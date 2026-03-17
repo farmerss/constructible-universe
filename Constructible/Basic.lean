@@ -738,6 +738,8 @@ theorem filter_values_in_position_preserves_value_at_input
     (filter_keys_index_of_item_in_subset_lt_filter_values_length α (β:=β) s s' hsNodup hs'Nodup s'_sub_s t hlength v hv)
   = value_at_index t (s.idxOf v) (hlength.symm ▸ (list_index_of_item_in_subset_lt_list_length α (β := β) s s' hsNodup hs'Nodup s'_sub_s v hv))
 :=
+  sorry
+/-
   by
   let fr := filter_values_in_position α (β:=β) s s' hsNodup hs'Nodup s'_sub_s t hlength
   have h_fr_eq_fvip : fr = filter_values_in_position α (β:=β) s s' hsNodup hs'Nodup s'_sub_s t hlength := rfl
@@ -901,7 +903,7 @@ theorem filter_values_in_position_preserves_value_at_input
       · --Case: fr_keys.idxOf v = n+1
         next =>
           sorry
-
+-/
 
 theorem value_at_succ_index_of_cons
   {β : Type u}

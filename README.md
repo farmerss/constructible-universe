@@ -10,13 +10,12 @@ segment starting at line 836, using the mutual inductive definition of codes for
 
 ## Current Status: **Work in Progress**
 
-**Note:** The code is provided for research and review purposes, but it won't
-compile successfully with `lake build` at this exact moment.
+**Note:** The code is provided for research and review purposes. It should compile, but it contains "sorry"s
 
 ### To-Do List:
-- [ ] Fix proofs of lemmas in connection with variable substitution
+- [ ] Deal with a number of "sorry"s, mostly in proofs of lemmas in connection with variable substitution
 
-## Build (when ready)
+## Build
 ```bash
 lake exe cache get
 lake build
