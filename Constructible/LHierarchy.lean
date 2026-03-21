@@ -42,7 +42,7 @@ def r_leq
 instance rIsStrictTotalOrder : IsStrictTotalOrder α r where
   trichotomous := h.toIsTrichotomous.trichotomous
 
-instance r_leqIsPartialOrder : IsPartialOrder α (r:=r_leq (r:=r) (h:=h)) where
+instance r_leqIsPartialOrder : IsPartialOrder α (r:=r_leq (r := r) (h:=h)) where
   refl := -- proof of: ∀ a, a ≤ a
     fun x => Or.inr (Eq.refl x)
   trans := -- proof of: ∀ a b c, a ≤ b → b ≤ c → a ≤ c
@@ -86,14 +86,14 @@ instance r_leqIsTotal : IsTotal α (r := r_leq (r := r) (h := h)) where
       | inl hyp => apply Or.inl; apply Or.inl; exact hyp
       | inr hyp =>
       cases hyp with
-      | inl hyp => subst hyp; apply Or.inl; exact (r_leqIsPartialOrder (α:=α) (r:=r) (h:=h)).refl a
+      | inl hyp => subst hyp; apply Or.inl; exact (r_leqIsPartialOrder (α:=α) (r := r) (h:=h)).refl a
       | inr hyp => apply Or.inr; apply Or.inl; exact hyp -- proof of: a ≤ b ∨ b ≤ a
 
 theorem upper_bound
   {y a b : α}
   (ha : r a y)
   (hb : r b y)
-: ∃ (e:α), (r e y) ∧ (r_leq (r:=r) (h:=h) a e ∧ r_leq (r:=r) (h:=h) b e)
+: ∃ (e:α), (r e y) ∧ (r_leq (r := r) (h:=h) a e ∧ r_leq (r := r) (h:=h) b e)
 :=
   by
   cases h.trichotomous a b with
@@ -124,17 +124,18 @@ theorem upper_bound_of_4
   | intro bound hyp =>
     use bound
     exact ⟨hyp.1,
-      ⟨(r_leqIsPartialOrder (α:=α) (r:=r)).trans a bound_ab bound hypab.2.1 hyp.2.1,
-      ⟨(r_leqIsPartialOrder (α:=α) (r:=r)).trans b bound_ab bound hypab.2.2 hyp.2.1,
-      ⟨(r_leqIsPartialOrder (α:=α) (r:=r)).trans c bound_cd bound hypcd.2.1 hyp.2.2,
-       (r_leqIsPartialOrder (α:=α) (r:=r)).trans d bound_cd bound hypcd.2.2 hyp.2.2⟩⟩⟩⟩
+      ⟨(r_leqIsPartialOrder (α:=α) (r := r)).trans a bound_ab bound hypab.2.1 hyp.2.1,
+      ⟨(r_leqIsPartialOrder (α:=α) (r := r)).trans b bound_ab bound hypab.2.2 hyp.2.1,
+      ⟨(r_leqIsPartialOrder (α:=α) (r := r)).trans c bound_cd bound hypcd.2.1 hyp.2.2,
+       (r_leqIsPartialOrder (α:=α) (r := r)).trans d bound_cd bound hypcd.2.2 hyp.2.2⟩⟩⟩⟩
 
 theorem upper_bound_of_3
   {y a b c : α}
   (ha : r a y)
   (hb : r b y)
   (hc : r c y)
-: ∃ (d:α), r d y ∧ (r_leq (r:=r) (h:=h) a d) ∧ (r_leq (r:=r) (h:=h) b d) ∧ (r_leq (r:=r) (h:=h) c d)
+: ∃ (d:α), r d y
+    ∧ (r_leq (r := r) (h:=h) a d) ∧ (r_leq (r := r) (h:=h) b d) ∧ (r_leq (r := r) (h:=h) c d)
 :=
   by
   rcases upper_bound_of_4 (h:=h) ha hb hc hc with ⟨e, hypey, hypae, hypbe, hypce, _⟩
@@ -146,8 +147,8 @@ Our definition of the constructible universe $L$ and its levels $L_γ$
 for ordinals $γ$ proceeds technically slightly differently to the usual one.
 
 Recall that in the usual one, $L_0=∅$, $L_{γ+1}=P_d(L_γ)$ where $P_d$ is the "definable power set",
-that is, the set of all subsets of $L_γ$ which are definable over $L_γ$ in the language of set theory
-from parameters in $L_γ$, and taking unions at limit stages $λ$, so $L_λ=⋃_{γ<λ}L_γ$.
+that is, the set of all subsets of $L_γ$ which are definable over $L_γ$ in the language
+of set theory from parameters in $L_γ$, and taking unions at limit stages $λ$, so $L_λ=⋃_{γ<λ}L_γ$.
 The definition of $L_γ$ is usually made by recursion on ordinals $γ$.
 
 Instead of fully defining each level $L_γ$ by recursion on $γ$,
@@ -173,26 +174,28 @@ $v$ (the variable bound in the definition of $X_c$) was specified in (3),
 and $v_1,...,v_k$ are supposed to enumerate the free variables of $φ$ excluding $v$.
 ($v$ itself might not actually appear in $φ$.)
 
-The main type of code is those of type `L_code`. The `y` there corresponds to the rank $γ$ of the code.
-We work with an arbtirary wellordering `r` of a type `α` to give our indices for building the $L$-hierarchy,
-so `y:α`.
-A secondary type is `L_code_below`; this specifies both a bound `x`, and `y` with `r y x` (with a proof of this),
-and an `L_code` at rank `y`. There are also lists of these `L_code_below` objects, which we use as the list
-of parameters used in building a code of type `L_code`.
+The main type of code is those of type `L_code`. The `y` there corresponds to the rank $γ$
+of the code. We work with an arbtirary wellordering `r` of a type `α` to give our indices
+for building the $L$-hierarchy, so `y:α`. A secondary type is `L_code_below`; this specifies
+both a bound `x`, and `y` with `r y x` (with a proof of this), and an `L_code` at rank `y`.
+There are also lists of these `L_code_below` objects, which we use as the list of parameters
+used in building a code of type `L_code`.
 
 Note that when $x$ is "$0$"; that is, the `r`-least element of `α`,
 there is a unique element of type `L_List r h x`, which is just the empty list `List.nil`.
 This is the list of all codes for elements of $L_0=∅$.
 
-The general parameters for the types will be `(α:Type u)`, `(r:α→α→ Prop)` and `(h:IsWellOrder α r)`.
+The general parameters for the types will be `(α:Type u)`, `(r:α→α→ Prop)` and
+`(h:IsWellOrder α r)`.
 
 The first type to be defined mutually is `L_list (x:α) (n:Nat)`,
 that of "lists" of length `n` consisting of objects of type `L_bound_code (x:α)`, defined below,
 which consist of some `(y:α)` with `r y x`, and an `L_code y` (also defined below).
 We implement the lists manually, in order to get around issues
-with getting the recursion to be accepted by Lean.-/
+with getting the recursion to be accepted by Lean. -/
   inductive L_List
-  : (x:α) → (n:Nat) → Type u -- x:α is the strict upper bound for allowed ranks of codes in list, n:Nat is the length of the list
+  : (x : α) → (n : Nat) → Type u --(x : α) is the strict upper bound for allowed
+                                 --ranks of codes in list, n:Nat is the length of the list
   where
   | nil :
       {x:α} →
@@ -204,113 +207,114 @@ with getting the recursion to be accepted by Lean.-/
       (L_List x n) → -- tail of list
       L_List x (n+1) -- output type of "cons" constructor
 
-/--The second type mutually defined is `L_code (y:α)`, that of codes
-for elements of the "definable power set" $P_d(L_y)$ of $L_y$.-/
+/-- The second type mutually defined is `L_code (y:α)`, that of codes
+for elements of the "definable power set" $P_d(L_y)$ of $L_y$. -/
   inductive L_code
-  : (y:α) → Type u -- y is specifies the rank of the code
+  : (y : α) → Type u -- y is specifies the rank of the code
   where
   | code :
-      {y:α} →
-      (φ:LSTF) →
-      (v:var) →
-      (σ:List var) →
-      (hσ:σ.Nodup ∧ σ ≈ (free_var_excluding φ v)) →
-      (τ:L_List y σ.length) → --note this is a recursive argument
+      {y : α} →
+      (φ : LSTF) →
+      (v : var) →
+      (σ : List var) →
+      (hσ : σ.Nodup ∧ σ ≈ (free_var_excluding φ v)) →
+      (τ : L_List y σ.length) → --note this is a recursive argument
       L_code y --output type
 
-/--The third type defined mutually is that of `L_code_below (x:α)`, consisting of
- some `y` with `r y x`, and some element of `L_code y`.-/
+/-- The third type defined mutually is that of `L_code_below (x:α)`, consisting of
+ some `y` with `r y x`, and some element of `L_code y`. -/
   inductive L_code_below
-  : (x:α) → Type u
+  : (x : α) → Type u
   where
   | boundcode :
-      {x:α} →
-      (y:α) →
-      (hryx:r y x) →
-      (code:L_code y) →
+      {x : α} →
+      (y : α) →
+      (hryx : r y x) →
+      (code : L_code y) →
       L_code_below x  -- output type
 end
 
 namespace L_List
 
 def length
-  {x:α}
-  {n:Nat}
-  (_:L_List (r:=r) x n)
+  {x : α}
+  {n : Nat}
+  (_ : L_List (r := r) x n)
 : Nat
 := n
 
 end L_List
 
 theorem L_List_length_cons_x_nil
-  {x:α}
-  (y:L_code_below (r:=r) x)
+  {x : α}
+  (y : L_code_below (r := r) x)
 : (L_List.cons y L_List.nil).length = 1
 := rfl
 
-/--Definition: `to_List` converts an object of type `L_List` to a standard list type.-/
+/-- Definition: `to_List` converts an object of type `L_List` to a standard list type. -/
 def to_List
-  {x:α}
-  {n:Nat}
-  (τ:L_List (r:=r) x n)
-:  List (L_code_below (r:=r) x)
+  {x : α}
+  {n : Nat}
+  (τ : L_List (r := r) x n)
+:  List (L_code_below (r := r) x)
 :=
   match n, τ with
-  | 0, L_List.nil (r:=r)  => List.nil
-  | _+1, L_List.cons c τ' => List.cons c (to_List τ')
+  | 0, L_List.nil (r := r)  => List.nil
+  | _ + 1, L_List.cons c τ' => List.cons c (to_List τ')
 
 
 
-/--Theorem: The casting of `L_List` to `List` given by `to_List`
-respects "cons".-/
+/-- Theorem: The casting of `L_List` to `List` given by `to_List`
+respects "cons". -/
 theorem L_ListToListConsCons
-  {x:α}
-  {n:Nat}
-  (τ:L_List (r:=r) x n)
-  (c:L_code_below x)
+  {x : α}
+  {n : Nat}
+  (τ : L_List (r := r) x n)
+  (c : L_code_below x)
 : to_List (L_List.cons c τ) = List.cons c (to_List τ)
 := rfl
 
-/--Theorem: The index `(n:Nat)` for an `L_List` object is just the length
-of its associated List object provided by `to_List`.-/
+/-- Theorem: The index `(n:Nat)` for an `L_List` object is just the length
+of its associated List object provided by `to_List`. -/
 theorem L_ListToListLength
-  {x:α}
-  {n:Nat}
-  (τ:L_List (r:=r) x n)
+  {x : α}
+  {n : Nat}
+  (τ : L_List (r := r) x n)
 : (to_List τ).length = τ.length
 :=
   have i : τ.length = n := by rfl
   by
-    rw[i]
+    rw [i]
     match n, τ with
     | 0, L_List.nil  => rfl
-    | m+1, L_List.cons c τ' =>
-      rw[L_ListToListConsCons]
-      rw[List.length_cons]
-      rw[L_ListToListLength τ']
+    | m + 1, L_List.cons c τ' =>
+      rw [L_ListToListConsCons]
+      rw [List.length_cons]
+      rw [L_ListToListLength τ']
       rfl
 --attribute [match_pattern]  L_code_below.boundcode L_code.code
 end L
 
-/--Definition: `build_ass` builds an `assignment M φ` object from input data coming
+/-- Definition: `build_ass` builds an `assignment M φ` object from input data coming
 from an `L_code` object together with some `x:M.univ` to interpret the excluded variable `v`
-(and the relevant proofs).-/
+(and the relevant proofs). -/
 def build_ass
-  (M:LSTModel.{u})
-  (φ:LSTF)
-  (v:var)
-  (σ:List var)
-  (hσ:σ.Nodup ∧ σ ≈ (free_var_excluding φ v))
-  (τ:List M.univ)
-  (hτ: σ.length = τ.length)
-  (x:M.univ)
+  (M : LSTModel.{u})
+  (φ : LSTF)
+  (v : var)
+  (σ : List var)
+  (hσ : σ.Nodup ∧ σ ≈ (free_var_excluding φ v))
+  (τ : List M.univ)
+  (hτ : σ.length = τ.length)
+  (x : M.univ)
 : assignment M φ
 :=
   if i : v ∈ free_var φ then
     assignment.mk
-      (keys := (List.cons v σ))
+      (keys := (v::σ))
       -- Proof of `keys.Nodup`: we argue roughly as follows:
-      -- `v ∉ σ`, since `σ ≈ free_varExc φ v`, and since `σ.Nodup` and `v ∉ σ`, therefore `(cons v σ).Nodup`.
+      -- `v ∉ σ`, since `σ ≈ free_varExc φ v`, and since `σ.Nodup` and `v ∉ σ`,
+      --therefore `(cons v σ).Nodup`.
       --
       -- In more detail:
       -- `(List.Nodup.cons (α := var) (l := σ) (a := v) (hv : v∉σ) (hσ : σ.Nodup))`
@@ -324,21 +328,14 @@ def build_ass
       -- `: (v ∉ free_var_excluding φ v) → v ∉ σ`
       --
       -- ().mpr ass
-      --
       (hNodup := (List.Nodup.cons
                  (α:=var)
                  (l:=σ)
                  (a:=v)
                  --Proof that `v ∉ σ`:
                  ((List_mem_respects_ext_equiv
-                    (α:=var)
-                    σ
-                    (free_var_excluding φ v)
-                    hσ.2
-                    v
-                  ).mp.mt
-                  (excluded_var_notin_free_var_excluding φ v)
-                 )
+                    (α:=var) σ (free_var_excluding φ v) hσ.2 v).mp.mt
+                  (excluded_var_notin_free_var_excluding φ v))
                  --Proof that `σ.Nodup`
                  hσ.1))
       --Proof of `keys ≈ free_var φ`
@@ -352,58 +349,54 @@ def build_ass
       (hfree_var := Setoid.trans
                   (List_cons_respects_ext_equiv var v hσ.2)
                   (cons_free_var_excluding_ext_equiv_free_var φ v i))
-      (values := List.cons x τ)
+      (values := (x::τ))
       (hvalues := cons_preserves_length_equality (α:=var) (β:= M.univ) v σ x τ hτ)
   else
     --Case `v ∉ free_var φ`: Here we almost have everything needed already.
     --The main thing is the proof that `keys ≈ free_var φ`, for which we use
-    -- theorem `free_var_excluding_is_free_var_if_excluded_not_present (φ:LSTF) (v:var) (h: v ∉ free_var φ)`
-    -- `: free_var_excluding φ v ≈ free_var φ`
+    -- theorem `free_var_excluding_is_free_var_if_excluded_not_present (φ:LSTF) (v:var)
+    --(h: v ∉ free_var φ) : free_var_excluding φ v ≈ free_var φ`
     assignment.mk
-      σ
-      hσ.1
-      (Setoid.trans
-        hσ.2
-        (free_var_excluding_is_free_var_if_excluded_not_present φ v i)
-      )
-      τ
-      hτ
+      σ hσ.1 (Setoid.trans hσ.2 (free_var_excluding_is_free_var_if_excluded_not_present φ v i)) τ hτ
 
-theorem build_ass_cons_new_keys
-  (M : LSTModel.{u})
+theorem excluded_var_in_free_var_build_ass_keys_eq_cons
+  {α : Type u}
+  (M : LSTModel)
   (φ : LSTF)
   (v : var)
   (σ : List var)
-  (hσ : σ.Nodup ∧ σ ≈ (free_var_excluding φ v))
+  (h : σ.Nodup ∧ σ ≈ free_var_excluding φ v)
   (τ : List M.univ)
   (hτ : σ.length = τ.length)
   (x : M.univ)
-  (hv : v ∈ free_var φ)
-: (build_ass M φ v σ hσ τ hτ x).keys = (v::σ)
+  (i : v ∈ free_var φ)
+: (build_ass M φ v σ h τ hτ x).keys = (v :: σ)
 :=
   by
   unfold build_ass
-  split
-  · rfl
-  · contradiction
+  simp only [i, ↓reduceDIte]
+--Alternate proof:
+-- unfold build_ass
+--  split
+--  · rfl
+--  · contradiction
 
-theorem build_ass_cons_new_values
-  (M : LSTModel.{u})
+theorem excluded_var_in_free_var_build_ass_values_eq_cons
+  {α : Type u}
+  (M : LSTModel)
   (φ : LSTF)
   (v : var)
   (σ : List var)
-  (hσ : σ.Nodup ∧ σ ≈ (free_var_excluding φ v))
+  (h : σ.Nodup ∧ σ ≈ free_var_excluding φ v)
   (τ : List M.univ)
   (hτ : σ.length = τ.length)
   (x : M.univ)
-  (hv : v ∈ free_var φ)
-: (build_ass M φ v σ hσ τ hτ x).values = (x::τ)
+  (i : v ∈ free_var φ)
+: (build_ass M φ v σ h τ hτ x).values = (x::τ)
 :=
   by
   unfold build_ass
-  split
-  · rfl
-  · contradiction
+  simp only [i, ↓reduceDIte]
 
 theorem length_values_build_ass_on_new_var_positive
   (M : LSTModel)
@@ -431,6 +424,20 @@ theorem length_values_build_ass_on_new_var_positive
   have m : ass.values.length = τ.length + 1 := by rw[l']; rfl
   have n : 0 < ass.values.length := by simp [m]
   exact n
+
+theorem eval_build_ass_has_old_vars_mem_keys
+  (M : LSTModel)
+  (φ : LSTF)
+  (v : var)
+  (σ : List var)
+  (h : σ.Nodup ∧ σ ≈ free_var_excluding φ v)
+  (τ : List M.univ)
+  (hτ : σ.length = τ.length)
+  (x : M.univ)
+  (w : var)
+  (hw : w ∈ free_var φ)
+: w ∈ (build_ass M φ v σ h τ hτ x).keys
+:=(build_ass M φ v σ h τ hτ x).hfree_var.2 hw
 
 theorem eval_build_ass_on_new_var_has_new_var_mem_keys
   (M : LSTModel)
@@ -468,39 +475,6 @@ theorem there_exists_proof_eval_build_ass_on_new_var_has_new_var_mem_keys
   by
   use (eval_build_ass_on_new_var_has_new_var_mem_keys M φ v σ h τ hτ x i)
 
-theorem excluded_var_in_free_var_build_ass_keys_eq_cons
-  {α : Type u}
-  (M : LSTModel)
-  (φ : LSTF)
-  (v : var)
-  (σ : List var)
-  (h : σ.Nodup ∧ σ ≈ free_var_excluding φ v)
-  (τ : List M.univ)
-  (hτ : σ.length = τ.length)
-  (x : M.univ)
-  (i : v ∈ free_var φ)
-: (build_ass M φ v σ h τ hτ x).keys = (v :: σ)
-:=
-  by
-  unfold build_ass
-  simp only [i, ↓reduceDIte]
-
-theorem excluded_var_in_free_var_build_ass_values_eq_cons
-  {α : Type u}
-  (M : LSTModel)
-  (φ : LSTF)
-  (v : var)
-  (σ : List var)
-  (h : σ.Nodup ∧ σ ≈ free_var_excluding φ v)
-  (τ : List M.univ)
-  (hτ : σ.length = τ.length)
-  (x : M.univ)
-  (i : v ∈ free_var φ)
-: (build_ass M φ v σ h τ hτ x).values = (x::τ)
-:=
-  by
-  unfold build_ass
-  simp only [i, ↓reduceDIte]
 
 theorem new_var_in_free_var_in_build_ass_keys
   {α : Type u}
@@ -530,35 +504,26 @@ theorem eval_build_ass_on_new_var
   (hτ : σ.length = τ.length)
   (x : M.univ)
   (i : v ∈ free_var φ)
-  (hkeys
-  :  v ∈ (build_ass M φ v σ h τ hτ x).keys
-  := new_var_in_free_var_in_build_ass_keys (α:=α) M φ v σ h τ hτ x i)
+  (hkeys : v ∈ (build_ass M φ v σ h τ hτ x).keys
+  := new_var_in_free_var_in_build_ass_keys (α := α) M φ v σ h τ hτ x i)
 : var_eval (build_ass M φ v σ h τ hτ x) v hkeys = x
 :=
   by
   unfold var_eval
   dsimp only [Lean.Elab.WF.paramLet]
-
   have  j_keys : (build_ass M φ v σ h τ hτ x).keys = (v::σ)
   := excluded_var_in_free_var_build_ass_keys_eq_cons (α:=α) M φ v σ h τ hτ x i
-
   have  j_values : (build_ass M φ v σ h τ hτ x).values = (x::τ)
   := excluded_var_in_free_var_build_ass_values_eq_cons (α:=α) M φ v σ h τ hτ x i
-
   have m
   : List.idxOf v (build_ass M φ v σ h τ hτ x).keys = 0
   := by rw[j_keys]; simp only [List.idxOf_cons_self]
-
   have o : 0 < (build_ass M φ v σ h τ hτ x).values.length
   := length_values_build_ass_on_new_var_positive M φ v σ h τ hτ x i
-
   have n : value_at_index (build_ass M φ v σ h τ hτ x).values 0 o = x
   := by simp only [j_values]; rfl
-
   simp only [m]
   exact n
-
-
 
 def eval_var_param_pair
   {β : Type u}
@@ -626,15 +591,44 @@ theorem eval_build_ass_on_old_var
   (hτ : σ.length = τ.length)
   (x : M.univ)
   (i : w ∈ σ)
-  (h_w_in_keys : w ∈ (build_ass M φ v σ h τ hτ x).keys)
+  (h_w_in_keys : w ∈ (build_ass M φ v σ h τ hτ x).keys
+  :=
+    eval_build_ass_has_old_vars_mem_keys M φ v σ h τ hτ x w
+      --proof that w ∈ free_var φ: use w ∈ σ ≈ free_var_excluding φ v ⊆ free_var φ
+      --proof that w ∈ (free_var_excluding φ v)
+      --  := (List_mem_respects_ext_equiv_mp var σ (free_var_excluding φ v) h.2 i)
+      --proof that free_var_excluding φ v ⊆ free_var φ := free_var_excluding_is_sub_free_var φ v
+      (free_var_excluding_is_sub_free_var φ v
+        (List_mem_respects_ext_equiv_mp var σ (free_var_excluding φ v) h.2 w i)))
 : var_eval (build_ass M φ v σ h τ hτ x) w h_w_in_keys =
   eval_var_param_pair σ h.1 τ hτ w i
 :=
   by
   let ass := build_ass M φ v σ h τ hτ x
-  unfold build_ass at ass
-
-  sorry
+  unfold var_eval
+  unfold eval_var_param_pair
+  dsimp only
+  unfold build_ass
+  split
+  · dsimp only
+    have h_idxOf_w_lt_length_tau
+    : (List.idxOf w σ) < τ.length
+    := (hτ ▸ ((List.idxOf_lt_length_iff (l:=σ) (a:=w)).mpr i))
+    have h_succ_idxOf_w_lt_length_cons_x_tau
+    : (List.idxOf w σ).succ < (x::τ).length
+    := Nat.succ_lt_succ h_idxOf_w_lt_length_tau
+    have goal_but_with_succ
+    :   value_at_index τ (List.idxOf w σ) h_idxOf_w_lt_length_tau
+      = value_at_index (x::τ) (List.idxOf w σ).succ h_succ_idxOf_w_lt_length_cons_x_tau
+    :=  value_at_index_of_cons_at_succ_eq_value_at_index
+          τ (List.idxOf w σ) h_idxOf_w_lt_length_tau x
+    have
+    :   List.idxOf w (v::σ) = (List.idxOf w σ).succ
+    :=  List.idxOf_cons_ne
+          σ (variable_in_free_var_excluding_is_neq_excluded_var φ v w (h.2.1 i)).symm
+    rw [goal_but_with_succ]
+    congr 1
+  · dsimp only
 
 --Some helper objects to define lift_code operation below.
 -- `v_5` is some specific variable
@@ -662,7 +656,8 @@ def hσ₅ :σ₅.Nodup ∧ σ₅ ≈ (free_var_excluding φ₅ v₅) := by
     have i : var.mk 5 ≠ var.mk 6 := var.mk.inj.mt h
     unfold v₅
     unfold v₆
-    have j : (insert (var.mk 5) (insert (var.mk 6) ∅):List var).erase (var.mk 5) = ({var.mk 6}:List var)
+    have j
+    : (insert (var.mk 5) (insert (var.mk 6) ∅):List var).erase (var.mk 5) = ({var.mk 6}:List var)
     := List.erase_cons_head (var.mk 5) ({var.mk 6}:List var)
     rw [j]
     have k : [var.mk 6] = ({var.mk 6}:List var) := by rfl
@@ -670,40 +665,42 @@ def hσ₅ :σ₅.Nodup ∧ σ₅ ≈ (free_var_excluding φ₅ v₅) := by
 def hσ₅length : σ₅.length = 1 := by rfl
 
 def v₅_mem_free_var_φ₅ : v₅ ∈ free_var φ₅ := first_in_free_var_atomic_mem v₅ v₆
+def v₆_mem_free_var_φ₅ : v₆ ∈ free_var φ₅ := second_in_free_var_atomic_mem v₅ v₆
+def v₆_mem_σ₅ : v₆ ∈ σ₅ := List.mem_singleton_self v₆
 
 namespace L
 
-variable {α : Type u} {r:α→α→ Prop} {h : IsWellOrder α r}
+variable {α : Type u} {r : α → α → Prop} {h : IsWellOrder α r}
 
-/--Given an `c : L_code` of rank `y` and `y'` with `r y y'`, there is a canonical
+/-- Given an `c : L_code` of rank `y` and `y'` with `r y y'`, there is a canonical
 lift of `c` to an `c' : L_code` of rank `y'`, for the same object:
 just set `c'` to be the code of rank `y'` that uses the parameter $X_c$ (the interpretation of `c`)
 to define itself, as the set of its members.
 So `c'` uses the formula $v_6 ∈ v_5$ for some variables `v_5`, `v_6`,
 interpreting `v_5` as $X_c$ and leaving `v_6` free. This is implemented by
- `lift_code`.-/
+ `lift_code`. -/
 def lift_code
-  (y1 y2 :α)
-  (h': r y1 y2)
-  (code:L_code (r:=r) y1)
-: L_code (r:=r) y2
+  (y1 y2 : α)
+  (h' : r y1 y2)
+  (code : L_code (r := r) y1)
+: L_code (r := r) y2
 := L_code.code φ₅ v₅ σ₅ hσ₅ (L_List.cons (L_code_below.boundcode y1 h' code) L_List.nil)
 
 abbrev L_univ
- (x:α)
-:= L_code_below (r:=r) x
+ (x : α)
+:= L_code_below (r := r) x
 
 structure LSTInterpretation
-  (x:α)
+  (x : α)
 where
-  equiv : (L_univ (r:=r) x) → (L_univ (r:=r) x) → Prop
-  mem : (L_univ (r:=r) x) → (L_univ (r:=r) x) → Prop
+  equiv : (L_univ (r := r) x) → (L_univ (r := r) x) → Prop
+  mem : (L_univ (r := r) x) → (L_univ (r := r) x) → Prop
 
 def sats_L_code_param
-  {y:α}
-  (int : LSTInterpretation (r:=r) y)
-  (c : L_code (r:=r) y)
-  (x : L_univ (r:=r) y)
+  {y : α}
+  (int : LSTInterpretation (r := r) y)
+  (c : L_code (r := r) y)
+  (x : L_univ (r := r) y)
 : Prop
 :=
   let M := LSTModel.mk (L_univ y) int.equiv int.mem
@@ -712,25 +709,25 @@ def sats_L_code_param
     let hτ : σ.length = (to_List τ).length := (L_ListToListLength τ).symm
     sats M φ (build_ass M φ v σ hσ (to_List τ) hτ x)
 
-/-- This takes as input a model with universe the `y`-bounded `L_code_below`s for some `y`, `r`, `h`,
-and given equality and membership relations (`eq`, `mem`),
-and two codes for subsets of it, and checks whether they define the same set.-/
+/-- This takes as input a model with universe the `y`-bounded `L_code_below`s for
+some `y`, `r`, `h`, and given equality and membership relations (`eq`, `mem`),
+and two codes for subsets of it, and checks whether they define the same set. -/
 def code_equiv
-  {y:α}
-  (int : LSTInterpretation (r:=r) y)
-  (c c':L_code (r:=r) y)
+  {y : α}
+  (int : LSTInterpretation (r := r) y)
+  (c c' : L_code (r := r) y)
 : Prop
 :=
   ∀ (x : L_univ y),
     (sats_L_code_param int c x)  ↔ (sats_L_code_param int c' x)
 
-/--This takes as input a model with universe the `y`-bounded `L_code_below`s for some `y`, `r`, `h`,
-and given equality and membership relations (`eq`, `mem`),
-and two codes for subsets of it, and checks whether the first codes an element of the second.-/
+/-- This takes as input a model with universe the `y`-bounded `L_code_below`s for some
+`y`, `r`, `h`, and given equality and membership relations (`eq`, `mem`),
+and two codes for subsets of it, and checks whether the first codes an element of the second. -/
 def code_mem
-  {y:α}
-  (int : LSTInterpretation (r:=r) y)
-  (c c' : L_code (r:=r) y)
+  {y : α}
+  (int : LSTInterpretation (r := r) y)
+  (c c' : L_code (r := r) y)
 : Prop
 :=
   ∃ (p:L_univ y), --p will be the set coded by c, and will be in the set coded by c'
@@ -740,11 +737,11 @@ def code_mem
     ∧ (sats_L_code_param int c' p)
 
 theorem code_equiv_is_Equivalence
-  (y:α)
-  (int : LSTInterpretation (r:=r) y)
+  (y : α)
+  (int : LSTInterpretation (r := r) y)
 : Equivalence (code_equiv (α:=α) int)
   where
-    refl (c : L_code (r:=r) y) :=
+    refl (c : L_code (r := r) y) :=
       by
       unfold code_equiv
       exact fun x => Iff.rfl
@@ -767,10 +764,10 @@ theorem code_equiv_is_Equivalence
       exact fun x => Iff.trans (hcd x) (hde x)
 
 theorem code_mem_respects_code_equiv
-  {y:α}
-  (int : LSTInterpretation (r:=r) y)
-  {c c' : L_code (r:=r) y}
-  {d d' : L_code (r:=r) y}
+  {y : α}
+  (int : LSTInterpretation (r := r) y)
+  {c c' : L_code (r := r) y}
+  {d d' : L_code (r := r) y}
   (hcc' : code_equiv int c c')
   (hdd' : code_equiv int d d')
 : (code_mem int c d) → (code_mem int c' d')
@@ -791,10 +788,10 @@ theorem code_mem_respects_code_equiv
       exact (hdd' p).mp hyp.2
 
 theorem code_mem_respects_code_equiv_iff
-  {y:α}
-  (int : LSTInterpretation (r:=r) y)
-  {c c' : L_code (r:=r) y}
-  {d d' : L_code (r:=r) y}
+  {y : α}
+  (int : LSTInterpretation (r := r) y)
+  {c c' : L_code (r := r) y}
+  {d d' : L_code (r := r) y}
   (hcc' : code_equiv int c c')
   (hdd' : code_equiv int d d')
 :  (code_mem int c d) ↔ (code_mem int c' d')
@@ -804,14 +801,14 @@ theorem code_mem_respects_code_equiv_iff
 --theorem --code_equiv_{y_1} c d → y_1 < y_2 → code_equiv_{y_2} (lift_code y_1 y_2 c) (lift_code y_1 y_2 d)
 
 def L_recursion_trichotomy_equiv_general
-  (x:α)
-  (lx: (y:α) → (_:r y x) → LSTInterpretation (r:=r) y)
+  (x : α)
+  (lx : (y:α) → (_:r y x) → LSTInterpretation (r := r) y)
   (y1 : α)
   (h1 : r y1 x)
-  (code1 : L_code (r:=r) y1)
+  (code1 : L_code (r := r) y1)
   (y2 : α)
   (h2 : r y2 x)
-  (code2 : L_code (r:=r) y2)
+  (code2 : L_code (r := r) y2)
 : Prop
 :=
     (∃ (h' : r y1 y2), code_equiv (lx y2 h2) (lift_code y1 y2 h' code1) code2)
@@ -819,14 +816,14 @@ def L_recursion_trichotomy_equiv_general
   ∨ (∃ (h' : y1=y2),  code_equiv  (lx y1 h1) code1 (h'▸code2))
 
 def L_recursion_trichotomy_mem_general
-  (x:α)
-  (lx: (y:α) → (_ : r y x) → LSTInterpretation (r:=r) y)
+  (x : α)
+  (lx : (y:α) → (_ : r y x) → LSTInterpretation (r := r) y)
   (y1 : α)
   (h1 : r y1 x)
-  (code1 : L_code (r:=r) y1)
+  (code1 : L_code (r := r) y1)
   (y2 : α)
   (h2 : r y2 x)
-  (code2 : L_code (r:=r) y2)
+  (code2 : L_code (r := r) y2)
 : Prop
 :=
     (∃ (h' : r y1 y2), code_mem (lx y2 h2) (lift_code y1 y2 h' code1) code2)
@@ -856,9 +853,9 @@ If the non-bounded codes have ranks `z` where `r z y` (where `r y x`),
 then we convert the rank `z` code to a rank `y` code in the canonical fashion,
 and then use the method of the previous case.-/
 def L_recursion
-: (x : α) → (lx:(y : α) → r y x → (LSTInterpretation (r:=r) y))
- →  (LSTInterpretation (r:=r) x)
-:= fun (x : α)  (lx: (y : α) → r y x →  (LSTInterpretation (r:=r) y))
+: (x : α) → (lx:(y : α) → r y x → (LSTInterpretation (r := r) y))
+ →  (LSTInterpretation (r := r) x)
+:= fun (x : α)  (lx: (y : α) → r y x →  (LSTInterpretation (r := r) y))
  =>
     LSTInterpretation.mk
       --equivalence relation `eq_x`:
@@ -879,16 +876,16 @@ def L_recursion
       )
 
 noncomputable def L
-: (x : α) → LSTInterpretation (r:=r) x
+: (x : α) → LSTInterpretation (r := r) x
 := WellFounded.fix h.wf (L_recursion)
 
 noncomputable def L_Model
 : (x : α) → LSTModel
-:= fun (x:α) => LSTModel.mk (L_univ (r:=r) x) (L (h:=h) x).equiv (L (h:=h) x).mem
+:= fun (x:α) => LSTModel.mk (L_univ (r := r) x) (L (h:=h) x).equiv (L (h:=h) x).mem
 
 noncomputable def L_hierarchy_below
 (x : α)
-: (y:α)→ r y x → LSTInterpretation (r:=r) y
+: (y:α)→ r y x → LSTInterpretation (r := r) y
 := fun (y:α) (_ : r y x) => L (h:=h) y
 
 theorem L_fixed_point_of_recursion
@@ -1221,33 +1218,13 @@ theorem L_seg_mem_of_upper_constructed_boundcode
 := by rw [L_seg_mem]
 
 --We now prove by two facts by simultaneous induction:
---1. That "lift_code" commutes mod equivalence; that is, if y1 < y2 < y3
--- and `code` is in `L_code y1`,
---then lift_code_{y2,y3} ∘ lift_code_{y1,y2} (code) code_equiv lift_code_{y1,y3}(code).
+--1. That "lift_code" commutes mod equivalence; that is, if y1 < y2 < y3 and `code` is in
+--`L_code y1`, then lift_code_{y2,y3} ∘ lift_code_{y1,y2} (code) code_equiv lift_code_{y1,y3}(code).
 --2. That if y1 < y3 then `lift_code_{y1,y3}` is an embedding L_{y1+1} → L_{y3+1};
--- that is, given `code1, code2 ∈ L_code y1`, we have `code1 code_equiv code2` iff `lift_code_{y1,y3}(code1) code_equiv lift_code_{y1,y3}(code2)`,
--- and likewise with `code_mem` replacing `code_equiv`
---We prove these things by simultaneous induction on the upper bound `y3`.
-
-/-
-theorem mem_of_boundcode_lift_code
-  {y3:α}
-  (y1 y2 :α)
-  (i : r y1 y2)
-  (j : r y2 y3)
-  (code : L_code y1)
-  (x: L_code_below y3)
-: (L (h:=h) y3).mem x (L_code_below.boundcode y2 j (lift_code y1 y2 i code))
-↔ (L (h:=h) y3).mem x (L_code_below.boundcode y1 (sorry: r y1 y3) code)
-:=
-  by
-  apply Iff.intro
-  · intro hsats
-    rw [L_seg_mem] at hsats
-    rw [L_seg_mem]
-    sorry
-  · sorry
--/
+-- that is, given `code1, code2 ∈ L_code y1`, we have `code1 code_equiv code2` iff
+-- `lift_code_{y1,y3}(code1) code_equiv lift_code_{y1,y3}(code2)`, and likewise with `code_mem`
+-- replacing `code_equiv`.
+-- We prove these things by simultaneous induction on the upper bound `y3`.
 
 theorem sats_L_code_param_of_lift_code
   {y2 : α}
@@ -1263,7 +1240,7 @@ theorem sats_L_code_param_of_lift_code
   have hτ
   : σ₅.length = τ.length
   := by rfl
-
+  --now main proof begins
   by
   unfold lift_code
   unfold sats_L_code_param
@@ -1292,7 +1269,7 @@ theorem sats_L_code_param_of_lift_code
       { univ := L_univ y2, eq := (L (h:=h) y2).equiv, mem := (L (h:=h) y2).mem }
       (LSTF.atomic_mem v₅ v₆) v₅ σ₅ hσ₅
       (to_List (L_List.cons (L_code_below.boundcode y1 i code) L_List.nil)) hτ x).keys
-  := sorry--eval_build_ass_on_new_var_has_new_var_mem_keys M φ₅ v₅ σ₅ hσ₅ τ hτ x v₅_mem_free_var_φ₅
+  := eval_build_ass_has_old_vars_mem_keys M φ₅ v₅ σ₅ hσ₅ τ hτ x v₆ v₆_mem_free_var_φ₅
   have k'
   : var_eval
     (build_ass
@@ -1300,7 +1277,13 @@ theorem sats_L_code_param_of_lift_code
       (LSTF.atomic_mem v₅ v₆) v₅ σ₅ hσ₅
       (to_List (L_List.cons (L_code_below.boundcode y1 i code) L_List.nil)) hτ x
     ) v₆ j' = L_code_below.boundcode y1 i code
-  := sorry--eval_build_ass_on_new_var (α:=α) M φ₅ v₅ σ₅ hσ₅ τ hτ x v₅_mem_free_var_φ₅ j
+  :=by
+    dsimp
+    have eval_var_param_pair_returns
+    : eval_var_param_pair σ₅ hσ₅.1 τ hτ v₆ v₆_mem_σ₅ = L_code_below.boundcode y1 i code
+    :=by unfold eval_var_param_pair; rfl
+    exact eval_var_param_pair_returns
+      ▸ eval_build_ass_on_old_var (α:=α) M φ₅ v₅ v₆ σ₅ hσ₅ τ hτ x v₆_mem_σ₅
   rw[k']
 
 theorem L_seg_mem_of_constructed_boundcodes
@@ -1316,10 +1299,11 @@ theorem L_seg_mem_of_constructed_boundcodes
 := by rw [L_seg_mem]
 
 /-The next few theorems reduce (L x).equiv and (L x).mem statements about
-constructed boundcodes (in parameters (y1, jy1, code1) and (y2, jy2, code2) which are the inputs to the constructors for the boundcodes)
-to code_equiv and code_mem statements, each separately in 3 cases depending on the relationship between y1 and y3. Thus, the main point is
-it processes the rather trivial trichotomy in each of those cases (where in each case, 2 of the possibilities of the trichotomy are just ruled out
-directly by the hypotheses).-/
+constructed boundcodes (in parameters (y1, jy1, code1) and (y2, jy2, code2) which are the
+inputs to the constructors for the boundcodes) to code_equiv and code_mem statements, each
+separately in 3 cases depending on the relationship between y1 and y3. Thus, the main point
+is it processes the rather trivial trichotomy in each of those cases (where in each case,
+2 of the possibilities of the trichotomy are just ruled out directly by the hypotheses).-/
 
 theorem L_seg_equiv_of_constructed_boundcodes_same_level
     {x : α}
@@ -1550,14 +1534,6 @@ theorem L_seg_mem_of_constructed_boundcodes_second_below_first
     apply Or.inr
     apply Or.inl
     use jy1y2
-
-    --syntax "step1_lt_lt" ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    --14 "ident"s for the 14 arguments
-
-   -- macro_rules
-    --| `(tactic| step1_lt_lt $hcd_z $h $yc $yd $z $yc_LT $yd_LT $jz $jc $jd $codec $coded $hcd $lift_codes_with_mem) =>
-     -- `(tactic| have $hcd_z : code_mem (L (h := $h) $z) (lift_code $yc $z $jc $codec) (lift_code $yd $z $jd $coded)
-    --    := $lift_codes_with_mem $yc $yd $z $jz $yc_LT $yd_LT $jc $jd $codec $coded $hcd)
 
 open Lean Meta Elab Tactic
 

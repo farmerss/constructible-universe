@@ -14,6 +14,8 @@ set_option linter.unusedVariables false
 set_option linter.unusedSectionVars false
 set_option linter.deprecated false
 
+universe u u'
+
 namespace L
 
   variable {α : Type u} {r : α → α → Prop} {h : IsWellOrder α r}
@@ -451,7 +453,7 @@ def L_equiv_trans_lemma_left_lt_right_lt_center
   , code_equiv (L (h := h) yc) (lift_code ya yc hyac codea) codec
 
 def sats_L_code_param_respects_equiv_param
-  {y3:α} : Prop := ∀
+  {y3 : α} : Prop := ∀
   (c : L_code (r:=r) y3)
   {p q : L_univ (r:=r) y3}
   (hpq : (L (r:=r) (h := h) y3).equiv p q)
@@ -1739,8 +1741,50 @@ theorem ind_sats_L_code_param_respects_equiv_param
   by
   unfold sats_L_code_param_respects_equiv_param
   intro c p q hpq hsats
-  sorry
-
+  unfold sats_L_code_param at hsats
+  unfold sats_L_code_param
+  set M := LSTModel.mk (L_univ  y3 : Type u) (L (h:=h) y3).equiv (L (h:=h) y3).mem
+  have M_eq_Equiv
+  : Equivalence M.eq
+  := ind_L_seg_equiv_is_Equivalence ihyp
+  have M_mem_respects
+  : respects M.eq M.mem
+  := ind_L_seg_mem_respects_equiv ihyp
+  set StandardM := StandardLSTModel.mk M M_eq_Equiv M_mem_respects
+  dsimp
+  cases c with
+  | code φ v σ hσ τ =>
+    dsimp only
+    dsimp at hsats
+    have hτ : σ.length = (to_List τ).length :=  (L_ListToListLength τ).symm
+    set p_ass := build_ass M φ v σ hσ (to_List τ) hτ p
+    set q_ass := build_ass M φ v σ hσ (to_List τ) hτ q
+    have p_q_ass_equiv : equiv_ass StandardM φ p_ass q_ass
+    :=by
+      unfold equiv_ass
+      intro w hw
+      if hvw : v = w then
+        --in this case one evaluates to p, one to q
+        subst hvw
+        have var_eval_p_ass_eq_p
+        : var_eval p_ass v (p_ass.hfree_var.2 hw) = p
+        := eval_build_ass_on_new_var (α:=α) M φ v σ hσ (to_List τ) hτ p hw
+        have var_eval_q_ass_eq_q
+        : var_eval q_ass v (q_ass.hfree_var.2 hw) = q
+        := eval_build_ass_on_new_var (α:=α) M φ v σ hσ (to_List τ) hτ q hw
+        exact var_eval_q_ass_eq_q ▸ var_eval_p_ass_eq_p.symm ▸ hpq
+      else
+        --in this case they eval to the same object
+        have w_in_σ : w ∈ σ
+        := List_mem_respects_ext_equiv_mp var (free_var_excluding φ v) σ hσ.2.symm w
+          (variable_in_free_var_neq_excluded_is_in_free_var_excluding φ v w hvw hw)
+        have var_eval_p_ass_eq_var_eval_q_ass
+        : var_eval p_ass w (p_ass.hfree_var.2 hw) = var_eval q_ass w (q_ass.hfree_var.2 hw)
+        :=(eval_build_ass_on_old_var (α:=α) M φ v w σ hσ (to_List τ) hτ p w_in_σ).trans
+            (eval_build_ass_on_old_var M φ v w σ hσ (α:=α) (to_List τ) hτ q w_in_σ).symm
+        rw[var_eval_p_ass_eq_var_eval_q_ass]
+        exact M_eq_Equiv.refl (var_eval q_ass w (q_ass.hfree_var.2 hw))
+    exact sats_respects_equiv StandardM φ p_ass q_ass p_q_ass_equiv hsats
 
 theorem ind_lift_code_mem_emb {y3 : α}
     (ihyp : ext_IH y3 (h := h))
