@@ -5,24 +5,22 @@ Authors: Farmer Schlutzenberg, https://sites.google.com/site/schlutzenberg
 -/
 import Mathlib.Order.RelClasses
 import Mathlib.SetTheory.Ordinal.Basic
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finmap
 
-set_option linter.unusedVariables false
-set_option linter.unusedSectionVars false
-set_option linter.deprecated false
-set_option linter.style.setOption false
+--set_option linter.unusedVariables false
+--set_option linter.unusedSectionVars false
 
 --set_option pp.coercions true
 
 universe u u'
 
 --Lists
-/-Lists: In this section we develop some basic material on lists and the *extensional equivalence*
+/- Lists: In this section we develop some basic material on lists and the *extensional equivalence*
 relation. We work with `List.cons` (note `(List.cons x s) = (x::s)`), `List.erase`, `List.insert`,
 `x ∈ s` and `s ⊆ t` (for lists `s`, `t`), `List.Nodup` ("no duplications" or "duplication-free").
 Most things will be developed for the type `List α`, where `α` is a type satisfying
-`DecidableEq α`. -/
+`DecidableEq α`. For some theorems we make do without the decidability assumption,
+or with just `BEq α` + `LawfulBEq α`, but the main point is that things work overall
+with `DecidableEq α`. -/
 section Lists
 
 --Some useful basic tools for author's reference:
@@ -45,7 +43,10 @@ section Lists
 #check List.length_nil
 #check Nat.lt_irrefl
 
-variable (α : Type u) [DecidableEq α]
+variable (α : Type u)
+
+
+--variable (α : Type u) [DecidableEq α]
 
 /-- Definition: Two lists `s, t` (of type `List α`) are *extensionally equivalent*
   (`ext_equiv`) if each is a subset of the other: `s ⊆ t ∧ t ⊆ s`. -/
@@ -143,64 +144,60 @@ theorem List_nil_not_ext_equiv_non_nil
     have l : x ∈ [] := k.1 j
     contradiction
 
-/-- Theorem: If `v ∈ s` (list `s`) then erasing `v` followed by inserting
-`v` results in a list `≈ s`. -/
-theorem List_insert_erase
-  (s : List α)
-  (v : α)
-  (h : v ∈ s)
-: List.insert v (s.erase v) ≈ s
-:= by
-  apply And.intro
-  · intro x i
-    rw[List.mem_insert_iff] at i
-    apply Or.elim i
-    · intro j
-      rw [← j] at h
-      exact h
-    · intro j
-      apply List.erase_subset (a:=v) (l:=s)
-      exact j
-  · intro x i
-    rw[List.mem_insert_iff]
-    by_cases k : x=v
-    case pos =>
-      apply Or.inl k
-    case neg =>
-      apply Or.inr
-      exact (List.mem_erase_of_ne (a:=x) (b:=v) (l:=s) k).mpr i
-
-/-- Theorem: `List.insert v s ⊆ List.cons v s`-/
-theorem List_insert_sub_cons
-  (s : List α)
-  (v : α)
-: List.insert v s ⊆ List.cons v s
+/-- Theorem: If list `t ⊆ (x::s)` but `x ∉ t` then `t ⊆ s`. -/
+theorem List_sub_cons_sub_tail (t s : List α) (x : α) (h : t ⊆ (x::s)) (i : x ∉ t)
+: t ⊆ s
 :=
   by
-    intro x
-    rw [List.mem_insert_iff]
-    intro h
-    cases h with
-    | inl i => rw[i]; exact List.mem_cons_self
-    | inr i => exact List.mem_cons_of_mem v i
+  intro y j
+  have k : y ∈ (x::s) := h j
+  rw [List.mem_cons] at k
+  cases k with
+  | inl l => rw [l] at j; contradiction
+  | inr l => exact l
 
-/-- Theorem: `List.cons v (s.erase v) ≈ List.insert v (s.erase v)`. -/
-theorem List_cons_erase_ext_equiv_List_insert_erase
-  (s : List α)
-  (v : α)
-: List.cons v (s.erase v) ≈ List.insert v (s.erase v)
-:= by
-  apply And.intro
-  · intro x i
-    rw[List.mem_cons] at i
-    cases i with
-    | inl j =>
-      rw [j]
-      exact List.mem_insert_self
-    | inr j =>
-      apply List.subset_insert
-      exact j
-  · exact List_insert_sub_cons (α:=α) (s.erase v) v
+/-- If a non-empty List `s` satisfies `Nodup` then so does its tail. -/
+theorem tail_Nodup_if_Nodup
+  {v : α}
+  {s_tail : List α}
+  (h : (v::s_tail).Nodup)
+: s_tail.Nodup
+:= ((List.nodup_cons (a := v) (l := s_tail)).mp h).2
+
+/-- Theorem:If lists `s`, `t` have the same length, then
+`(x::s)`, `(y::t)` have the same length. -/
+theorem List_lengths_equal_implies_cons_lengths_equal
+  {β : Type u'} (s : List α) (x : α) (t : List β) (y : β) (h : s.length = t.length)
+: (x::s).length = (y::t).length
+:=
+  by
+    unfold List.length
+    rw [h]
+
+/-- Theorem: If lists `(x::s)` and `(y::t)` have the same length
+then `s`, `t` have the same length. -/
+theorem List_lengths_equal_implies_tail_lengths_equal
+  {β : Type u'} (s : List α) (x : α) (t : List β) (y : β) (h : (x::s).length = (y::t).length)
+: s.length = t.length
+:=
+  by
+    simp only [List.length_cons, Nat.add_right_cancel_iff] at h
+    exact h
+
+/-- Theorem: Lists `s`, `t` have equal lengths iff `(x::s)`, `(y::t)` have equal lengths. -/
+theorem List_length_agree_iff_cons_length_agree
+  {β : Type u'} (s : List α) (x : α) (t : List β) (y : β)
+: (s.length = t.length) ↔ (x::s).length = (y::t).length
+:=
+  by
+    apply Iff.intro
+    · intro h
+      exact List_lengths_equal_implies_cons_lengths_equal (α:=α) (β:=β) s x t y h
+    · intro h
+      exact List_lengths_equal_implies_tail_lengths_equal (α:=α) (β:=β) s x t y h
+
+---Now switching to LawfulBEq α
+variable (α : Type u) [BEq α] [LawfulBEq α]
 
 /-- Theorem: If list `s` has no duplicates then `v ∉ List.erase s v`. -/
 theorem not_mem_erase_Nodup
@@ -294,6 +291,68 @@ theorem cons_preserves_length_equality
      have j : (y::τ).length = τ.length + 1 := rfl
      rw [i, j, h]
 
+--From here on we need equality to be decidable for elements of `α`.
+variable (α : Type u) [DecidableEq α]
+
+/-- Theorem: If `v ∈ s` (list `s`) then erasing `v` followed by inserting
+`v` results in a list `≈ s`. -/
+theorem List_insert_erase
+  (s : List α)
+  (v : α)
+  (h : v ∈ s)
+: List.insert v (s.erase v) ≈ s
+:= by
+  apply And.intro
+  · intro x i
+    rw[List.mem_insert_iff] at i
+    apply Or.elim i
+    · intro j
+      rw [← j] at h
+      exact h
+    · intro j
+      apply List.erase_subset (a:=v) (l:=s)
+      exact j
+  · intro x i
+    rw[List.mem_insert_iff]
+    by_cases k : x=v
+    case pos =>
+      apply Or.inl k
+    case neg =>
+      apply Or.inr
+      exact (List.mem_erase_of_ne (a:=x) (b:=v) (l:=s) k).mpr i
+
+/-- Theorem: `List.insert v s ⊆ List.cons v s`. -/
+theorem List_insert_sub_cons
+  (s : List α)
+  (v : α)
+: List.insert v s ⊆ List.cons v s
+:=
+  by
+    intro x
+    rw [List.mem_insert_iff]
+    intro h
+    cases h with
+    | inl i => rw[i]; exact List.mem_cons_self
+    | inr i => exact List.mem_cons_of_mem v i
+
+/-- Theorem: `List.cons v (s.erase v) ≈ List.insert v (s.erase v)`. -/
+theorem List_cons_erase_ext_equiv_List_insert_erase
+  (s : List α)
+  (v : α)
+: List.cons v (s.erase v) ≈ List.insert v (s.erase v)
+:= by
+  apply And.intro
+  · intro x i
+    rw[List.mem_cons] at i
+    cases i with
+    | inl j =>
+      rw [j]
+      exact List.mem_insert_self
+    | inr j =>
+      apply List.subset_insert
+      exact j
+  · exact List_insert_sub_cons (α:=α) (s.erase v) v
+
 /-- Theorem: If `v ∈ s`, then `List.cons v (s.erase v) ≈ s`. -/
 theorem List_cons_erase
   (s : List α)
@@ -301,18 +360,6 @@ theorem List_cons_erase
   (h : v ∈ s)
 : (v :: s.erase v) ≈ s
 := Setoid.trans (List_cons_erase_ext_equiv_List_insert_erase α s v) (List_insert_erase α s v h)
-
-/-- Theorem: If list `t ⊆ (x::s)` but `x ∉ t` then `t ⊆ s`. -/
-theorem List_sub_cons_sub_tail (t s : List α) (x : α) (h : t ⊆ (x::s)) (i : x ∉ t)
-: t ⊆ s
-:=
-  by
-  intro y j
-  have k : y ∈ (x::s) := h j
-  rw [List.mem_cons] at k
-  cases k with
-  | inl l => rw [l] at j; contradiction
-  | inr l => exact l
 
 /-- Theorem: If list `t ⊆ (x::s)` and `t.Nodup` then `t.erase x ⊆ s`. -/
 theorem List_Nodup_sub_cons_erase_head_sub_tail
@@ -341,38 +388,6 @@ theorem List_sub_cons_erase_sub_tail (t s : List α) (x : α) (h : t ⊆ (x::s))
     rw [k] at i
     exact ((not_mem_erase_Nodup (α := α) t x ht) i).elim
   | inr k => exact k
-
-/-- Theorem:If lists `s`, `t` have the same length, then
-`(x::s)`, `(y::t)` have the same length. -/
-theorem List_lengths_equal_implies_cons_lengths_equal
-  {β : Type u'} (s : List α) (x : α) (t : List β) (y : β) (h : s.length = t.length)
-: (x::s).length = (y::t).length
-:=
-  by
-    unfold List.length
-    rw [h]
-
-/-- Theorem: If lists `(x::s)` and `(y::t)` have the same length
-then `s`, `t` have the same length. -/
-theorem List_lengths_equal_implies_tail_lengths_equal
-  {β : Type u'} (s : List α) (x : α) (t : List β) (y : β) (h : (x::s).length = (y::t).length)
-: s.length = t.length
-:=
-  by
-    simp only [List.length_cons, Nat.add_right_cancel_iff] at h
-    exact h
-
-/-- Theorem: Lists `s`, `t` have equal lengths iff `(x::s)`, `(y::t)` have equal lengths. -/
-theorem List_length_agree_iff_cons_length_agree
-  {β : Type u'} (s : List α) (x : α) (t : List β) (y : β)
-: (s.length = t.length) ↔ (x::s).length = (y::t).length
-:=
-  by
-    apply Iff.intro
-    · intro h
-      exact List_lengths_equal_implies_cons_lengths_equal (α:=α) (β:=β) s x t y h
-    · intro h
-      exact List_lengths_equal_implies_tail_lengths_equal (α:=α) (β:=β) s x t y h
 
 /-- Theorem: The list `s` has length just the length of `(s.erase x) + 1`, assuming `x ∈ s`. -/
 theorem List_length_erase_of_mem_plus_one (s : List α) (x : α) (h : x ∈ s)
@@ -416,6 +431,9 @@ theorem List_ext_equiv_preserved_adjoining
       | inl m => exact (k m).elim
       | inr m => exact List.erase_subset (j.2 m)
 
+--Switching back to general α (no decdiability assumptions)
+variable (α : Type u) [BEq α] [LawfulBEq α]
+
 /-- A structure of type `filter_result` is the output of a process used to restrict
  a pair `(σ,τ)` of lists `σ`, `τ` (which will be thought of as giving key-value pairs)
 to a certain subset `old_keys` of the original list `σ` of keys. (The lists `σ`, `τ` do
@@ -438,6 +456,8 @@ structure filter_result
   values : List β
   hlength : old_keys.length = values.length
 
+/-- In a structure of type `filter_result old_keys h`,
+the `keys` field has the same length as `old_keys`. -/
 theorem filter_result_old_keys_length_is_keys_length
   {β : Type u'}
   (old_keys : List α)
@@ -446,6 +466,7 @@ theorem filter_result_old_keys_length_is_keys_length
 : old_keys.length = result.keys.length
 :=Nodup_ext_equiv_preserves_length α result.hkeys_equiv h_old_keys result.hNodup
 
+/-- In a `filter_result` structure, `keys` and `values` have the same length. -/
 theorem filter_result_keys_length_is_values_length
   {β : Type u'}
   (old_keys : List α)
@@ -455,6 +476,8 @@ theorem filter_result_keys_length_is_values_length
 :=(filter_result_old_keys_length_is_keys_length α old_keys h_old_keys result).symm.trans
     result.hlength
 
+--And returning to fully decidable equality for `α`
+variable (α : Type u) [DecidableEq α]
 
 /-- Definition: `filter_values_in_position` converts a key-value pair `(s, t)` of lists
 `s, t`, and a list `s' ⊆ s`, where `s` has no duplicates, into a key-value pair
@@ -602,6 +625,11 @@ def filter_values_in_position
           t_tail
           (List_lengths_equal_implies_tail_lengths_equal (α:=α) (β:=β) s_tail x t_tail y hlength)
 
+/-- The process `filter_values_in_position` applied to input key-value pair `s,t` of form
+`s = (v::s_tail)` and `t = (y::t_tail)`, and filtering subset `s' ⊆ s` with `v ∉ s'`,
+simply "chops the heads" of `s,t`, meaning that it is equivalent to applying
+`filter_values_in_position` to `s_tail,t_tail` and (the original) `s'`.
+Note that the last 3 parameters to the theorem are proof terms with default values. -/
 theorem filter_values_in_position_just_chops_heads_when_keys_head_not_in_subset
   {β : Type u'}
   (s s' : List α)
@@ -617,8 +645,7 @@ theorem filter_values_in_position_just_chops_heads_when_keys_head_not_in_subset
   (t_tail : List β)
   (t_eq_cons_of : t = (y::t_tail))
   (v_not_in_s' : v ∉ s')
-  (hs_tailNodup : s_tail.Nodup
-    := ((List.nodup_cons (a := v) (l := s_tail)).mp (s_eq_cons_of ▸ hsNodup)).2)
+  (hs_tailNodup : s_tail.Nodup := (tail_Nodup_if_Nodup (α := α) (s_eq_cons_of ▸ hsNodup)))
   (s'_sub_s_tail : s' ⊆ s_tail
     := List_sub_cons_sub_tail α s' s_tail v (s_eq_cons_of.symm ▸ s'_sub_s) v_not_in_s')
   (hlength_tail : s_tail.length = t_tail.length
@@ -758,11 +785,15 @@ theorem filter_values_in_position_values_neq_nil_when_some_element_in_subset
 : (filter_values_in_position α s s' hsNodup hs'Nodup s'_sub_s t hlength).values ≠ []
 :=by
     intro hnil
-    have hlengthpos : 0 < (filter_values_in_position α s s' hsNodup hs'Nodup s'_sub_s t hlength).values.length
+    have hlengthpos
+    : 0 < (filter_values_in_position α s s' hsNodup hs'Nodup s'_sub_s t hlength).values.length
     :=
       Nat.lt_of_le_of_lt
-        (Nat.zero_le ((filter_values_in_position α (β:=β) s s' hsNodup hs'Nodup s'_sub_s t hlength).keys.idxOf v))
-        (filter_keys_index_of_item_in_subset_lt_filter_values_length (α:=α) s s' hsNodup hs'Nodup s'_sub_s t hlength v hvs')
+        (Nat.zero_le
+          ((filter_values_in_position α (β:=β)
+          s s' hsNodup hs'Nodup s'_sub_s t hlength).keys.idxOf v))
+        (filter_keys_index_of_item_in_subset_lt_filter_values_length
+          (α:=α) s s' hsNodup hs'Nodup s'_sub_s t hlength v hvs')
     have hnillengthpos : 0 < [].length
     := hnil ▸ hlengthpos
     have hzero_lt_zero : 0 < 0
@@ -786,7 +817,8 @@ theorem
   (y : β)
   (t_tail : List β)
   (hyt_tail : t = (y::t_tail))
-: ∃ (t'_tail : List β), (filter_values_in_position α s s' hsNodup hs'Nodup s'_sub_s t hlength).values = (y::t'_tail)
+: ∃ (t'_tail : List β),
+    (filter_values_in_position α s s' hsNodup hs'Nodup s'_sub_s t hlength).values = (y::t'_tail)
 :=by
   unfold filter_values_in_position
   split  --splitting s
@@ -803,9 +835,11 @@ theorem
         subst y_1_eq_y t_tail_1_eq_t_tail
         split
         · next v_in_s' =>-- Case v ∈ s'  (actual case)
-          use (filter_values_in_position (α:=α) s_tail (s'.erase v) hssplitNodup.tail (List.Nodup.erase v hs'Nodup)
+          use (filter_values_in_position
+                (α:=α) s_tail (s'.erase v) hssplitNodup.tail (List.Nodup.erase v hs'Nodup)
                 (List_sub_cons_erase_sub_tail (α:=α) s' s_tail v hsplits'_sub_s hs'Nodup) t_tail
-                   (List_lengths_equal_implies_tail_lengths_equal (α:=α) (β:=β) s_tail v t_tail y htsplitlength)
+                (List_lengths_equal_implies_tail_lengths_equal
+                  (α:=α) (β:=β) s_tail v t_tail y htsplitlength)
               ).values
         · next v_notin_s' => --Case v ∉ s' (leads to contradiction)
           exact (v_notin_s' hvs').elim
@@ -817,14 +851,16 @@ theorem
   (s s' : List α)
   (hsNodup : s.Nodup)
   (hs'Nodup : s'.Nodup)
-  (s'_sub_s : s'⊆ s)
+  (s'_sub_s : s' ⊆ s)
   (t : List β)
   (hlength : s.length = t.length)
   (v : α)
   (hv : v ∈ s')
   (s_tail : List α)
   (hvs_tail : s = (v::s_tail))
-: ∃ (s'_tail : List α), (filter_values_in_position α (β:=β) s s' hsNodup hs'Nodup s'_sub_s t hlength).keys = (v::s'_tail)
+: ∃ (s'_tail : List α),
+      (filter_values_in_position α (β:=β) s s' hsNodup hs'Nodup s'_sub_s t hlength).keys
+    = (v::s'_tail)
 :=by
   unfold filter_values_in_position
   split  --splitting s
@@ -839,9 +875,11 @@ theorem
     · next y_1 t_tail_1 htsplitlength _ => --Case t = (y_1 :: t_tail_1)
         split
         · next v_in_s' =>-- Case v ∈ s'  (actual case)
-          use (filter_values_in_position (α:=α) s_tail (s'.erase v) hssplitNodup.tail (List.Nodup.erase v hs'Nodup)
+          use (filter_values_in_position
+                (α:=α) s_tail (s'.erase v) hssplitNodup.tail (List.Nodup.erase v hs'Nodup)
                 (List_sub_cons_erase_sub_tail (α:=α) s' s_tail v hsplits'_sub_s hs'Nodup) t_tail_1
-                   (List_lengths_equal_implies_tail_lengths_equal (α:=α) (β:=β) s_tail v t_tail_1 y_1 htsplitlength)
+                (List_lengths_equal_implies_tail_lengths_equal
+                  (α:=α) (β:=β) s_tail v t_tail_1 y_1 htsplitlength)
               ).keys
         · next v_notin_s' => --Case v ∉ s' (leads to contradiction)
           exact (v_notin_s' hv).elim
@@ -1211,7 +1249,7 @@ The list is duplication-free (`(free_var φ).Nodup` holds) but comes in some ord
 The primary object of interest is in fact the *set* of free variables,
 so we will generally compare lists of free variables up to
 extensional equivalence (`≈`), not equality. -/
-def free_var (φ: LSTF)
+def free_var (φ : LSTF)
 : List var
 := match φ with
 | (LSTF.atomic_mem v_1 v_2) => insert v_1 (insert v_2 ∅)
@@ -1261,7 +1299,7 @@ theorem variable_in_free_var_neq_excluded_is_in_free_var_excluding
 : w ∈ free_var_excluding φ v
 :=by
   rw[free_var_excluding_is φ v]
-  sorry
+  exact (List.mem_erase_of_ne hvw.symm).mpr hw
 
 /-- Theorem: `free_var_excluding φ v` is injective. -/
 theorem free_var_excluding_Nodup (φ : LSTF) (v : var)
@@ -1343,7 +1381,7 @@ def var_eval
 atomic formula of LST (in general for equality or membership, without actually mentioning
 the formula itself). Intended as a lemma for `free_var_atomic_eq` and `free_var_atomic_mem`,
 which specialize it to the two kinds of atomic formulas. -/
-theorem free_var_atomic (v v':var) : insert v (insert v' ∅) ≈ [v',v]
+theorem free_var_atomic (v v' : var) : insert v (insert v' ∅) ≈ [v',v]
   := by
     apply And.intro
     · intro x
@@ -1378,7 +1416,7 @@ theorem free_var_atomic (v v':var) : insert v (insert v' ∅) ≈ [v',v]
 up to equivalence `≈`: the free variables of the formula $v ∈ v'$ is
 `free_var (LSTF.atomic_mem v v') ≈ [v', v]`. (The reversal of `v` and `v'` is not significant,
 since `[v, v'] ≈ [v', v]`; it's just the way this was written.)) -/
-theorem free_var_atomic_mem (v v':var)
+theorem free_var_atomic_mem (v v' : var)
 : free_var (LSTF.atomic_mem v v') ≈ [v', v]
 :=
   by
@@ -1389,7 +1427,7 @@ theorem free_var_atomic_mem (v v':var)
 up to equivalence `≈`: the free variables of the formula $v = v'$ is
 `free_var (LSTF.atomic_eq v v') ≈ [v', v]`. (The reversal of `v` and `v'` is not significant,
 since `[v, v'] ≈ [v', v]`; it's just the way this was written.)) -/
-theorem free_var_atomic_eq (v v': var)
+theorem free_var_atomic_eq (v v' : var)
 : free_var (LSTF.atomic_eq v v') ≈ [v', v]
 :=
   by
@@ -1422,13 +1460,13 @@ theorem free_var_neg (φ : LSTF)
 
 /-- Theorem: Characterization of `free_var LSTF.ex v φ`,
 as `(free_var φ).erase v`. Intended as lemma toward theorem `free_var_ex`. -/
-theorem free_var_ex_is (v:var) (φ : LSTF)
+theorem free_var_ex_is (v : var) (φ : LSTF)
 : free_var (LSTF.ex v φ) = (free_var φ).erase v
 := rfl
 
 /-- Theorem: Characterization of `free_var` of existential formula $∃ v φ$,
 up to equivalence `≈`, as `(free_var φ).erase v`. -/
-theorem free_var_ex (v:var) (φ : LSTF)
+theorem free_var_ex (v : var) (φ : LSTF)
 : free_var (LSTF.ex v φ) ≈ (free_var φ).erase v
 := (free_var_ex_is v φ) ▸ Setoid.refl ((free_var φ).erase v)
 
@@ -1438,18 +1476,18 @@ theorem free_var_ex_subset_free_var (v : var) (φ : LSTF)
 
 /-- Theorem: `v ∈ [v, v']` (where `[v, v'] : List var`). Intended as lemma toward
 theorems `first_in_free_var_atomic_eq` and `first_in_free_var_atomic_mem`. -/
-theorem first_in_List (v v':var)
+theorem first_in_List (v v' : var)
 : v ∈ ([v, v']: List var)
 := by apply List.mem_cons_self
 
 /-- Theorem: `v' ∈ [v, v']` (where `[v, v'] : List var`). Intended as lemma toward
 theorems `second_in_free_var_atomic_eq` and `second_in_free_var_atomic_mem`. -/
-theorem second_in_List (v v':var)
+theorem second_in_List (v v' : var)
 : v' ∈ ([v, v']: List var)
 := by simp [List.mem_cons]
 
 /-- Theorem: `v` is an element of the free variables of the atomic formula $v = v'$. -/
-theorem first_in_free_var_atomic_eq (v v' :var) : v ∈ free_var (LSTF.atomic_eq v v')
+theorem first_in_free_var_atomic_eq (v v' : var) : v ∈ free_var (LSTF.atomic_eq v v')
 :=
   by
   have h : [v', v] ⊆ free_var (LSTF.atomic_mem v v') := (free_var_atomic_mem v v').2
@@ -1457,15 +1495,15 @@ theorem first_in_free_var_atomic_eq (v v' :var) : v ∈ free_var (LSTF.atomic_eq
   exact h i
 
 /-- Theorem: `v'` is an element of the free variables of the atomic formula $v = v'$. -/
-theorem second_in_free_var_atomic_eq (v v' :var) : v' ∈ free_var (LSTF.atomic_eq v v')
+theorem second_in_free_var_atomic_eq (v v' : var) : v' ∈ free_var (LSTF.atomic_eq v v')
 :=
   by
   have h : [v', v] ⊆ free_var (LSTF.atomic_mem v v') := (free_var_atomic_mem v v').2
   have i : v' ∈ [v',v] := first_in_List v' v
   exact h i
 
-/--Theorem: `v` is an element of the free variables of the atomic formula $v ∈ v'$. -/
-theorem first_in_free_var_atomic_mem (v v' :var)
+/-- Theorem: `v` is an element of the free variables of the atomic formula $v ∈ v'$. -/
+theorem first_in_free_var_atomic_mem (v v' : var)
 : v ∈ free_var (LSTF.atomic_mem v v')
 :=
   by
@@ -1473,53 +1511,55 @@ theorem first_in_free_var_atomic_mem (v v' :var)
   have i : v ∈ [v',v] := second_in_List v' v
   exact h i
 
-/--Theorem: `v'` is an element of the free variables of the atomic formula $v ∈ v'$. -/
-theorem second_in_free_var_atomic_mem (v v' :var) : v' ∈ free_var (LSTF.atomic_mem v v')
+/-- Theorem: `v'` is an element of the free variables of the atomic formula $v ∈ v'$. -/
+theorem second_in_free_var_atomic_mem (v v' : var) : v' ∈ free_var (LSTF.atomic_mem v v')
 :=
   by
   have h : [v', v] ⊆ free_var (LSTF.atomic_mem v v') := (free_var_atomic_mem v v').2
   have i : v' ∈ [v',v] := first_in_List v' v
   exact h i
 
-/--Theorem: The list of free variables of formula $φ$ is (List-wise) $⊆$ the free variables of $φ ∧ ψ$. -/
+/-- Theorem: The list of free variables of formula $φ$ is
+(List-wise) $⊆$ the free variables of $φ ∧ ψ$. -/
 theorem free_var_first_conjunct_sub_free_var_conjunction
   (φ ψ : LSTF)
 : free_var φ ⊆ free_var (LSTF.conj φ ψ)
 := fun (v:var) (h : v ∈ free_var φ) => List.mem_union_left h (free_var ψ)
 
-/--Theorem: The list of free variables of formula $ψ$ is (List-wise) $⊆$ the free variables of $φ ∧ ψ$. -/
+/-- Theorem: The list of free variables of formula $ψ$ is
+(List-wise) $⊆$ the free variables of $φ ∧ ψ$. -/
 theorem free_var_second_conjunct_sub_free_var_conjunction
   (φ ψ : LSTF)
 : free_var ψ ⊆ free_var (LSTF.conj φ ψ)
 := fun (v:var) (h : v ∈ free_var ψ) => List.mem_union_right (free_var φ) h
 
-/--Theorem: The `free_var` of $∃vφ$ is precisely `free_var φ`, when `v` is not free in `φ`. -/
+/-- Theorem: The `free_var` of $∃vφ$ is precisely `free_var φ`, when `v` is not free in `φ`. -/
 theorem free_var_identical_when_quantified_var_not_present
-  (v:var)
-  (φ:LSTF)
-  (h:v ∉ free_var φ)
+  (v : var)
+  (φ : LSTF)
+  (h : v ∉ free_var φ)
 : free_var (LSTF.ex v φ) = free_var φ
 := List.erase_of_not_mem h
 
-/--Theorem: The `free_var` of $∃vφ$ is `≈ free_var φ`, when `v` is not free in `φ`. -/
+/-- Theorem: The `free_var` of $∃vφ$ is `≈ free_var φ`, when `v` is not free in `φ`. -/
 theorem free_var_ext_equiv_when_quantified_var_not_present
-  (v:var)
-  (φ:LSTF)
-  (h:v ∉ free_var φ)
+  (v : var)
+  (φ : LSTF)
+  (h : v ∉ free_var φ)
 : free_var (LSTF.ex v φ) ≈ free_var φ
 := (free_var_identical_when_quantified_var_not_present v φ h).symm ▸ Setoid.refl (free_var φ)
 
-/--Theorem: `v` is not free in $∃vφ$. -/
-theorem bound_var_not_free  (v:var) (φ:LSTF)
+/-- Theorem: `v` is not free in $∃vφ$. -/
+theorem bound_var_not_free (v : var) (φ : LSTF)
 : v ∉ free_var (LSTF.ex v φ)
 :=  not_mem_erase_Nodup (α:=var) (free_var φ) v (free_var_Nodup φ)
 
-/--Theorem: `free_var φ` is equivalent to `(v :: free_var (∃vφ))`, assuming `v ∈ free_var φ`.
-(The notation `free_var (∃vφ)` is only pseudo-code.)-/
+/-- Theorem: `free_var φ` is equivalent to `(v :: free_var (∃vφ))`, assuming `v ∈ free_var φ`.
+(The notation `free_var (∃vφ)` is only pseudo-code.) -/
 theorem free_var_matrix_ext_equiv_cons_when_bound_var_present
-  (v:var)
-  (φ:LSTF)
-  (h:v ∈ free_var φ)
+  (v : var)
+  (φ : LSTF)
+  (h : v ∈ free_var φ)
 : (free_var φ) ≈ (v::free_var (LSTF.ex v φ))
 := (List_cons_erase (α:=var) (free_var φ) v h).symm
 
@@ -1910,13 +1950,18 @@ theorem quantified_var_free_extend_assignment_agrees
   (w : var)
   (hw : w ∈ free_var (LSTF.ex v ψ))
   (x : M.univ)
-  (hwmatrix : w ∈ (extend_assignment ass x).keys := assignment_keys_subset_extend_assignment_keys ass x (ass.hfree_var.2 hw))
+  (hwmatrix : w ∈ (extend_assignment ass x).keys
+  := assignment_keys_subset_extend_assignment_keys ass x (ass.hfree_var.2 hw))
 : var_eval ass w (ass.hfree_var.2 hw) = var_eval (extend_assignment ass x) w hwmatrix
 :=by
   unfold var_eval
   dsimp
-  have ex_ass_keys_is : (extend_assignment ass x).keys = (v::ass.keys) := quantified_var_free_extend_assignment_keys ass x hv
-  have ex_ass_values_is : (extend_assignment ass x).values = (x::ass.values) := quantified_var_free_extend_assignment_values ass x hv
+  have ex_ass_keys_is
+  : (extend_assignment ass x).keys = (v::ass.keys)
+  := quantified_var_free_extend_assignment_keys ass x hv
+  have ex_ass_values_is
+  : (extend_assignment ass x).values = (x::ass.values)
+  := quantified_var_free_extend_assignment_values ass x hv
   simp only [ex_ass_keys_is, ex_ass_values_is]
   have j : v ∉ free_var (LSTF.ex v ψ) := bound_var_not_free v ψ
   let idxvσ := (v::ass.keys).idxOf w

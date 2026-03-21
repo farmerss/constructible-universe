@@ -3,16 +3,9 @@ Copyright (c) 2026 Farmer Schlutzenberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Farmer Schlutzenberg, https://sites.google.com/site/schlutzenberg
 -/
-import Mathlib.Order.RelClasses
-import Mathlib.SetTheory.Ordinal.Basic
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finmap
 import Constructible.Basic
 
 set_option linter.unusedVariables false
-set_option linter.unusedSectionVars false
-set_option linter.deprecated false
-set_option linter.style.setOption false
 
 #print var_eval
 #check sats_respects_equiv
@@ -86,7 +79,8 @@ instance r_leqIsTotal : IsTotal α (r := r_leq (r := r) (h := h)) where
       | inl hyp => apply Or.inl; apply Or.inl; exact hyp
       | inr hyp =>
       cases hyp with
-      | inl hyp => subst hyp; apply Or.inl; exact (r_leqIsPartialOrder (α:=α) (r := r) (h:=h)).refl a
+      | inl hyp => subst hyp; apply Or.inl;
+                   exact (r_leqIsPartialOrder (α:=α) (r := r) (h:=h)).refl a
       | inr hyp => apply Or.inr; apply Or.inl; exact hyp -- proof of: a ≤ b ∨ b ≤ a
 
 theorem upper_bound
@@ -796,13 +790,12 @@ theorem code_mem_respects_code_equiv_iff
   (hdd' : code_equiv int d d')
 :  (code_mem int c d) ↔ (code_mem int c' d')
 := Iff.intro (code_mem_respects_code_equiv int hcc' hdd')
-             (code_mem_respects_code_equiv int ((code_equiv_is_Equivalence y int).symm hcc') ((code_equiv_is_Equivalence y int).symm hdd'))
-
---theorem --code_equiv_{y_1} c d → y_1 < y_2 → code_equiv_{y_2} (lift_code y_1 y_2 c) (lift_code y_1 y_2 d)
+             (code_mem_respects_code_equiv int ((code_equiv_is_Equivalence y int).symm hcc')
+                                               ((code_equiv_is_Equivalence y int).symm hdd'))
 
 def L_recursion_trichotomy_equiv_general
   (x : α)
-  (lx : (y:α) → (_:r y x) → LSTInterpretation (r := r) y)
+  (lx : (y : α) → (_ : r y x) → LSTInterpretation (r := r) y)
   (y1 : α)
   (h1 : r y1 x)
   (code1 : L_code (r := r) y1)
@@ -817,7 +810,7 @@ def L_recursion_trichotomy_equiv_general
 
 def L_recursion_trichotomy_mem_general
   (x : α)
-  (lx : (y:α) → (_ : r y x) → LSTInterpretation (r := r) y)
+  (lx : (y : α) → (_ : r y x) → LSTInterpretation (r := r) y)
   (y1 : α)
   (h1 : r y1 x)
   (code1 : L_code (r := r) y1)
@@ -842,8 +835,8 @@ and `mem` is a binary relation on that type which respects `eq`
 (so also `mem : T_y → T_y → Prop`),
 and if `r z y` then considering the natural embedding `π_{zy}`
 of `L_code_below r h z` into `L_code_below r h y`
-(which just replaces the "upper bound" `z` with `y` and corresponding proof in the constructor's arguments)
-then `eq_y`, `mem_y` agrees with `eq_z`, `mem_z` on those elements.
+(which just replaces the "upper bound" `z` with `y` and corresponding proof in the
+constructor's arguments) then `eq_y`, `mem_y` agrees with `eq_z`, `mem_z` on those elements.
 
 So we have to now define `eq_x` and `mem_x`.
 Given two codes `c`, `d` of the relevant type (`L_code_below r h x`),
@@ -851,7 +844,7 @@ if the non-bounded codes have the same rank `y` (where `r y x`),
 we do a computation over $L_y$ to compute equivalence and membership.
 If the non-bounded codes have ranks `z` where `r z y` (where `r y x`),
 then we convert the rank `z` code to a rank `y` code in the canonical fashion,
-and then use the method of the previous case.-/
+and then use the method of the previous case. -/
 def L_recursion
 : (x : α) → (lx:(y : α) → r y x → (LSTInterpretation (r := r) y))
  →  (LSTInterpretation (r := r) x)
@@ -1537,43 +1530,48 @@ theorem L_seg_mem_of_constructed_boundcodes_second_below_first
 
 open Lean Meta Elab Tactic
 
-    syntax (name := step1_lt_lt_tac) "step1_lt_lt"
-    ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step1_lt_lt_tac]
-    def eval_step1_lt_lt : Tactic := fun stx => do
+syntax (name := step1_lt_lt_tac) "step1_lt_lt"
+  ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+
+@[tactic step1_lt_lt_tac]
+  def eval_step1_lt_lt : Tactic := fun stx => do
     match stx with
-    | `(tactic| step1_lt_lt $hcd_z $h $yc $yd $z $yc_LT $yd_LT $jz $jc $jd $codec $coded $hcd $lift_codes_with_mem) =>
+    | `(tactic| step1_lt_lt $hcd_z $h $yc $yd $z $yc_LT $yd_LT $jz $jc $jd
+                            $codec $coded $hcd $lift_codes_with_mem) =>
       evalTactic <| ← `(tactic|
-      have $hcd_z : code_mem (L (h := $h) $z) (lift_code $yc $z $jc $codec) (lift_code $yd $z $jd $coded)
+      have $hcd_z : code_mem (L (h := $h) $z) (lift_code $yc $z $jc $codec)
+                                              (lift_code $yd $z $jd $coded)
       := $lift_codes_with_mem $yc $yd $z $jz $yc_LT $yd_LT $jc $jd $codec $coded $hcd)
     | _ => throwUnsupportedSyntax
 
-    syntax (name := step1_lt_eq_tac) "step1_lt_eq"
-    ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step1_lt_eq_tac]
-    def eval_step1_lt_eq : Tactic := fun stx => do
+syntax (name := step1_lt_eq_tac) "step1_lt_eq"
+  ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step1_lt_eq_tac]
+  def eval_step1_lt_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step1_lt_eq $hcd_z $h $yc $yd $z $yc_LT $yd_LT $jz $jc $jd $codec $coded $hcd $lift_first_code_mem_iff) =>
+    | `(tactic| step1_lt_eq $hcd_z $h $yc $yd $z $yc_LT $yd_LT $jz $jc $jd
+                            $codec $coded $hcd $lift_first_code_mem_iff) =>
       evalTactic <| ← `(tactic|
       have $hcd_z : code_mem (L (h := $h) $z) (lift_code $yc $z $jc $codec) $coded
       := ($lift_first_code_mem_iff $yc $z $yc_LT $jz $jc $codec $coded).mp $hcd)
     | _ => throwUnsupportedSyntax
 
-    syntax (name := step1_eq_lt_tac) (priority := high) "step1_eq_lt"
-    ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step1_eq_lt_tac]
-    def eval_step1_eq_lt : Tactic := fun stx => do
+syntax (name := step1_eq_lt_tac) (priority := high) "step1_eq_lt"
+  ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step1_eq_lt_tac]
+  def eval_step1_eq_lt : Tactic := fun stx => do
     match stx with
-    | `(tactic| step1_eq_lt $hcd_z $h $yc $yd $z $yc_LT $yd_LT $jz $jc $jd $codec $coded $hcd $lift_second_code_mem_iff) =>
+    | `(tactic| step1_eq_lt $hcd_z $h $yc $yd $z $yc_LT $yd_LT $jz $jc $jd
+                            $codec $coded $hcd $lift_second_code_mem_iff) =>
       evalTactic <| ← `(tactic|
       have $hcd_z : code_mem (L (h := $h) $z) $codec (lift_code $yd $z $jd $coded)
       := ($lift_second_code_mem_iff $z $yd $jz $yd_LT $jd $codec $coded).mp $hcd)
     | _ => throwUnsupportedSyntax
 
-    syntax (name := step1_eq_eq_tac) (priority := high) "step1_eq_eq"
-    ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step1_eq_eq_tac]
-    def eval_step1_eq_eq : Tactic := fun stx => do
+syntax (name := step1_eq_eq_tac) (priority := high) "step1_eq_eq"
+  ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step1_eq_eq_tac]
+  def eval_step1_eq_eq : Tactic := fun stx => do
     match stx with
     | `(tactic| step1_eq_eq $hcd_z $h $yc $yd $z $yc_LT $yd_LT $jz $jc $jd $codec $coded $hcd) =>
       evalTactic <| ← `(tactic|
@@ -1581,156 +1579,175 @@ open Lean Meta Elab Tactic
       := (L_seg_mem_of_constructed_boundcodes_same_level $z $jz $codec $coded).mp $hcd)
     | _ => throwUnsupportedSyntax
 
-    syntax (name := step2_lt_lt_tac) (priority := 200000) "step2_lt_lt"
-    ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step2_lt_lt_tac]
-    def eval_step2_lt_lt : Tactic := fun stx => do
+syntax (name := step2_lt_lt_tac) (priority := 200000) "step2_lt_lt"
+  ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step2_lt_lt_tac]
+  def eval_step2_lt_lt : Tactic := fun stx => do
     match stx with
-    | `(tactic| step2_lt_lt $hcc'_z $h $yc $yc' $z $yc_LT $yc'_LT $jz $jc $jc' $codec $codec' $hcc' $lift_codes_with_equiv) =>
+    | `(tactic| step2_lt_lt $hcc'_z $h $yc $yc' $z $yc_LT $yc'_LT $jz $jc $jc'
+                            $codec $codec' $hcc' $lift_codes_with_equiv) =>
       evalTactic <| ← `(tactic|
-      have $hcc'_z : code_equiv (L (h := $h) $z) (lift_code $yc $z $jc $codec) (lift_code $yc' $z $jc' $codec')
+      have $hcc'_z : code_equiv (L (h := $h) $z) (lift_code $yc $z $jc $codec)
+                                                 (lift_code $yc' $z $jc' $codec')
       := $lift_codes_with_equiv $yc $yc' $z $jz $yc_LT $yc'_LT $jc $jc' $codec $codec' $hcc')
     | _ => throwUnsupportedSyntax
 
-    syntax (name := step2_lt_eq_tac) (priority := 200000) "step2_lt_eq"
-    ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step2_lt_eq_tac]
-    def eval_step2_lt_eq : Tactic := fun stx => do
+syntax (name := step2_lt_eq_tac) (priority := 200000) "step2_lt_eq"
+  ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step2_lt_eq_tac]
+  def eval_step2_lt_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step2_lt_eq $hcc'_z $h $yc $yc' $z $yc_LT $yc'_LT $jz $jc $jc' $codec $codec' $hcc' $lift_first_code_equiv_iff) =>
+    | `(tactic| step2_lt_eq $hcc'_z $h $yc $yc' $z $yc_LT $yc'_LT $jz $jc $jc'
+                            $codec $codec' $hcc' $lift_first_code_equiv_iff) =>
       evalTactic <| ← `(tactic|
       have $hcc'_z : code_equiv (L (h := $h) $z) (lift_code $yc $z $jc $codec) $codec'
       := ($lift_first_code_equiv_iff $yc $z $yc_LT $yc'_LT $jc $codec $codec').mp $hcc')
     | _ => throwUnsupportedSyntax
 
 
-    syntax (name := step2_eq_lt_tac) (priority := 200000) "step2_eq_lt"
-    ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step2_eq_lt_tac]
-    def eval_step2_eq_lt : Tactic := fun stx => do
+syntax (name := step2_eq_lt_tac) (priority := 200000) "step2_eq_lt"
+  ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step2_eq_lt_tac]
+  def eval_step2_eq_lt : Tactic := fun stx => do
     match stx with
-    | `(tactic| step2_eq_lt $hcc'_z $h $yc $yc' $z $yc_LT $yc'_LT $jz $jc $jc' $codec $codec' $hcc' $lift_second_code_equiv_iff) =>
+    | `(tactic| step2_eq_lt $hcc'_z $h $yc $yc' $z $yc_LT $yc'_LT $jz $jc $jc'
+                            $codec $codec' $hcc' $lift_second_code_equiv_iff) =>
       evalTactic <| ← `(tactic|
       have $hcc'_z : code_equiv (L (h := $h) $z) $codec (lift_code $yc' $z $jc' $codec')
       := ($lift_second_code_equiv_iff $z $yc' $yc_LT $yc'_LT $jc' $codec $codec').mp $hcc')
     | _ => throwUnsupportedSyntax
 
-    syntax (name := step2_eq_eq_tac) (priority := 200000) "step2_eq_eq"
-    ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step2_eq_eq_tac]
-    def eval_step2_eq_eq : Tactic := fun stx => do
+syntax (name := step2_eq_eq_tac) (priority := 200000) "step2_eq_eq"
+  ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step2_eq_eq_tac]
+  def eval_step2_eq_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step2_eq_eq $hcc'_z $h $yc $yc' $z $yc_LT $yc'_LT $jz $jc $jc' $codec $codec' $hcc') =>
+    | `(tactic| step2_eq_eq $hcc'_z $h $yc $yc' $z $yc_LT $yc'_LT $jz $jc $jc'
+                            $codec $codec' $hcc') =>
       evalTactic <| ← `(tactic|
       have $hcc'_z : code_equiv (L (h := $h) $z) $codec $codec'
       := (L_seg_equiv_of_constructed_boundcodes_same_level $z $jz $codec $codec').mp $hcc')
     | _ => throwUnsupportedSyntax
 
 
-    syntax (name := step4_lt_lt_tac) (priority := high) "step4_lt_lt"
-    ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step4_lt_lt_tac]
-    def eval_step4_lt_lt : Tactic := fun stx => do
+syntax (name := step4_lt_lt_tac) (priority := high) "step4_lt_lt"
+  ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step4_lt_lt_tac]
+  def eval_step4_lt_lt : Tactic := fun stx => do
     match stx with
-    | `(tactic| step4_lt_lt $hc'd'_z $h $yc' $yd' $z $jc' $jd' $codec' $coded' $hcc'_z $hdd'_z $hcd_z) =>
+    | `(tactic| step4_lt_lt $hc'd'_z $h $yc' $yd' $z $jc' $jd'
+                            $codec' $coded' $hcc'_z $hdd'_z $hcd_z) =>
       evalTactic <| ← `(tactic|
-      have $hc'd'_z : code_mem (L (h := $h) $z) (lift_code $yc' $z $jc' $codec') (lift_code $yd' $z $jd' $coded')
+      have $hc'd'_z : code_mem (L (h := $h) $z) (lift_code $yc' $z $jc' $codec')
+                                                (lift_code $yd' $z $jd' $coded')
       := code_mem_respects_code_equiv (L $z) $hcc'_z $hdd'_z $hcd_z)
     | _ => throwUnsupportedSyntax
 
-    syntax (name := step4_lt_eq_tac) (priority := high) "step4_lt_eq"
-    ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step4_lt_eq_tac]
-    def eval_step4_lt_eq : Tactic := fun stx => do
+syntax (name := step4_lt_eq_tac) (priority := high) "step4_lt_eq"
+  ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step4_lt_eq_tac]
+  def eval_step4_lt_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step4_lt_eq $hc'd'_z $h $yc' $yd' $z $jc' $jd' $codec' $coded' $hcc'_z $hdd'_z $hcd_z) =>
+    | `(tactic| step4_lt_eq $hc'd'_z $h $yc' $yd' $z $jc' $jd'
+                            $codec' $coded' $hcc'_z $hdd'_z $hcd_z) =>
       evalTactic <| ← `(tactic|
       have $hc'd'_z : code_mem (L (h := $h) $z) (lift_code $yc' $z $jc' $codec') $coded'
       := code_mem_respects_code_equiv (L $z) $hcc'_z $hdd'_z $hcd_z)
     | _ => throwUnsupportedSyntax
 
-    syntax (name := step4_eq_lt_tac) (priority := high) "step4_eq_lt"
-    ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step4_eq_lt_tac]
-    def eval_step4_eq_lt : Tactic := fun stx => do
+syntax (name := step4_eq_lt_tac) (priority := high) "step4_eq_lt"
+  ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step4_eq_lt_tac]
+  def eval_step4_eq_lt : Tactic := fun stx => do
     match stx with
-    | `(tactic| step4_eq_lt $hc'd'_z $h $yc' $yd' $z $jc' $jd' $codec' $coded' $hcc'_z $hdd'_z $hcd_z) =>
+    | `(tactic| step4_eq_lt $hc'd'_z $h $yc' $yd' $z $jc' $jd'
+                            $codec' $coded' $hcc'_z $hdd'_z $hcd_z) =>
       evalTactic <| ← `(tactic|
       have $hc'd'_z : code_mem (L (h := $h) $z) $codec' (lift_code $yd' $z $jd' $coded')
       := code_mem_respects_code_equiv (L $z) $hcc'_z $hdd'_z $hcd_z)
     | _ => throwUnsupportedSyntax
 
-    syntax (name := step4_eq_eq_tac) (priority := high) "step4_eq_eq"
-    ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step4_eq_eq_tac]
-    def eval_step4_eq_eq : Tactic := fun stx => do
+syntax (name := step4_eq_eq_tac) (priority := high) "step4_eq_eq"
+  ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step4_eq_eq_tac]
+  def eval_step4_eq_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step4_eq_eq $hc'd'_z $h $yc' $yd' $z $jc' $jd' $codec' $coded' $hcc'_z $hdd'_z $hcd_z) =>
+    | `(tactic| step4_eq_eq $hc'd'_z $h $yc' $yd' $z $jc' $jd'
+                            $codec' $coded' $hcc'_z $hdd'_z $hcd_z) =>
       evalTactic <| ← `(tactic|
       have $hc'd'_z : code_mem (L (h := $h) $z) $codec' $coded'
       := code_mem_respects_code_equiv (L $z) $hcc'_z $hdd'_z $hcd_z)
     | _ => throwUnsupportedSyntax
 
-    syntax (name := step5_lt_lt_tac) (priority := high) "step5_lt_lt"
-    ident ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step5_lt_lt_tac]
-    def eval_step5_lt_lt : Tactic := fun stx => do
+syntax (name := step5_lt_lt_tac) (priority := high) "step5_lt_lt"
+  ident ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step5_lt_lt_tac]
+  def eval_step5_lt_lt : Tactic := fun stx => do
     match stx with
-    | `(tactic| step5_lt_lt $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT $jz $jc' $jd' $codec' $coded' $hc'd'_z $lift_codes_mem_iff) =>
+    | `(tactic| step5_lt_lt $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT
+                            $jz $jc' $jd' $codec' $coded' $hc'd'_z $lift_codes_mem_iff) =>
       evalTactic <| ← `(tactic|
-    have $hc'd'_y3 : (L (h := $h) $y3).mem (L_code_below.boundcode $yc' $yc'_LT $codec') (L_code_below.boundcode $yd' $yd'_LT $coded')
-    := ($lift_codes_mem_iff $yc' $yd' $z $jz $yc'_LT $yd'_LT $jc' $jd' $codec' $coded').mpr $hc'd'_z)
+    have $hc'd'_y3 : (L (h := $h) $y3).mem (L_code_below.boundcode $yc' $yc'_LT $codec')
+                                           (L_code_below.boundcode $yd' $yd'_LT $coded')
+    := ($lift_codes_mem_iff $yc' $yd' $z $jz $yc'_LT $yd'_LT
+        $jc' $jd' $codec' $coded').mpr $hc'd'_z)
     | _ => throwUnsupportedSyntax
 
-    syntax (name := step5_lt_eq_tac) (priority := high) "step5_lt_eq"
-    ident ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step5_lt_eq_tac]
-    def eval_step5_lt_eq : Tactic := fun stx => do
+syntax (name := step5_lt_eq_tac) (priority := high) "step5_lt_eq"
+  ident ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step5_lt_eq_tac]
+  def eval_step5_lt_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step5_lt_eq $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT $jz $jc' $jd' $codec' $coded' $hc'd'_z $lift_first_code_mem_iff) =>
+    | `(tactic| step5_lt_eq $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT $jz $jc' $jd'
+                            $codec' $coded' $hc'd'_z $lift_first_code_mem_iff) =>
       evalTactic <| ← `(tactic|
-      have $hc'd'_y3 : (L (h := $h) $y3).mem (L_code_below.boundcode $yc' $yc'_LT $codec') (L_code_below.boundcode $yd' $yd'_LT $coded')
+      have $hc'd'_y3 : (L (h := $h) $y3).mem (L_code_below.boundcode $yc' $yc'_LT $codec')
+                                             (L_code_below.boundcode $yd' $yd'_LT $coded')
       := ($lift_first_code_mem_iff $yc' $z $yc'_LT $yd'_LT $jc' $codec' $coded').mpr $hc'd'_z)
     | _ => throwUnsupportedSyntax
 
-    syntax (name := step5_eq_lt_tac) (priority := high) "step5_eq_lt"
-    ident ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step5_eq_lt_tac]
-    def eval_step5_eq_lt : Tactic := fun stx => do
+syntax (name := step5_eq_lt_tac) (priority := high) "step5_eq_lt"
+  ident ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step5_eq_lt_tac]
+  def eval_step5_eq_lt : Tactic := fun stx => do
     match stx with
-    | `(tactic| step5_eq_lt $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT $jz $jc' $jd' $codec' $coded' $hc'd'_z $lift_second_code_mem_iff) =>
+    | `(tactic| step5_eq_lt $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT $jz $jc' $jd'
+                            $codec' $coded' $hc'd'_z $lift_second_code_mem_iff) =>
       evalTactic <| ← `(tactic|
-      have $hc'd'_y3 : (L (h := $h) $y3).mem (L_code_below.boundcode $yc' $yc'_LT $codec') (L_code_below.boundcode $yd' $yd'_LT $coded')
+      have $hc'd'_y3 : (L (h := $h) $y3).mem (L_code_below.boundcode $yc' $yc'_LT $codec')
+                                             (L_code_below.boundcode $yd' $yd'_LT $coded')
       := ($lift_second_code_mem_iff $z $yd' $yc'_LT $yd'_LT $jd' $codec' $coded').mpr $hc'd'_z)
     | _ => throwUnsupportedSyntax
 
-    syntax (name := step5_eq_eq_tac) (priority := high) "step5_eq_eq"
-    ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
-    @[tactic step5_eq_eq_tac]
-    def eval_step5_eq_eq : Tactic := fun stx => do
+syntax (name := step5_eq_eq_tac) (priority := high) "step5_eq_eq"
+  ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+@[tactic step5_eq_eq_tac]
+  def eval_step5_eq_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step5_eq_eq $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT $jz $jc' $jd' $codec' $coded' $hc'd'_z) =>
+    | `(tactic| step5_eq_eq $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT $jz $jc' $jd'
+                            $codec' $coded' $hc'd'_z) =>
       evalTactic <| ← `(tactic|
-      have $hc'd'_y3 : (L (h := $h) $y3).mem (L_code_below.boundcode $yc' $yc'_LT $codec') (L_code_below.boundcode $yd' $yd'_LT $coded')
+      have $hc'd'_y3 : (L (h := $h) $y3).mem (L_code_below.boundcode $yc' $yc'_LT $codec')
+                                             (L_code_below.boundcode $yd' $yd'_LT $coded')
       := (L_seg_mem_of_constructed_boundcodes_same_level $z $jz $codec' $coded').mpr $hc'd'_z)
     | _ => throwUnsupportedSyntax
 
-  theorem L_equiv_trans_lemma_all_equal
-    {y3 : α}
-    (ya : α)
-    (hya : r ya y3)
-    (codea : L_code ya)
-    (yb : α)
-    (hyb : r yb y3)
-    (codeb : L_code yb)
-    (yc : α)
-    (hyc : r yc y3)
-    (codec : L_code yc)
-    (hyab : ya = yb)
-    (hybc : yb = yc)
-    (hyac : ya = yc)
-    (equiv_ab : code_equiv (L (h:=h) ya) codea (hyab.symm ▸ codeb))
-    (equiv_bc : code_equiv (L (h:=h) yb) codeb (hybc.symm ▸ codec))
+theorem L_equiv_trans_lemma_all_equal
+  {y3 : α}
+  (ya : α)
+  (hya : r ya y3)
+  (codea : L_code ya)
+  (yb : α)
+  (hyb : r yb y3)
+  (codeb : L_code yb)
+  (yc : α)
+  (hyc : r yc y3)
+  (codec : L_code yc)
+  (hyab : ya = yb)
+  (hybc : yb = yc)
+  (hyac : ya = yc)
+  (equiv_ab : code_equiv (L (h := h) ya) codea (hyab.symm ▸ codeb))
+  (equiv_bc : code_equiv (L (h := h) yb) codeb (hybc.symm ▸ codec))
 : code_equiv (L (h:=h) ya) codea (hyac ▸ codec)
 :=
   by
@@ -1741,22 +1758,22 @@ open Lean Meta Elab Tactic
   dsimp at equiv_ab
   exact (code_equiv_is_Equivalence ya (L (h:=h) ya)).trans equiv_ab equiv_bc
 
-  theorem L_equiv_trans_lemma_outers_equal_gt_inner
-    {y3 : α}
-    (ya : α)
-    (hya : r ya y3)
-    (codea : L_code ya)
-    (yb : α)
-    (hyb : r yb y3)
-    (codeb : L_code yb)
-    (yc : α)
-    (hyc : r yc y3)
-    (codec : L_code yc)
-    (hyab : r yb ya)
-    (hybc : r yb yc)
-    (hyac : ya = yc)
-    (equiv_ab : code_equiv (L (h:=h) ya) codea (lift_code yb ya hyab codeb))
-    (equiv_bc : code_equiv (L (h:=h) yc) (lift_code yb yc hybc codeb) codec)
+theorem L_equiv_trans_lemma_outers_equal_gt_inner
+  {y3 : α}
+  (ya : α)
+  (hya : r ya y3)
+  (codea : L_code ya)
+  (yb : α)
+  (hyb : r yb y3)
+  (codeb : L_code yb)
+  (yc : α)
+  (hyc : r yc y3)
+  (codec : L_code yc)
+  (hyab : r yb ya)
+  (hybc : r yb yc)
+  (hyac : ya = yc)
+  (equiv_ab : code_equiv (L (h := h) ya) codea (lift_code yb ya hyab codeb))
+  (equiv_bc : code_equiv (L (h := h) yc) (lift_code yb yc hybc codeb) codec)
 : code_equiv (L (h:=h) ya) codea (hyac ▸ codec)
 :=
   by
@@ -1764,33 +1781,30 @@ open Lean Meta Elab Tactic
   dsimp
   exact (code_equiv_is_Equivalence ya (L (h:=h) ya)).trans equiv_ab equiv_bc
 
-  theorem L_equiv_trans_lemma_center_right_equal_gt_left
-    {y3 : α}
-    (ya : α)
-    (hya : r ya y3)
-    (codea : L_code ya)
-    (yb : α)
-    (hyb : r yb y3)
-    (codeb : L_code yb)
-    (yc : α)
-    (hyc : r yc y3)
-    (codec : L_code yc)
-    (hyab : r ya yb)
-    (hybc : yb = yc)
-    (hyac : r ya yc)
-    (equiv_ab : code_equiv (L (h:=h) yb) (lift_code ya yb hyab codea) codeb)
-    (equiv_bc : code_equiv (L (h:=h) yb) codeb (hybc ▸ codec))
-  : code_equiv (L (h:=h) yb) (lift_code ya yb hyab codea) (hybc ▸ codec)
-  :=
-    by
-    subst hybc
-    dsimp
-    exact (code_equiv_is_Equivalence yb (L (h:=h) yb)).trans equiv_ab equiv_bc
+theorem L_equiv_trans_lemma_center_right_equal_gt_left
+  {y3 : α}
+  (ya : α)
+  (hya : r ya y3)
+  (codea : L_code ya)
+  (yb : α)
+  (hyb : r yb y3)
+  (codeb : L_code yb)
+  (yc : α)
+  (hyc : r yc y3)
+  (codec : L_code yc)
+  (hyab : r ya yb)
+  (hybc : yb = yc)
+  (hyac : r ya yc)
+  (equiv_ab : code_equiv (L (h := h) yb) (lift_code ya yb hyab codea) codeb)
+  (equiv_bc : code_equiv (L (h := h) yb) codeb (hybc ▸ codec))
+: code_equiv (L (h:=h) yb) (lift_code ya yb hyab codea) (hybc ▸ codec)
+:=
+  by
+  subst hybc
+  dsimp
+  exact (code_equiv_is_Equivalence yb (L (h:=h) yb)).trans equiv_ab equiv_bc
 
 end L
-
-
-
 
 /-
 def next_var (v : var) : var
@@ -1884,18 +1898,21 @@ def LSTF.pair (r : var) : LSTF
   LSTF.bounded_ex p r (LSTF.bounded_ex q r (LSTF.only_possible_members_of_last p q r))
 
 def LSTF.last_is_ordered_pair_of_first_two_via (p q pp pq r : var) : LSTF
-:= LSTF.conj (LSTF.last_is_pair_of pp pq r) (LSTF.conj (LSTF.last_is_pair_of p p pp) (LSTF.last_is_pair_of p q pq))
+:= LSTF.conj (LSTF.last_is_pair_of pp pq r) (LSTF.conj (LSTF.last_is_pair_of p p pp)
+                                                       (LSTF.last_is_pair_of p q pq))
 
 def LSTF.last_is_ordered_pair_of_first_two (p q r : var) : LSTF
 := let pp := next_var_2 p (next_var_2 q r)
   let pq := next_var pp
-  LSTF.bounded_ex pp r (LSTF.bounded_ex pq r (LSTF.last_is_ordered_pair_of_first_two_via p q pp pq r))
+  LSTF.bounded_ex pp r (LSTF.bounded_ex pq r
+                        (LSTF.last_is_ordered_pair_of_first_two_via p q pp pq r))
 
 def LSTF.ordered_pair (r : var): LSTF
 := let p := next_var r
  let q := next_var p
  let spq := next_var q
- LSTF.bounded_ex spq r (LSTF.bounded_ex p spq (LSTF.bounded_ex q spq (LSTF.last_is_ordered_pair_of_first_two p q r)))
+ LSTF.bounded_ex spq r (LSTF.bounded_ex p spq (LSTF.bounded_ex q spq
+                                               (LSTF.last_is_ordered_pair_of_first_two p q r)))
 
 def LSTF.ordered_pair_first_coordinate (p r : var) : LSTF
 := let q := next_var_2 p r
@@ -2006,6 +2023,7 @@ def LSTF.formula_data (F r : var)
     (LSTF.formula_family F)
     (LSTF.binary_relation F r)
 
---def L_seg_exists_for_each_ordinal (LSTF.all v₀ (LSTF.implies (formula_ordinal v₀) (formula_L_seg_exists v₀)))
+--def L_seg_exists_for_each_ordinal (LSTF.all v₀ (LSTF.implies (formula_ordinal v₀)
+        (formula_L_seg_exists v₀)))
 --def V_equals_L : LSTF := LSTF.conj (LSTF.all v₀ (L_seg_exists ∨₀)) ()
 -/

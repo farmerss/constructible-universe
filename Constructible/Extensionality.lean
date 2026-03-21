@@ -3,32 +3,25 @@ Copyright (c) 2026 Farmer Schlutzenberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Farmer Schlutzenberg, https://sites.google.com/site/schlutzenberg
 -/
-import Mathlib.Order.RelClasses
-import Mathlib.SetTheory.Ordinal.Basic
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finmap
-import Constructible.Basic
 import Constructible.LHierarchy
 
 set_option linter.unusedVariables false
-set_option linter.unusedSectionVars false
-set_option linter.deprecated false
 
 universe u u'
 
 namespace L
 
-  variable {α : Type u} {r : α → α → Prop} {h : IsWellOrder α r}
+variable {α : Type u} {r : α → α → Prop} {h : IsWellOrder α r}
 
-  theorem lift_first_code_with_equiv
-    {y3 : α}
-    (yc yd: α)
-    (jc : r yc y3)
-    (jd : r yd y3)
-    (hc : r yc yd)
-    (codec : L_code yc)
-    (coded : L_code yd)
-    (hcd : (L (h := h) y3).equiv (L_code_below.boundcode yc jc codec)
+theorem lift_first_code_with_equiv
+  {y3 : α}
+  (yc yd : α)
+  (jc : r yc y3)
+  (jd : r yd y3)
+  (hc : r yc yd)
+  (codec : L_code yc)
+  (coded : L_code yd)
+  (hcd : (L (h := h) y3).equiv (L_code_below.boundcode yc jc codec)
                                (L_code_below.boundcode yd jd coded))
 : code_equiv (L (h := h) yd) (lift_code yc yd hc codec) coded
 :=
@@ -55,17 +48,17 @@ namespace L
       subst h'
       exact (h.wf.isIrrefl.irrefl yc hc).elim
 
-  theorem lift_first_code_mem_iff
-    {y3 : α}
-    (yc yd : α)
-    (jc : r yc y3)
-    (jd : r yd y3)
-    (hc : r yc yd)
-    (codec : L_code yc)
-    (coded : L_code yd)
-:  ((L (h := h) y3).mem (L_code_below.boundcode yc jc codec)
+theorem lift_first_code_mem_iff
+  {y3 : α}
+  (yc yd : α)
+  (jc : r yc y3)
+  (jd : r yd y3)
+  (hc : r yc yd)
+  (codec : L_code yc)
+  (coded : L_code yd)
+: ((L (h := h) y3).mem (L_code_below.boundcode yc jc codec)
                                (L_code_below.boundcode yd jd coded))
- ↔ (code_mem (L (h := h) yd) (lift_code yc yd hc codec) coded)
+  ↔ (code_mem (L (h := h) yd) (lift_code yc yd hc codec) coded)
 :=
   by
   apply Iff.intro
@@ -98,17 +91,17 @@ namespace L
     apply Or.inl
     use hc
 
-    theorem lift_first_code_equiv_iff
-    {y3 : α}
-    (yc yd: α)
-    (jc : r yc y3)
-    (jd : r yd y3)
-    (hc : r yc yd)
-    (codec : L_code yc)
-    (coded : L_code yd)
-:  ((L (h := h) y3).equiv (L_code_below.boundcode yc jc codec)
+theorem lift_first_code_equiv_iff
+  {y3 : α}
+  (yc yd : α)
+  (jc : r yc y3)
+  (jd : r yd y3)
+  (hc : r yc yd)
+  (codec : L_code yc)
+  (coded : L_code yd)
+: ((L (h := h) y3).equiv (L_code_below.boundcode yc jc codec)
                                (L_code_below.boundcode yd jd coded))
- ↔ (code_equiv (L (h := h) yd) (lift_code yc yd hc codec) coded)
+  ↔ (code_equiv (L (h := h) yd) (lift_code yc yd hc codec) coded)
 :=
   by
   apply Iff.intro
@@ -141,15 +134,15 @@ namespace L
     apply Or.inl
     use hc
 
-  theorem lift_second_code_mem_iff
-    {y3 : α}
-    (yc yd: α)
-    (jc : r yc y3)
-    (jd : r yd y3)
-    (hc : r yd yc)
-    (codec : L_code yc)
-    (coded : L_code yd)
-:  ((L (h := h) y3).mem (L_code_below.boundcode yc jc codec)
+theorem lift_second_code_mem_iff
+  {y3 : α}
+  (yc yd : α)
+  (jc : r yc y3)
+  (jd : r yd y3)
+  (hc : r yd yc)
+  (codec : L_code yc)
+  (coded : L_code yd)
+: ((L (h := h) y3).mem (L_code_below.boundcode yc jc codec)
                                (L_code_below.boundcode yd jd coded))
  ↔ (code_mem (L (h := h) yc) codec (lift_code yd yc hc coded))
 :=
@@ -185,17 +178,17 @@ namespace L
     apply Or.inl
     use hc
 
-  theorem lift_second_code_equiv_iff
-    {y3 : α}
-    (yc yd: α)
-    (jc : r yc y3)
-    (jd : r yd y3)
-    (hc : r yd yc)
-    (codec : L_code yc)
-    (coded : L_code yd)
-:  ((L (h := h) y3).equiv (L_code_below.boundcode yc jc codec)
+theorem lift_second_code_equiv_iff
+  {y3 : α}
+  (yc yd : α)
+  (jc : r yc y3)
+  (jd : r yd y3)
+  (hc : r yd yc)
+  (codec : L_code yc)
+  (coded : L_code yd)
+: ((L (h := h) y3).equiv (L_code_below.boundcode yc jc codec)
                                (L_code_below.boundcode yd jd coded))
- ↔ (code_equiv (L (h := h) yc) codec (lift_code yd yc hc coded))
+  ↔ (code_equiv (L (h := h) yc) codec (lift_code yd yc hc coded))
 :=
   by
   apply Iff.intro
@@ -250,43 +243,43 @@ def lift_code_commutes {y3 : α} : Prop := ∀
       (lift_code y2 y3 h23 (lift_code y1 y2 h12 code))
 
 def lift_codes_with_mem
-    {y3 : α} : Prop := ∀
-    (yc yd z : α)
-    (jz : r z y3)
-    (jc : r yc y3)
-    (jd : r yd y3)
-    (hc : r yc z)
-    (hd : r yd z)
-    (codec : L_code yc)
-    (coded : L_code yd)
-    (hcd : (L (h := h) y3).mem (L_code_below.boundcode yc jc codec)
+  {y3 : α} : Prop := ∀
+  (yc yd z : α)
+  (jz : r z y3)
+  (jc : r yc y3)
+  (jd : r yd y3)
+  (hc : r yc z)
+  (hd : r yd z)
+  (codec : L_code yc)
+  (coded : L_code yd)
+  (hcd : (L (h := h) y3).mem (L_code_below.boundcode yc jc codec)
                              (L_code_below.boundcode yd jd coded))
   , code_mem (L (h := h) z) (lift_code yc z hc codec) (lift_code yd z hd coded)
 
-  def lift_codes_with_equiv
-    {y3 : α} : Prop := ∀
-    (yc yd z : α)
-    (jz : r z y3)
-    (jc : r yc y3)
-    (jd : r yd y3)
-    (hc : r yc z)
-    (hd : r yd z)
-    (codec : L_code yc)
-    (coded : L_code yd)
-    (hcd : (L (h := h) y3).equiv (L_code_below.boundcode yc jc codec)
+def lift_codes_with_equiv
+  {y3 : α} : Prop := ∀
+  (yc yd z : α)
+  (jz : r z y3)
+  (jc : r yc y3)
+  (jd : r yd y3)
+  (hc : r yc z)
+  (hd : r yd z)
+  (codec : L_code yc)
+  (coded : L_code yd)
+  (hcd : (L (h := h) y3).equiv (L_code_below.boundcode yc jc codec)
                                (L_code_below.boundcode yd jd coded))
   , code_equiv (L (h := h) z) (lift_code yc z hc codec) (lift_code yd z hd coded)
 
 def lift_codes_mem_iff
-    {y3 : α} : Prop := ∀
-    (yc yd z : α)
-    (jz : r z y3)
-    (jc : r yc y3)
-    (jd : r yd y3)
-    (hc : r yc z)
-    (hd : r yd z)
-    (codec : L_code yc)
-    (coded : L_code yd)
+  {y3 : α} : Prop := ∀
+  (yc yd z : α)
+  (jz : r z y3)
+  (jc : r yc y3)
+  (jd : r yd y3)
+  (hc : r yc z)
+  (hd : r yd z)
+  (codec : L_code yc)
+  (coded : L_code yd)
   , (L (h := h) y3).mem (L_code_below.boundcode yc jc codec)
                                (L_code_below.boundcode yd jd coded)
 ↔ code_mem (L (h := h) z) (lift_code yc z hc codec) (lift_code yd z hd coded)
@@ -298,65 +291,73 @@ def L_seg_equiv_is_Equivalence
 -- From here on the proofs will use earlier listed results as well as the induction hypothesis
 -- (thus, equivalent to just using the induction hypothesis)
 
-/-- This theorem shows that the membership relation for `L y3` respects the equality relation for `L y3`. Thus, we are given elements `c ≈ c'` and `d ≈ d'` of `L y3`,
-with `c ∈ d`, and must show `c' ∈ d'`. The 4 elements are codes of ranks `yc < y3`, `yc' < y3`, `yd < y3`, and `yd' < y3` respectively. We lift this codes to codes of a common rank `z < y3` and use the theorem
-`code_mem_respects_code_equiv` to do the main work. The precise details of the proof depend on 4 things: whether `yc < z` or `yc = z`, whether `yc' < z` or `yc' < yz`, etc. There are 16 possible combinations of
-these possibilities, so there are 16 cases in the proof. The proof in each case is has a similar form:
-first we make substitutions of those variables of `yc`, `yc'`, `yd` and `yd'` which equal `z` (replacing them with `z`),
-and then execute 5 `have` statements, which are each done using macros defined earlier.
-Those are as follows: `step1...` converts the assumption `hcd` into a membership statement at level `z`,
-the first `step2...` converts the equivalence between `c`, `c'` at rank max(yc, yc') to one at z,
-the second `step2...` does likewise for `d`, `d'`, `step4...` applies
-`code_mem_respects_code_equiv` at rank `z` to the foregoing things,
-and then `step5...` converts the result of that to the desired fact about `L y3`. I
-did try to make the proof uniform in cases, but had trouble in connection with type errors
-coming from the variables `yc` etc collapsing to `z`.-/
+/-- This theorem shows that the membership relation for `L y3` respects the equality relation for
+`L y3`. Thus, we are given elements `c ≈ c'` and `d ≈ d'` of `L y3`, with `c ∈ d`, and must show
+`c' ∈ d'`. The 4 elements are codes of ranks `yc < y3`, `yc' < y3`, `yd < y3`, and `yd' < y3`
+respectively. We lift this codes to codes of a common rank `z < y3` and use the theorem
+`code_mem_respects_code_equiv` to do the main work. The precise details of the proof depend on 4
+things: whether `yc < z` or `yc = z`, whether `yc' < z` or `yc' < yz`, etc. There are 16 possible
+combinations of these possibilities, so there are 16 cases in the proof. The proof in each case is
+has a similar form: first we make substitutions of those variables of `yc`, `yc'`, `yd` and `yd'`
+which equal `z` (replacing them with `z`), and then execute 5 `have` statements, which are each
+done using macros defined earlier. Those are as follows: `step1...` converts the assumption `hcd`
+into a membership statement at level `z`, the first `step2...` converts the equivalence between `c`,
+`c'` at rank max(yc, yc') to one at z, the second `step2...` does likewise for `d`, `d'`, `step4...`
+applies `code_mem_respects_code_equiv` at rank `z` to the foregoing things, and then `step5...`
+converts the result of that to the desired fact about `L y3`. I did try to make the proof uniform in
+cases, but had trouble in connection with type errors coming from the variables `yc` etc collapsing
+to `z`. -/
 def L_seg_mem_respects_equiv
-    {y3 : α} : Prop := ∀
-    (c c' d d' : L_univ y3)
-    (hcc' : (L (h := h) y3).equiv c c')
-    (hdd' : (L (h := h) y3).equiv d d')
-    (hcd : (L (h := h) y3).mem c d)
+  {y3 : α} : Prop := ∀
+  (c c' d d' : L_univ y3)
+  (hcc' : (L (h := h) y3).equiv c c')
+  (hdd' : (L (h := h) y3).equiv d d')
+  (hcd : (L (h := h) y3).mem c d)
   , (L (h := h) y3).mem c' d'
 
-/--One quarter of extensionality. Note that it only does → in the implication between the membership statements.-/
+/-- One quarter of extensionality. Note that it only does → in the implication between the
+membership statements. -/
 def L_extensional_equiv_implies_mp
-    {y3 : α} : Prop := ∀
-    (d d' : L_univ y3)
-  , (L (h := h) y3).equiv d d' → ∀ (x : L_univ y3), ((L (h := h) y3).mem x d → (L (h := h) y3).mem x d')
+  {y3 : α} : Prop := ∀
+  (d d' : L_univ y3)
+  , (L (h := h) y3).equiv d d'
+    → ∀ (x : L_univ y3), ((L (h := h) y3).mem x d → (L (h := h) y3).mem x d')
 
-/--One half of extensionality. It has the ↔ between the membership statements.-/
+/-- One half of extensionality. It has the ↔ between the membership statements. -/
 def L_extensional_equiv_implies
-    {y3 : α} : Prop := ∀
-    (d d' : L_univ y3)
-  , (L (h := h) y3).equiv d d' → ∀ (x : L_univ y3), ((L (h := h) y3).mem x d ↔ (L (h := h) y3).mem x d')
+  {y3 : α} : Prop := ∀
+  (d d' : L_univ y3)
+  , (L (h := h) y3).equiv d d'
+    → ∀ (x : L_univ y3), ((L (h := h) y3).mem x d ↔ (L (h := h) y3).mem x d')
 
 def code_equiv_iff
-    {y3 : α} : Prop := ∀
-    (y:α)
-    (_ : r y y3)
-    (c c' : L_code y)
-  , (code_equiv (L (h := h) y) c c')
-    ↔ ∀ (x:α) (jx : r x y) (codex : L_code x),
-      (code_mem (L (h := h) y) (lift_code x y jx codex) c
-       ↔ code_mem (L (h := h) y) (lift_code x y jx codex) c')
+  {y3 : α} : Prop := ∀
+  (y:α)
+  (_ : r y y3)
+  (c c' : L_code y),
+  (code_equiv (L (h := h) y) c c')
+  ↔ ∀ (x:α) (jx : r x y) (codex : L_code x),
+        (  code_mem (L (h := h) y) (lift_code x y jx codex) c
+         ↔ code_mem (L (h := h) y) (lift_code x y jx codex) c')
 
 def L_extensional_mem_implies
-    {y3 : α} : Prop := ∀
-    (d d' : L_univ y3)
-  , (∀ (c : L_univ y3), ((L (h := h) y3).mem c d ↔ (L (h := h) y3).mem c d')) → (L (h := h) y3).equiv d d'
+  {y3 : α} : Prop
+:= ∀ (d d' : L_univ y3),
+    (∀ (c : L_univ y3),
+      ((L (h := h) y3).mem c d ↔ (L (h := h) y3).mem c d')) → (L (h := h) y3).equiv d d'
 
 def L_extensional
-    {y3 : α} : Prop := ∀
-    (d d' : L_univ (r:=r) y3)
-  , ((L (r:=r) (h := h) y3).equiv d d')
-    ↔ (∀ (x : L_univ (r:=r) y3), (((L (r:=r) (h := h) y3).mem x d)↔((L (r:=r) (h := h) y3).mem x d')))
+  {y3 : α} : Prop
+:= ∀ (d d' : L_univ (r := r) y3),
+      ((L (r := r) (h := h) y3).equiv d d')
+      ↔ (∀ (x : L_univ (r := r) y3),
+          (((L (r := r) (h := h) y3).mem x d) ↔ ((L (r := r) (h := h) y3).mem x d')))
 
 def lift_code_equiv_emb {y3 : α} : Prop := ∀
   {y1:α}
   (h13 : r y1 y3)
-  (code1 code2 : L_code (r:=r) y1)
-  , (code_equiv (L (h := h) y1) code1 code2)
+  (code1 code2 : L_code (r:=r) y1),
+    (code_equiv (L (h := h) y1) code1 code2)
     ↔ (code_equiv (L (h := h) y3)
       (lift_code y1 y3 h13 code1)
       (lift_code y1 y3 h13 code2))
@@ -435,7 +436,7 @@ def L_equiv_trans_lemma_left_lt_center_lt_right
   , code_equiv (L (h := h) yc) (lift_code ya yc hyac codea) codec
 
 def L_equiv_trans_lemma_left_lt_right_lt_center
-    {y3 : α}: Prop :=
+    {y3 : α} : Prop :=
   ∀ (ya : α)
     (hya : r ya y3)
     (codea : L_code ya)
@@ -1109,19 +1110,22 @@ theorem ind_L_seg_equiv_is_Equivalence
                             (Eq.refl ya) (Eq.refl ya) (Eq.refl ya) hypab hypbc
 }
 
-/-- This theorem shows that the membership relation for `L y3` respects the equality relation for `L y3`. Thus, we are given elements `c ≈ c'` and `d ≈ d'` of `L y3`,
-with `c ∈ d`, and must show `c' ∈ d'`. The 4 elements are codes of ranks `yc < y3`, `yc' < y3`, `yd < y3`, and `yd' < y3` respectively. We lift this codes to codes of a common rank `z < y3` and use the theorem
-`code_mem_respects_code_equiv` to do the main work. The precise details of the proof depend on 4 things: whether `yc < z` or `yc = z`, whether `yc' < z` or `yc' < yz`, etc. There are 16 possible combinations of
-these possibilities, so there are 16 cases in the proof. The proof in each case is has a similar form:
-first we make substitutions of those variables of `yc`, `yc'`, `yd` and `yd'` which equal `z` (replacing them with `z`),
-and then execute 5 `have` statements, which are each done using macros defined earlier.
-Those are as follows: `step1...` converts the assumption `hcd` into a membership statement at level `z`,
-the first `step2...` converts the equivalence between `c`, `c'` at rank max(yc, yc') to one at z,
-the second `step2...` does likewise for `d`, `d'`, `step4...` applies
-`code_mem_respects_code_equiv` at rank `z` to the foregoing things,
-and then `step5...` converts the result of that to the desired fact about `L y3`. I
-did try to make the proof uniform in cases, but had trouble in connection with type errors
-coming from the variables `yc` etc collapsing to `z`.-/
+/-- This theorem shows that the membership relation for `L y3` respects the equality relation for
+`L y3`. Thus, we are given elements `c ≈ c'` and `d ≈ d'` of `L y3`, with `c ∈ d`, and must show
+`c' ∈ d'`. The 4 elements are codes of ranks `yc < y3`, `yc' < y3`, `yd < y3`, and `yd' < y3`
+respectively. We lift this codes to codes of a common rank `z < y3` and use the theorem
+`code_mem_respects_code_equiv` to do the main work. The precise details of the proof depend on 4
+things: whether `yc < z` or `yc = z`, whether `yc' < z` or `yc' < yz`, etc. There are 16 possible
+combinations of these possibilities, so there are 16 cases in the proof. The proof in each case
+has a similar form: first we make substitutions of those variables of `yc`, `yc'`, `yd` and `yd'`
+which equal `z` (replacing them with `z`), and then execute 5 `have` statements, which are each
+done using macros defined earlier. Those are as follows: `step1...` converts the assumption `hcd`
+into a membership statement at level `z`, the first `step2...` converts the equivalence between
+`c`, `c'` at rank max(yc, yc') to one at z, the second `step2...` does likewise for `d`, `d'`,
+`step4...` applies `code_mem_respects_code_equiv` at rank `z` to the foregoing things, and then
+`step5...` converts the result of that to the desired fact about `L y3`. I did try to make the proof
+uniform in cases, but had trouble in connection with type errors coming from the variables `yc` etc
+collapsing to `z`. -/
 theorem ind_L_seg_mem_respects_equiv
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
@@ -1383,7 +1387,8 @@ theorem ind_L_seg_mem_respects_equiv
             step5_eq_eq hc'd'_y3 h y3 z z z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z
             exact hc'd'_y3
 
-/--One quarter of extensionality. Note that it only does → in the implication between the membership statements.-/
+/-- One quarter of extensionality. Note that it only does → in the implication between the
+membership statements. -/
 theorem ind_L_extensional_equiv_implies_mp
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
@@ -1392,9 +1397,10 @@ theorem ind_L_extensional_equiv_implies_mp
     by
     unfold L_extensional_equiv_implies_mp
     intro d d' hyp z hyp2
-    exact (ind_L_seg_mem_respects_equiv ihyp) z z d d' ((ind_L_seg_equiv_is_Equivalence ihyp).refl z) hyp hyp2
+    exact (ind_L_seg_mem_respects_equiv ihyp) z z d d'
+            ((ind_L_seg_equiv_is_Equivalence ihyp).refl z) hyp hyp2
 
-/--One half of extensionality. It has the ↔ between the membership statements.-/
+/-- One half of extensionality. It has the ↔ between the membership statements. -/
 theorem ind_L_extensional_equiv_implies
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
