@@ -5,15 +5,16 @@ Formalization of Gödel's constructible universe in Lean 4
 * `Constructible.lean`: Library gateway.
 * `Constructible/Basic.lean`: Lists and some other basics.
 * `Constructible/LHierarchy.lean`: The $L_\alpha$ hierarchy defined. (Main definition is in the
-segment starting at line 836, using the mutual inductive definition of codes for elements of $L$ given in lines 138--227. The outline is described in comments at those points.)
+segment starting at line 833, using the mutual inductive definition of codes for elements of $L$ given in lines 144--235. The outline is described in comments at those points.)
 * `Constructible/Extensionality.lean`: Proof of the Axiom of Extensionality in $L$.
 
 ## Current Status: **Work in Progress**
 
-**Note:** The code is provided for research and review purposes. It should compile, but it contains "sorry"s
+**Note:** The code is provided for research and review purposes.
 
 ### To-Do List:
-- [ ] Deal with a number of "sorry"s, mostly in proofs of lemmas in connection with variable substitution
+- [ ] Prove the ZFC + GCH axioms (assuming the base wellorder has the right sort of length)
+- [ ] Prove $\omega_1^{\mathrm{ck}}$ is the least ordinal $\gamma$ such that $L_\gamma$ models KP
 
 ## Build
 ```bash
