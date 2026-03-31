@@ -13,8 +13,8 @@ set_option linter.unusedVariables false
 #check ext_equiv
 #check filter_values_in_position
 
-namespace L
-open L
+namespace LL
+open LL
 variable {α : Type u} {r : α → α → Prop} {h : IsWellOrder α r}
 
 def r_leq
@@ -26,14 +26,15 @@ def r_leq
 #check IsWellFounded
 #print IsStrictTotalOrder
 #check WellFounded.isIrrefl
-#check h.wf.isIrrefl
-#check h.wf.isIrrefl
-#check IsIrrefl α r
+#check h.wf.irrefl
+#check h.wf.irrefl
+#check Std.Irrefl r
 #check IsIrrefl
 #print IsIrrefl
 
 instance rIsStrictTotalOrder : IsStrictTotalOrder α r where
-  trichotomous := h.toIsTrichotomous.trichotomous
+  --trichotomous := h.toIsTrichotomous.trichotomous
+  trichotomous := h.trichotomous
 
 instance r_leqIsPartialOrder : IsPartialOrder α (r:=r_leq (r := r) (h:=h)) where
   refl := -- proof of: ∀ a, a ≤ a
@@ -46,7 +47,7 @@ instance r_leqIsPartialOrder : IsPartialOrder α (r:=r_leq (r := r) (h:=h)) wher
       cases hbc with
       | inl hbc => --Case (r a b) ∧ (r b c)
         apply Or.inl
-        exact h.trans a b c hab hbc
+        exact IsStrictOrder.toIsTrans.trans a b c hab hbc
       | inr hbc => --Case (r a b) ∧ (b = c)
         subst hbc
         apply Or.inl
@@ -61,7 +62,7 @@ instance r_leqIsPartialOrder : IsPartialOrder α (r:=r_leq (r := r) (h:=h)) wher
     | inl hab => --case r a b
       cases hba with
       | inl hba => --Case (r a b) ∧ (r b a)
-        exact (h.wf.isIrrefl.irrefl a (h.trans a b a hab hba)).elim
+        exact (h.wf.irrefl.irrefl a (IsStrictOrder.toIsTrans.trans a b a hab hba)).elim
       | inr hbc => --Case (r a b) ∧ (b = c)
         subst hbc
         exact Eq.refl b
@@ -69,13 +70,10 @@ instance r_leqIsPartialOrder : IsPartialOrder α (r:=r_leq (r := r) (h:=h)) wher
       subst hab
       exact Eq.refl a
 
-#print IsRefl
-#check (IsRefl (α:=α) (r:=r_leq))
-
-instance r_leqIsTotal : IsTotal α (r := r_leq (r := r) (h := h)) where
+instance r_leqIsTotal : Std.Total (r_leq (r := r) (h := h)) where
   total a b :=
     by
-      cases h.toIsTrichotomous.trichotomous a b with
+      cases h.toTrichotomous.rel_or_eq_or_rel_swap (a:=a) (b:=b) with
       | inl hyp => apply Or.inl; apply Or.inl; exact hyp
       | inr hyp =>
       cases hyp with
@@ -90,7 +88,7 @@ theorem upper_bound
 : ∃ (e:α), (r e y) ∧ (r_leq (r := r) (h:=h) a e ∧ r_leq (r := r) (h:=h) b e)
 :=
   by
-  cases h.trichotomous a b with
+  cases h.toTrichotomous.rel_or_eq_or_rel_swap (a:=a) (b:=b) with
   | inl hyp => use b; exact ⟨hb,⟨Or.inl hyp,Or.inr (Eq.refl b)⟩⟩
   | inr hyp =>
   cases hyp with
@@ -287,7 +285,7 @@ theorem L_ListToListLength
       rw [L_ListToListLength τ']
       rfl
 --attribute [match_pattern]  L_code_below.boundcode L_code.code
-end L
+end LL
 
 /-- Definition: `build_ass` builds an `assignment M φ` object from input data coming
 from an `L_code` object together with some `x:M.univ` to interpret the excluded variable `v`
@@ -662,7 +660,7 @@ def v₅_mem_free_var_φ₅ : v₅ ∈ free_var φ₅ := first_in_free_var_atomi
 def v₆_mem_free_var_φ₅ : v₆ ∈ free_var φ₅ := second_in_free_var_atomic_mem v₅ v₆
 def v₆_mem_σ₅ : v₆ ∈ σ₅ := List.mem_singleton_self v₆
 
-namespace L
+namespace LL
 
 variable {α : Type u} {r : α → α → Prop} {h : IsWellOrder α r}
 
@@ -979,10 +977,11 @@ theorem L_recursion_trichotomy_mem_first_lt_second
     cases hyp with
     | inl hyp =>
       cases hyp with
-      | intro h' hyp' => exact (h.wf.isIrrefl.irrefl y1 (h.trans y1 y2 y1 h12 h')).elim
+      | intro h' hyp' =>
+        exact (h.wf.irrefl.irrefl y1 (IsStrictOrder.toIsTrans.trans y1 y2 y1 h12 h')).elim
     | inr hyp =>
       cases hyp with
-      | intro h' hyp' => exact (h.wf.isIrrefl.irrefl y1 (h'▸ h12)).elim
+      | intro h' hyp' => exact (h.wf.irrefl.irrefl y1 (h'▸ h12)).elim
   · intro hyp
     apply Or.inl
     use h12
@@ -1010,10 +1009,11 @@ theorem L_recursion_trichotomy_equiv_first_lt_second
     cases hyp with
     | inl hyp =>
       cases hyp with
-      | intro h' hyp' => exact (h.wf.isIrrefl.irrefl y1 (h.trans y1 y2 y1 h12 h')).elim
+      | intro h' hyp' =>
+        exact (h.wf.irrefl.irrefl y1 (IsStrictOrder.toIsTrans.trans y1 y2 y1 h12 h')).elim
     | inr hyp =>
       cases hyp with
-      | intro h' hyp' => exact (h.wf.isIrrefl.irrefl y1 (h'▸ h12)).elim
+      | intro h' hyp' => exact (h.wf.irrefl.irrefl y1 (h'▸ h12)).elim
   · intro hyp
     apply Or.inl
     use h12
@@ -1036,7 +1036,8 @@ theorem L_recursion_trichotomy_mem_second_lt_first
     cases hyp with
     | inl hyp =>
       cases hyp with
-      | intro h' hyp' => exact (h.wf.isIrrefl.irrefl y2 (h.trans y2 y1 y2 h12 h')).elim
+      | intro h' hyp' =>
+        exact (h.wf.irrefl.irrefl y2 (IsStrictOrder.toIsTrans.trans y2 y1 y2 h12 h')).elim
     | inr hyp =>
     cases hyp with
     | inl hyp =>
@@ -1044,7 +1045,7 @@ theorem L_recursion_trichotomy_mem_second_lt_first
       | intro h' hyp' => exact hyp'
     | inr hyp =>
       cases hyp with
-      | intro h' hyp' => exact (h.wf.isIrrefl.irrefl y1 (h'▸ h12)).elim
+      | intro h' hyp' => exact (h.wf.irrefl.irrefl y1 (h'▸ h12)).elim
   · intro hyp
     apply Or.inr
     apply Or.inl
@@ -1068,7 +1069,8 @@ theorem L_recursion_trichotomy_equiv_second_lt_first
     cases hyp with
     | inl hyp =>
       cases hyp with
-      | intro h' hyp' => exact (h.wf.isIrrefl.irrefl y2 (h.trans y2 y1 y2 h12 h')).elim
+      | intro h' hyp' =>
+        exact (h.wf.irrefl.irrefl y2 (IsStrictOrder.toIsTrans.trans y2 y1 y2 h12 h')).elim
     | inr hyp =>
     cases hyp with
     | inl hyp =>
@@ -1076,7 +1078,7 @@ theorem L_recursion_trichotomy_equiv_second_lt_first
       | intro h' hyp' => exact hyp'
     | inr hyp =>
       cases hyp with
-      | intro h' hyp' => exact (h.wf.isIrrefl.irrefl y1 (h'▸ h12)).elim
+      | intro h' hyp' => exact (h.wf.irrefl.irrefl y1 (h'▸ h12)).elim
   · intro hyp
     apply Or.inr
     apply Or.inl
@@ -1097,12 +1099,12 @@ theorem L_recursion_trichotomy_mem_first_eq_second
     cases hyp with
     | inl hyp =>
       cases hyp with
-      | intro h' hyp' => exact (h.wf.isIrrefl.irrefl y1 h').elim
+      | intro h' hyp' => exact (h.wf.irrefl.irrefl y1 h').elim
     | inr hyp =>
     cases hyp with
     | inl hyp =>
       cases hyp with
-      | intro h' hyp' => exact (h.wf.isIrrefl.irrefl y1 h').elim
+      | intro h' hyp' => exact (h.wf.irrefl.irrefl y1 h').elim
     | inr hyp =>
       cases hyp with
       | intro h' hyp' => exact hyp'
@@ -1126,12 +1128,12 @@ theorem L_recursion_trichotomy_equiv_first_eq_second
     cases hyp with
     | inl hyp =>
       cases hyp with
-      | intro h' hyp' => exact (h.wf.isIrrefl.irrefl y1 h').elim
+      | intro h' hyp' => exact (h.wf.irrefl.irrefl y1 h').elim
     | inr hyp =>
     cases hyp with
     | inl hyp =>
       cases hyp with
-      | intro h' hyp' => exact (h.wf.isIrrefl.irrefl y1 h').elim
+      | intro h' hyp' => exact (h.wf.irrefl.irrefl y1 h').elim
     | inr hyp =>
       cases hyp with
       | intro h' hyp' => exact hyp'
@@ -1256,7 +1258,7 @@ theorem sats_L_code_param_of_lift_code
       (to_List (L_List.cons (L_code_below.boundcode y1 i code) L_List.nil)) hτ x
     ) v₅ j = x
   := eval_build_ass_on_new_var (α:=α) M φ₅ v₅ σ₅ hσ₅ τ hτ x v₅_mem_free_var_φ₅ j
-  rw [k]
+  erw[k]
   have j'
   : v₆ ∈ (build_ass
       { univ := L_univ y2, eq := (L (h:=h) y2).equiv, mem := (L (h:=h) y2).mem }
@@ -1277,7 +1279,7 @@ theorem sats_L_code_param_of_lift_code
     :=by unfold eval_var_param_pair; rfl
     exact eval_var_param_pair_returns
       ▸ eval_build_ass_on_old_var (α:=α) M φ₅ v₅ v₆ σ₅ hσ₅ τ hτ x v₆_mem_σ₅
-  rw[k']
+  erw[k']
 
 theorem L_seg_mem_of_constructed_boundcodes
   {x : α}
@@ -1318,13 +1320,13 @@ theorem L_seg_equiv_of_constructed_boundcodes_same_level
     | inl hcd =>
       cases hcd with
       | intro h' hcd =>
-        exact (h.wf.isIrrefl.irrefl y h').elim
+        exact (h.wf.irrefl.irrefl y h').elim
     | inr hcd =>
     cases hcd with
     | inl hcd =>
       cases hcd with
       | intro h' hcd =>
-        exact (h.wf.isIrrefl.irrefl y h').elim
+        exact (h.wf.irrefl.irrefl y h').elim
     | inr hcd =>
       cases hcd with
       | intro h' hcd =>
@@ -1354,13 +1356,13 @@ theorem L_seg_mem_of_constructed_boundcodes_same_level
     | inl hcd =>
       cases hcd with
       | intro h' hcd =>
-        exact (h.wf.isIrrefl.irrefl y h').elim
+        exact (h.wf.irrefl.irrefl y h').elim
     | inr hcd =>
     cases hcd with
     | inl hcd =>
       cases hcd with
       | intro h' hcd =>
-        exact (h.wf.isIrrefl.irrefl y h').elim
+        exact (h.wf.irrefl.irrefl y h').elim
     | inr hcd =>
       cases hcd with
       | intro h' hcd =>
@@ -1398,13 +1400,13 @@ theorem L_seg_equiv_of_constructed_boundcodes_first_below_second
     | inl hcd =>
       cases hcd with
       | intro h' hcd =>
-        exact (h.wf.isIrrefl.irrefl y1 (h.trans y1 y2 y1 jy1y2 h')).elim
+        exact (h.wf.irrefl.irrefl y1 (IsStrictOrder.toIsTrans.trans y1 y2 y1 jy1y2 h')).elim
     | inr hcd =>
       cases hcd with
       | intro h' hcd =>
         subst h'
         dsimp at hcd
-        exact (h.wf.isIrrefl.irrefl y1 jy1y2).elim
+        exact (h.wf.irrefl.irrefl y1 jy1y2).elim
   · intro hcd
     apply Or.inl
     use jy1y2
@@ -1437,13 +1439,13 @@ theorem L_seg_mem_of_constructed_boundcodes_first_below_second
     | inl hcd =>
       cases hcd with
       | intro h' hcd =>
-        exact (h.wf.isIrrefl.irrefl y1 (h.trans y1 y2 y1 jy1y2 h')).elim
+        exact (h.wf.irrefl.irrefl y1 (IsStrictOrder.toIsTrans.trans y1 y2 y1 jy1y2 h')).elim
     | inr hcd =>
       cases hcd with
       | intro h' hcd =>
         subst h'
         dsimp at hcd
-        exact (h.wf.isIrrefl.irrefl y1 jy1y2).elim
+        exact (h.wf.irrefl.irrefl y1 jy1y2).elim
   · intro hcd
     apply Or.inl
     use jy1y2
@@ -1470,7 +1472,7 @@ theorem L_seg_equiv_of_constructed_boundcodes_second_below_first
     | inl hcd =>
       cases hcd with
       | intro h' hcd =>
-        exact (h.wf.isIrrefl.irrefl y2 (h.trans y2 y1 y2 jy1y2 h')).elim
+        exact (h.wf.irrefl.irrefl y2 (IsStrictOrder.toIsTrans.trans y2 y1 y2 jy1y2 h')).elim
     | inr hcd =>
     cases hcd with
     | inl hcd =>
@@ -1482,7 +1484,7 @@ theorem L_seg_equiv_of_constructed_boundcodes_second_below_first
       | intro h' hcd =>
         subst h'
         dsimp at hcd
-        exact (h.wf.isIrrefl.irrefl y1 jy1y2).elim
+        exact (h.wf.irrefl.irrefl y1 jy1y2).elim
   · intro hcd
     apply Or.inr
     apply Or.inl
@@ -1510,7 +1512,7 @@ theorem L_seg_mem_of_constructed_boundcodes_second_below_first
     | inl hcd =>
       cases hcd with
       | intro h' hcd =>
-        exact (h.wf.isIrrefl.irrefl y2 (h.trans y2 y1 y2 jy1y2 h')).elim
+        exact (h.wf.irrefl.irrefl y2 (IsStrictOrder.toIsTrans.trans y2 y1 y2 jy1y2 h')).elim
     | inr hcd =>
     cases hcd with
     | inl hcd =>
@@ -1522,7 +1524,7 @@ theorem L_seg_mem_of_constructed_boundcodes_second_below_first
       | intro h' hcd =>
         subst h'
         dsimp at hcd
-        exact (h.wf.isIrrefl.irrefl y1 jy1y2).elim
+        exact (h.wf.irrefl.irrefl y1 jy1y2).elim
   · intro hcd
     apply Or.inr
     apply Or.inl
@@ -1804,8 +1806,8 @@ theorem L_equiv_trans_lemma_center_right_equal_gt_left
   dsimp
   exact (code_equiv_is_Equivalence yb (L (h:=h) yb)).trans equiv_ab equiv_bc
 
-end L
-
+end LL
+#print LL.L_code
 /-
 def next_var (v : var) : var
 :=

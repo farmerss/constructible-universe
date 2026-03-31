@@ -9,8 +9,8 @@ set_option linter.unusedVariables false
 
 universe u u'
 
-namespace L
-
+namespace LL
+#check LL.L_code
 variable {α : Type u} {r : α → α → Prop} {h : IsWellOrder α r}
 
 theorem lift_first_code_with_equiv
@@ -40,13 +40,13 @@ theorem lift_first_code_with_equiv
     cases hcd with
     | intro h' hcd =>
       --contradiction
-      exact (h.wf.isIrrefl.irrefl yc (h.trans yc yd yc hc h')).elim
+      exact (h.wf.irrefl.irrefl yc (IsStrictOrder.toIsTrans.trans yc yd yc hc h')).elim
   | inr hcd => --case yc = yd
     cases hcd with
     | intro h' hcd =>
       --contradiction
       subst h'
-      exact (h.wf.isIrrefl.irrefl yc hc).elim
+      exact (h.wf.irrefl.irrefl yc hc).elim
 
 theorem lift_first_code_mem_iff
   {y3 : α}
@@ -77,13 +77,13 @@ theorem lift_first_code_mem_iff
       cases hcd with
       | intro h' hcd =>
         --contradiction
-        exact (h.wf.isIrrefl.irrefl yc (h.trans yc yd yc hc h')).elim
+        exact (h.wf.irrefl.irrefl yc (IsStrictOrder.toIsTrans.trans yc yd yc hc h')).elim
     | inr hcd => --case yc = yd
       cases hcd with
       | intro h' hcd =>
         --contradiction
         subst h'
-        exact (h.wf.isIrrefl.irrefl yc hc).elim
+        exact (h.wf.irrefl.irrefl yc hc).elim
   · intro hcd
     rw [L_seg_mem]
     dsimp
@@ -120,13 +120,13 @@ theorem lift_first_code_equiv_iff
       cases hcd with
       | intro h' hcd =>
         --contradiction
-        exact (h.wf.isIrrefl.irrefl yc (h.trans yc yd yc hc h')).elim
+        exact (h.wf.irrefl.irrefl yc (IsStrictOrder.toIsTrans.trans yc yd yc hc h')).elim
     | inr hcd => --case yc = yd
       cases hcd with
       | intro h' hcd =>
         --contradiction
         subst h'
-        exact (h.wf.isIrrefl.irrefl yc hc).elim
+        exact (h.wf.irrefl.irrefl yc hc).elim
   · intro hcd
     rw [L_seg_equiv]
     dsimp
@@ -156,7 +156,7 @@ theorem lift_second_code_mem_iff
     | inl hcd => --case r yc yd
       cases hcd with
       | intro h' hcd =>
-        exact (h.wf.isIrrefl.irrefl yc (h.trans yc yd yc h' hc)).elim
+        exact (h.wf.irrefl.irrefl yc (IsStrictOrder.toIsTrans.trans yc yd yc h' hc)).elim
     | inr hcd =>
     cases hcd with
     | inl hcd => --case r yd yc
@@ -169,7 +169,7 @@ theorem lift_second_code_mem_iff
       | intro h' hcd =>
         --contradiction
         subst h'
-        exact (h.wf.isIrrefl.irrefl yc hc).elim
+        exact (h.wf.irrefl.irrefl yc hc).elim
   · intro hcd
     rw [L_seg_mem]
     dsimp
@@ -200,7 +200,7 @@ theorem lift_second_code_equiv_iff
     | inl hcd => --case r yc yd
       cases hcd with
       | intro h' hcd =>
-        exact (h.wf.isIrrefl.irrefl yc (h.trans yc yd yc h' hc)).elim
+        exact (h.wf.irrefl.irrefl yc (IsStrictOrder.toIsTrans.trans yc yd yc h' hc)).elim
     | inr hcd =>
     cases hcd with
     | inl hcd => --case r yd yc
@@ -213,7 +213,7 @@ theorem lift_second_code_equiv_iff
       | intro h' hcd =>
         --contradiction
         subst h'
-        exact (h.wf.isIrrefl.irrefl yc hc).elim
+        exact (h.wf.irrefl.irrefl yc hc).elim
   · intro hcd
     rw [L_seg_equiv]
     dsimp
@@ -554,7 +554,7 @@ theorem ind_lift_code_commutes
         | inl hyp => -- case y1 < yx
           cases hyp with
           | intro h' hyp =>
-            cases IsTrichotomous.trichotomous (lt := r) yx y2 with
+            cases h.toTrichotomous.rel_or_eq_or_rel_swap (a:=yx) (b:=y2) with
             | inl hyxy2 =>
               apply Or.inl
               use hyxy2
@@ -606,22 +606,24 @@ theorem ind_lift_code_commutes
             dsimp only at hyp
             exact ((ihyp h23).lift_code_mem_emb y1 h12 codex code).mp hyp
       · intro hyp
-        cases IsTrichotomous.trichotomous (lt := r) yx y1 with
+        cases h.toTrichotomous.rel_or_eq_or_rel_swap (a:=yx) (b:=y1) with
         | inl hx1 => --case yx < y1
           apply Or.inl
           use hx1
           have hyp_case
-          : code_mem (L y2) (lift_code yx y2 (h.trans yx y1 y2 hx1 h12) codex)
+          : code_mem (L y2) (lift_code yx y2 (IsStrictOrder.toIsTrans.trans yx y1 y2 hx1 h12) codex)
               (lift_code y1 y2 h12 code)
           :=  (L_recursion_trichotomy_mem_first_lt_second
-                y3 yx hx codex y2 h23 (lift_code y1 y2 h12 code) (h.trans yx y1 y2 hx1 h12)
+                y3 yx hx codex y2 h23 (lift_code y1 y2 h12 code)
+                (IsStrictOrder.toIsTrans.trans yx y1 y2 hx1 h12)
               ).mp hyp
           have lifts_equiv
           : code_equiv
               (L (h := h) y2)
-              (lift_code yx y2 (h.trans yx y1 y2 hx1 h12) codex)
+              (lift_code yx y2 (IsStrictOrder.toIsTrans.trans yx y1 y2 hx1 h12) codex)
               (lift_code y1 y2 h12 (lift_code yx y1 hx1 codex))
-            := ((ihyp h23).lift_code_commutes y1 yx h12 hx1 (h.trans yx y1 y2 hx1 h12) codex)
+            :=  ((ihyp h23).lift_code_commutes y1 yx h12 hx1
+                (IsStrictOrder.toIsTrans.trans yx y1 y2 hx1 h12) codex)
           have hyp_case_equiv
           : code_mem (L y2) (lift_code y1 y2 h12 (lift_code yx y1 hx1 codex))
               (lift_code y1 y2 h12 code)
@@ -654,9 +656,10 @@ theorem ind_lift_code_commutes
               :
                 code_equiv
                   (L (h := h) y2)
-                  (lift_code y1 y2 (h.trans y1 yx y2 hx1 h') code)
+                  (lift_code y1 y2 (IsStrictOrder.toIsTrans.trans y1 yx y2 hx1 h') code)
                   (lift_code yx y2 h' (lift_code y1 yx hx1 code))
-              :=  ((ihyp h23).lift_code_commutes yx y1 h' hx1 (h.trans y1 yx y2 hx1 h') code)
+              :=  ((ihyp h23).lift_code_commutes yx y1 h' hx1
+                  (IsStrictOrder.toIsTrans.trans y1 yx y2 hx1 h') code)
               have hyp_case_equiv
               : code_mem (L y2) (lift_code yx y2 h' codex)
                   (lift_code yx y2 h' (lift_code y1 yx hx1 code))
@@ -675,7 +678,7 @@ theorem ind_lift_code_commutes
               :
                 code_equiv
                   (L (h := h) yx)
-                  (lift_code y1 yx (h.trans y1 y2 yx h12 h') code)
+                  (lift_code y1 yx (IsStrictOrder.toIsTrans.trans y1 y2 yx h12 h') code)
                   (lift_code y2 yx h' (lift_code y1 y2 h12 code))
               :=  ((ihyp hx).lift_code_commutes y2 y1 h' h12 hx1 code)
               exact code_mem_respects_code_equiv (L yx)
@@ -836,7 +839,7 @@ theorem ind_lift_codes_mem_iff
     rw [L_seg_mem]
     dsimp
     unfold L_recursion_trichotomy_mem
-    cases h.toIsTrichotomous.trichotomous yc yd with
+    cases h.toTrichotomous.rel_or_eq_or_rel_swap  (a:=yc) (b:=yd) with
     | inl jcd =>
       apply Or.inl
       use jcd
@@ -954,7 +957,7 @@ theorem ind_L_seg_equiv_is_Equivalence
               cases hypbc with
               | intro h'' hypbc =>
                 apply Or.inl
-                let h''' := h.trans ya yb yc h' h''
+                let h''' := IsStrictOrder.toIsTrans.trans ya yb yc h' h''
                 use h'''
                 exact (ihyp hyc).L_equiv_trans_lemma_left_lt_center_lt_right
                         ya h''' codea yb h'' codeb yc (Eq.refl yc) codec h' h'' h''' hypab hypbc
@@ -1042,7 +1045,7 @@ theorem ind_L_seg_equiv_is_Equivalence
                   | intro h'' hypbc =>
                     apply Or.inr
                     apply Or.inl
-                    let h''' := h.trans yc yb ya h'' h'
+                    let h''' := IsStrictOrder.toIsTrans.trans yc yb ya h'' h'
                     use h'''
                     exact
                       (code_equiv_is_Equivalence ya (L (h := h) ya)).symm
@@ -1538,22 +1541,26 @@ theorem ind_L_extensional_mem_implies
     rw [L_seg_equiv]
     dsimp
     unfold L_recursion_trichotomy_equiv
-    cases h.trichotomous yd yd' with
+    cases h.toTrichotomous.rel_or_eq_or_rel_swap  (a:=yd) (b:=yd') with
     | inl jdd' => --Case yd < yd'
       apply Or.inl
       use jdd'
       rw [(ind_code_equiv_iff ihyp) yd' yd'_LT]
       intro x jx codex
       have hypc
-      :   (L y3).mem (L_code_below.boundcode x (h.trans x yd' y3 jx yd'_LT) codex)
+      :   (L y3).mem (L_code_below.boundcode
+                        x (IsStrictOrder.toIsTrans.trans x yd' y3 jx yd'_LT) codex)
                      (L_code_below.boundcode yd yd_LT coded)
-        ↔ (L y3).mem (L_code_below.boundcode x (h.trans x yd' y3 jx yd'_LT) codex)
+        ↔ (L y3).mem (L_code_below.boundcode
+                        x (IsStrictOrder.toIsTrans.trans x yd' y3 jx yd'_LT) codex)
                      (L_code_below.boundcode yd' yd'_LT coded')
-      := hyp (L_code_below.boundcode x (h.trans x yd' y3 jx yd'_LT) codex)
-      rw [L_seg_mem_of_constructed_boundcodes_first_below_second
-            x yd' (h.trans x yd' y3 jx yd'_LT) yd'_LT jx codex coded'] at hypc
-      rw [(ind_lift_codes_mem_iff ihyp)
-            x yd yd' yd'_LT (h.trans x yd' y3 jx yd'_LT) yd_LT jx jdd' codex coded] at hypc
+      := hyp (L_code_below.boundcode x (IsStrictOrder.toIsTrans.trans x yd' y3 jx yd'_LT) codex)
+      rw [L_seg_mem_of_constructed_boundcodes_first_below_second x yd'
+            (IsStrictOrder.toIsTrans.trans x yd' y3 jx yd'_LT) yd'_LT jx codex coded']
+        at hypc
+      rw [(ind_lift_codes_mem_iff ihyp) x yd yd' yd'_LT
+            (IsStrictOrder.toIsTrans.trans x yd' y3 jx yd'_LT) yd_LT jx jdd' codex coded]
+        at hypc
       exact hypc
     | inr jdd' =>
     cases jdd' with
@@ -1566,15 +1573,17 @@ theorem ind_L_extensional_mem_implies
       rw [(ind_code_equiv_iff ihyp) yd yd_LT]
       intro x jx codex
       have hypc
-      :   (L y3).mem  (L_code_below.boundcode x (h.trans x yd y3 jx yd'_LT) codex)
+      :   (L y3).mem  (L_code_below.boundcode
+                        x (IsStrictOrder.toIsTrans.trans x yd y3 jx yd'_LT) codex)
                       (L_code_below.boundcode yd yd_LT coded)
-        ↔ (L y3).mem  (L_code_below.boundcode x (h.trans x yd y3 jx yd'_LT) codex)
+        ↔ (L y3).mem  (L_code_below.boundcode
+                        x (IsStrictOrder.toIsTrans.trans x yd y3 jx yd'_LT) codex)
                       (L_code_below.boundcode yd yd'_LT coded')
-      := hyp (L_code_below.boundcode x (h.trans x yd y3 jx yd'_LT) codex)
+      := hyp (L_code_below.boundcode x (IsStrictOrder.toIsTrans.trans x yd y3 jx yd'_LT) codex)
       rw [L_seg_mem_of_constructed_boundcodes_first_below_second
-            x yd (h.trans x yd y3 jx yd'_LT) yd'_LT jx codex coded'] at hypc
+            x yd (IsStrictOrder.toIsTrans.trans x yd y3 jx yd'_LT) yd'_LT jx codex coded'] at hypc
       rw [L_seg_mem_of_constructed_boundcodes_first_below_second
-            x yd (h.trans x yd y3 jx yd_LT) yd_LT jx codex coded] at hypc
+            x yd (IsStrictOrder.toIsTrans.trans x yd y3 jx yd_LT) yd_LT jx codex coded] at hypc
       exact hypc
     | inr jdd' => --Case yd' < yd
       apply Or.inr
@@ -1583,15 +1592,19 @@ theorem ind_L_extensional_mem_implies
       rw [(ind_code_equiv_iff ihyp) yd yd_LT]
       intro x jx codex
       have hypc
-      :   (L y3).mem  (L_code_below.boundcode x (h.trans x yd y3 jx yd_LT) codex)
+      :   (L y3).mem  (L_code_below.boundcode
+                        x (IsStrictOrder.toIsTrans.trans x yd y3 jx yd_LT) codex)
                       (L_code_below.boundcode yd yd_LT coded)
-        ↔ (L y3).mem  (L_code_below.boundcode x (h.trans x yd y3 jx yd_LT) codex)
+        ↔ (L y3).mem  (L_code_below.boundcode
+                        x (IsStrictOrder.toIsTrans.trans x yd y3 jx yd_LT) codex)
                       (L_code_below.boundcode yd' yd'_LT coded')
-      := hyp (L_code_below.boundcode x (h.trans x yd y3 jx yd_LT) codex)
+      := hyp (L_code_below.boundcode
+                x (IsStrictOrder.toIsTrans.trans x yd y3 jx yd_LT) codex)
       rw [L_seg_mem_of_constructed_boundcodes_first_below_second
-            x yd (h.trans x yd y3 jx yd_LT) yd_LT jx codex coded] at hypc
-      rw [(ind_lift_codes_mem_iff ihyp)
-            x yd' yd yd_LT (h.trans x yd y3 jx yd_LT) yd'_LT jx jdd' codex coded'] at hypc
+            x yd (IsStrictOrder.toIsTrans.trans x yd y3 jx yd_LT) yd_LT jx codex coded] at hypc
+      rw [(ind_lift_codes_mem_iff ihyp) x yd' yd yd_LT
+          (IsStrictOrder.toIsTrans.trans x yd y3 jx yd_LT) yd'_LT jx jdd' codex coded']
+        at hypc
       exact hypc
 
 theorem ind_L_extensional
@@ -1749,7 +1762,7 @@ theorem ind_sats_L_code_param_respects_equiv_param
   intro c p q hpq hsats
   unfold sats_L_code_param at hsats
   unfold sats_L_code_param
-  set M := LSTModel.mk (L_univ  y3 : Type u) (L (h:=h) y3).equiv (L (h:=h) y3).mem
+  set M := LSTModel.mk (L_univ  y3) (L (h:=h) y3).equiv (L (h:=h) y3).mem
   have M_eq_Equiv
   : Equivalence M.eq
   := ind_L_seg_equiv_is_Equivalence ihyp
@@ -1765,7 +1778,8 @@ theorem ind_sats_L_code_param_respects_equiv_param
     have hτ : σ.length = (to_List τ).length :=  (L_ListToListLength τ).symm
     set p_ass := build_ass M φ v σ hσ (to_List τ) hτ p
     set q_ass := build_ass M φ v σ hσ (to_List τ) hτ q
-    have p_q_ass_equiv : equiv_ass StandardM φ p_ass q_ass
+    have p_q_ass_equiv
+    : equiv_ass (StandardLSTModel.mk M (heq:=M_eq_Equiv) (hmem:=M_mem_respects)) φ p_ass q_ass
     :=by
       unfold equiv_ass
       intro w hw
@@ -1859,3 +1873,5 @@ theorem L_ext_inductive_step (y : α) (ihyp : ext_IH y (h := h))
 
 theorem L_ext_properties (y : α) : L_ext_inductive_properties y (h:=h)
 := WellFounded.fix h.wf L_ext_inductive_step y
+
+end LL

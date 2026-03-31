@@ -1339,8 +1339,8 @@ Fields:\
 `mem`: The "membership" relation of the model.\
 The relations `eq` and `mem` are just arbitrary binary relations on `univ`.
 -/
-structure LSTModel where
-  univ : Type u
+structure LSTModel.{u'''} where
+  univ : Type u'''
   eq : univ → univ → Prop
   mem : univ → univ → Prop
 
@@ -2061,10 +2061,10 @@ def respects {α : Type u} (eq : α → α → Prop) (mem : α → α → Prop)
 : Prop
 := ∀ (c c' d d' : α), (eq c c') → (eq d d') → (mem c d) → (mem c' d')
 
-structure StandardLSTModel where
-  model : LSTModel
-  heq : Equivalence model.eq
-  hmem : respects model.eq model.mem
+structure StandardLSTModel.{u''} where
+  model : LSTModel.{u''}
+  heq : Equivalence (α:=_) model.eq
+  hmem : respects (α:=_) model.eq model.mem
 
 def equiv_ass (M : StandardLSTModel) (φ : LSTF) (ass ass' : assignment (M.model) φ)
 : Prop
