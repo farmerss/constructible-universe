@@ -2,6 +2,7 @@ name = "Constructible"
 version = "0.1.0"
 keywords = ["math"]
 defaultTargets = ["Constructible"]
+lintDriver = "mathlib/runLinter"
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -13,7 +14,6 @@ maxSynthPendingDepth = 3
 name = "mathlib"
 scope = "leanprover-community"
 rev = "v4.29.0-rc8"
-
 
 #[[require]]
 #name = "checkdecls"
