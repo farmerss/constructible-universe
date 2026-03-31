@@ -2,7 +2,7 @@ name = "Constructible"
 version = "0.1.0"
 keywords = ["math"]
 defaultTargets = ["Constructible"]
-lintDriver = "mathlib/runLinter"
+lintDriver = "Batteries.Linter.lint"
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -10,27 +10,15 @@ relaxedAutoImplicit = false
 weak.linter.mathlibStandardSet = true
 maxSynthPendingDepth = 3
 
-[[require]]
-name = "mathlib"
-scope = "leanprover-community"
-rev = "v4.29.0-rc8"
-
-#[[require]]
-#name = "checkdecls"
-#git = "https://github.com/PatrickMassot/checkdecls.git"
-
-#[[require]]
-#name = "«doc-gen4»"
-#git = "https://github.com/leanprover/doc-gen4"
-#rev = "main"
+[[lean_exe]]
+name = "extract_blueprint"
+package = "LeanArchitect"
+root = "Architect.Extract"
+supportInterpreter = true
 
 [[require]]
-name = "checkdecls"
-git = "https://github.com/PatrickMassot/checkdecls.git"
-
-[[require]]
-name = "«doc-gen4»"
-git = "https://github.com/leanprover/doc-gen4"
+name = "LeanArchitect"
+git = "https://github.com/hanwenzhu/LeanArchitect"
 rev = "main"
 
 [[require]]
@@ -41,6 +29,12 @@ git = "https://github.com/PatrickMassot/checkdecls.git"
 name = "«doc-gen4»"
 git = "https://github.com/leanprover/doc-gen4"
 rev = "main"
+
+
 [[lean_lib]]
 name = "Constructible"
 roots = ["Constructible"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"

@@ -10,10 +10,10 @@ set_option linter.unusedVariables false
 universe u u'
 
 namespace LL
-#check LL.L_code
+
 variable {α : Type u} {r : α → α → Prop} {h : IsWellOrder α r}
 
-theorem lift_first_code_with_equiv
+lemma lift_first_code_with_equiv
   {y3 : α}
   (yc yd : α)
   (jc : r yc y3)
@@ -48,7 +48,7 @@ theorem lift_first_code_with_equiv
       subst h'
       exact (h.wf.irrefl.irrefl yc hc).elim
 
-theorem lift_first_code_mem_iff
+lemma lift_first_code_mem_iff
   {y3 : α}
   (yc yd : α)
   (jc : r yc y3)
@@ -91,7 +91,7 @@ theorem lift_first_code_mem_iff
     apply Or.inl
     use hc
 
-theorem lift_first_code_equiv_iff
+lemma lift_first_code_equiv_iff
   {y3 : α}
   (yc yd : α)
   (jc : r yc y3)
@@ -134,7 +134,7 @@ theorem lift_first_code_equiv_iff
     apply Or.inl
     use hc
 
-theorem lift_second_code_mem_iff
+lemma lift_second_code_mem_iff
   {y3 : α}
   (yc yd : α)
   (jc : r yc y3)
@@ -178,7 +178,7 @@ theorem lift_second_code_mem_iff
     apply Or.inl
     use hc
 
-theorem lift_second_code_equiv_iff
+lemma lift_second_code_equiv_iff
   {y3 : α}
   (yc yd : α)
   (jc : r yc y3)
@@ -473,6 +473,7 @@ def lift_code_mem_emb {y3 : α} : Prop := ∀
 --Our inductive hypothesis at y3 is that the assertions stated above hold at all y < y3 (that is,
 --with the parameter y3 above replaced by y).
 
+@[blueprint "dfn:ext_L_ext_inductive_properties"]
 structure L_ext_inductive_properties (y : α) : Prop  where
   L_equiv_trans_lemma_outers_equal_lt_inner :
     L_equiv_trans_lemma_outers_equal_lt_inner (y3 := y) (h := h)
@@ -499,12 +500,14 @@ structure L_ext_inductive_properties (y : α) : Prop  where
   lift_code_equiv_emb : lift_code_equiv_emb (y3 := y) (h := h)
   lift_code_mem_emb : lift_code_mem_emb (y3 := y) (h := h)
 
+@[blueprint "dfn:ext_ext_IH"]
 def ext_IH (y : α) : Prop :=
   ∀ {z : α} (rankhyp : r z y), L_ext_inductive_properties z (h:=h)
 
 --
 --Proofs begin
-theorem ind_lift_code_commutes
+@[blueprint "lem:ext_ind_lift_code_commutes"]
+lemma ind_lift_code_commutes
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : lift_code_commutes (y3 := y3) (h := h)
@@ -692,7 +695,8 @@ theorem ind_lift_code_commutes
               dsimp at hyp'
               exact hyp'
 
-theorem ind_lift_codes_with_mem
+@[blueprint "lem:ext_ind_lift_codes_with_mem"]
+lemma ind_lift_codes_with_mem
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : lift_codes_with_mem (y3 := y3) (h := h)
@@ -741,7 +745,8 @@ theorem ind_lift_codes_with_mem
       dsimp at hcd
       exact ((ihyp jz).lift_code_mem_emb yc hc codec coded).mp hcd
 
-theorem ind_lift_codes_with_equiv
+@[blueprint "lem:ext_ind_lift_codes_with_equiv"]
+lemma ind_lift_codes_with_equiv
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : lift_codes_with_equiv (y3 := y3) (h := h)
@@ -785,7 +790,8 @@ theorem ind_lift_codes_with_equiv
       dsimp at hcd
       exact ((ihyp jz).lift_code_equiv_emb hc codec coded).mp hcd
 
-theorem ind_lift_codes_mem_iff
+@[blueprint "lem:ext_ind_lift_codes_mem_iff"]
+lemma ind_lift_codes_mem_iff
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : lift_codes_mem_iff (y3 := y3) (h := h)
@@ -875,7 +881,8 @@ theorem ind_lift_codes_mem_iff
           ).mp hcd
       exact ((ihyp jz).lift_code_mem_emb yc hc codec (lift_code yd yc jcd coded)).mpr this
 
-theorem ind_L_seg_equiv_is_Equivalence
+@[blueprint "lem:ext_ind_L_seg_equiv_is_Equivalence"]
+lemma ind_L_seg_equiv_is_Equivalence
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : L_seg_equiv_is_Equivalence (y3 := y3) (h := h)
@@ -1129,7 +1136,8 @@ into a membership statement at level `z`, the first `step2...` converts the equi
 `step5...` converts the result of that to the desired fact about `L y3`. I did try to make the proof
 uniform in cases, but had trouble in connection with type errors coming from the variables `yc` etc
 collapsing to `z`. -/
-theorem ind_L_seg_mem_respects_equiv
+@[blueprint "lem:ext_ind_L_seg_mem_respects_equiv"]
+lemma ind_L_seg_mem_respects_equiv
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : L_seg_mem_respects_equiv (y3 := y3) (h := h)
@@ -1392,7 +1400,8 @@ theorem ind_L_seg_mem_respects_equiv
 
 /-- One quarter of extensionality. Note that it only does → in the implication between the
 membership statements. -/
-theorem ind_L_extensional_equiv_implies_mp
+@[blueprint "lem:ext_ind_L_extensional_equiv_implies_mp"]
+lemma ind_L_extensional_equiv_implies_mp
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : L_extensional_equiv_implies_mp (y3 := y3) (h := h)
@@ -1404,7 +1413,8 @@ theorem ind_L_extensional_equiv_implies_mp
             ((ind_L_seg_equiv_is_Equivalence ihyp).refl z) hyp hyp2
 
 /-- One half of extensionality. It has the ↔ between the membership statements. -/
-theorem ind_L_extensional_equiv_implies
+@[blueprint "lem:ext_ind_L_extensional_equiv_implies"]
+lemma ind_L_extensional_equiv_implies
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : L_extensional_equiv_implies (y3 := y3) (h := h)
@@ -1417,7 +1427,8 @@ theorem ind_L_extensional_equiv_implies
     · have hyp' : (L (h := h) y3).equiv d' d := (ind_L_seg_equiv_is_Equivalence ihyp).symm hyp
       exact (ind_L_extensional_equiv_implies_mp ihyp) d' d hyp' x
 
-theorem ind_code_equiv_iff
+@[blueprint "lem:ext_ind_code_equiv_iff"]
+lemma ind_code_equiv_iff
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : code_equiv_iff (y3 := y3) (h := h)
@@ -1527,7 +1538,8 @@ theorem ind_code_equiv_iff
                   (fun x => (j' x).symm)
             exact (ihyp hy_LT).sats_L_code_param_respects_equiv_param c l k
 
-theorem ind_L_extensional_mem_implies
+@[blueprint "lem:ext_ind_L_extensional_mem_implies"]
+lemma ind_L_extensional_mem_implies
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : L_extensional_mem_implies (y3 := y3) (h := h)
@@ -1607,7 +1619,8 @@ theorem ind_L_extensional_mem_implies
         at hypc
       exact hypc
 
-theorem ind_L_extensional
+@[blueprint "lem:ext_ind_L_extensional"]
+lemma ind_L_extensional
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : L_extensional (y3 := y3) (h := h)
@@ -1619,7 +1632,8 @@ theorem ind_L_extensional
     · exact (ind_L_extensional_equiv_implies ihyp) d d'
     · exact (ind_L_extensional_mem_implies ihyp) d d'
 
-theorem ind_lift_code_equiv_emb
+@[blueprint "lem:ext_ind_lift_code_equiv_emb"]
+lemma ind_lift_code_equiv_emb
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : lift_code_equiv_emb (y3 := y3) (h := h)
@@ -1655,7 +1669,8 @@ theorem ind_lift_code_equiv_emb
         exact hypx
       exact i.mp j
 
-theorem ind_L_equiv_trans_lemma_outers_equal_lt_inner
+@[blueprint "lem:ext_ind_L_equiv_trans_lemma_outers_equal_lt_inner"]
+lemma ind_L_equiv_trans_lemma_outers_equal_lt_inner
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : L_equiv_trans_lemma_outers_equal_lt_inner (y3 := y3) (h := h)
@@ -1670,7 +1685,8 @@ theorem ind_L_equiv_trans_lemma_outers_equal_lt_inner
   := (code_equiv_is_Equivalence yb (L (h := h) yb)).trans equiv_ab equiv_bc
   exact ((ind_lift_code_equiv_emb ihyp) hyab codea codec).mpr i
 
-theorem ind_L_equiv_trans_lemma_center_right_equal_lt_left
+@[blueprint "lem:ext_ind_L_equiv_trans_lemma_center_right_equal_lt_left"]
+lemma ind_L_equiv_trans_lemma_center_right_equal_lt_left
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : L_equiv_trans_lemma_center_right_equal_lt_left (y3 := y3) (h := h)
@@ -1685,7 +1701,8 @@ theorem ind_L_equiv_trans_lemma_center_right_equal_lt_left
   := ((ind_lift_code_equiv_emb ihyp) hyab codeb codec).mp (equiv_bc)
   exact (code_equiv_is_Equivalence ya (L (h := h) ya)).trans equiv_ab equiv_bc_at_ya
 
-theorem ind_L_equiv_trans_lemma_center_lt_left_lt_right
+@[blueprint "lem:ext_ind_L_equiv_trans_lemma_center_lt_left_lt_right"]
+lemma ind_L_equiv_trans_lemma_center_lt_left_lt_right
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : L_equiv_trans_lemma_center_lt_left_lt_right (y3 := y3) (h := h)
@@ -1706,7 +1723,8 @@ theorem ind_L_equiv_trans_lemma_center_lt_left_lt_right
     exact (code_equiv_is_Equivalence yc (L (h := h) yc)).trans equiv_ab_lifted
       ((code_equiv_is_Equivalence yc (L (h := h) yc)).trans commuting_lift_codes equiv_bc)
 
-theorem ind_L_equiv_trans_lemma_left_lt_center_lt_right
+@[blueprint "lem:ext_ind_L_equiv_trans_lemma_left_lt_center_lt_right"]
+lemma ind_L_equiv_trans_lemma_left_lt_center_lt_right
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
   : L_equiv_trans_lemma_left_lt_center_lt_right (y3 := y3) (h := h)
@@ -1728,7 +1746,8 @@ theorem ind_L_equiv_trans_lemma_left_lt_center_lt_right
             ((code_equiv_is_Equivalence yc (L (h := h) yc)).symm commuting_lift_codes)
             ((code_equiv_is_Equivalence yc (L (h := h) yc)).trans equiv_ab_lifted equiv_bc)
 
-theorem ind_L_equiv_trans_lemma_left_lt_right_lt_center
+@[blueprint "lem:ext_ind_L_equiv_trans_lemma_left_lt_right_lt_center"]
+lemma ind_L_equiv_trans_lemma_left_lt_right_lt_center
     {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : L_equiv_trans_lemma_left_lt_right_lt_center (y3 := y3) (h := h)
@@ -1752,7 +1771,8 @@ theorem ind_L_equiv_trans_lemma_left_lt_right_lt_center
     exact ((ind_lift_code_equiv_emb ihyp) hybc
             (lift_code ya yc hyac codea) codec).mpr equiv_ac_factored
 
-theorem ind_sats_L_code_param_respects_equiv_param
+@[blueprint "lem:ext_ind_sats_L_code_param_respects_equiv_param"]
+lemma ind_sats_L_code_param_respects_equiv_param
   {y3 : α}
   (ihyp : ext_IH y3 (h := h))
 : sats_L_code_param_respects_equiv_param (y3 := y3) (h := h)
@@ -1806,7 +1826,8 @@ theorem ind_sats_L_code_param_respects_equiv_param
         exact M_eq_Equiv.refl (var_eval q_ass w (q_ass.hfree_var.2 hw))
     exact sats_respects_equiv StandardM φ p_ass q_ass p_q_ass_equiv hsats
 
-theorem ind_lift_code_mem_emb {y3 : α}
+@[blueprint "lem:ext_ind_lift_code_mem_emb"]
+lemma ind_lift_code_mem_emb {y3 : α}
     (ihyp : ext_IH y3 (h := h))
 : lift_code_mem_emb (y3 := y3) (h := h)
 :=
@@ -1871,6 +1892,7 @@ theorem L_ext_inductive_step (y : α) (ihyp : ext_IH y (h := h))
     lift_code_equiv_emb := ind_lift_code_equiv_emb (y3 := y) (h := h) ihyp
     lift_code_mem_emb := ind_lift_code_mem_emb (y3 := y) (h := h) ihyp}
 
+@[blueprint "thm:extensionality_induction"]
 theorem L_ext_properties (y : α) : L_ext_inductive_properties y (h:=h)
 := WellFounded.fix h.wf L_ext_inductive_step y
 

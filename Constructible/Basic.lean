@@ -5,6 +5,7 @@ Authors: Farmer Schlutzenberg, https://sites.google.com/site/schlutzenberg
 -/
 import Mathlib.Order.RelClasses
 import Mathlib.SetTheory.Ordinal.Basic
+import Architect
 
 --set_option linter.unusedVariables false
 --set_option linter.unusedSectionVars false
@@ -52,7 +53,8 @@ variable (α : Type u)
   (`ext_equiv`) if each is a subset of the other: `s ⊆ t ∧ t ⊆ s`. -/
 def ext_equiv (s t : List α) : Prop := s ⊆ t ∧ t ⊆ s
 
-/-- Theorem: `ext_equiv` is an equivalence relation (satisfies `Equivalence`). -/
+/-- ext_equiv_is_Equivalence
+Theorem: `ext_equiv` is an equivalence relation (satisfies `Equivalence`). -/
 theorem ext_equiv_is_Equivalence : Equivalence (ext_equiv (α:=α)) where
   -- Must prove `∀ (s:List α) : ext_equiv s s`
   refl (s : List α) := ⟨List.Subset.refl s, List.Subset.refl s⟩
