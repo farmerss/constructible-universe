@@ -7,8 +7,9 @@ import Mathlib.Order.RelClasses
 import Mathlib.SetTheory.Ordinal.Basic
 import Architect
 
---set_option linter.unusedVariables false
---set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
+set_option linter.unusedSectionVars false
+set_option linter.missingDocs false
 
 --set_option pp.coercions true
 

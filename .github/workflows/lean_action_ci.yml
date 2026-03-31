@@ -20,4 +20,6 @@ jobs:
       - uses: leanprover/lean-action@v1
         with:
           lint: false
+      - name: Run Manual Linter
+        run: lake env runLinter Constructible || true
       - uses: leanprover-community/docgen-action@v1

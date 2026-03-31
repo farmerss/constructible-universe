@@ -6,6 +6,7 @@ Authors: Farmer Schlutzenberg, https://sites.google.com/site/schlutzenberg
 import Constructible.Basic
 
 set_option linter.unusedVariables false
+set_option linter.missingDocs false
 
 #print var_eval
 #check sats_respects_equiv
@@ -1807,7 +1808,7 @@ theorem L_equiv_trans_lemma_center_right_equal_gt_left
   exact (code_equiv_is_Equivalence yb (L (h:=h) yb)).trans equiv_ab equiv_bc
 
 end LL
-#print LL.L_code
+
 /-
 def next_var (v : var) : var
 :=

@@ -6,6 +6,7 @@ Authors: Farmer Schlutzenberg, https://sites.google.com/site/schlutzenberg
 import Constructible.LHierarchy
 
 set_option linter.unusedVariables false
+set_option linter.missingDocs false
 
 universe u u'
 
@@ -13,6 +14,9 @@ namespace LL
 
 variable {α : Type u} {r : α → α → Prop} {h : IsWellOrder α r}
 
+/-- If codes `codec,coded` for elements of $L_γ$, at ranks `yc < yd`,
+are such that $L_γ⊧$ `codec ≃ coded`, then the lift-code of
+`codedc` to level `yd` is `code_equiv` to `coded`. -/
 lemma lift_first_code_with_equiv
   {y3 : α}
   (yc yd : α)

@@ -2,7 +2,7 @@ name = "Constructible"
 version = "0.1.0"
 keywords = ["math"]
 defaultTargets = ["Constructible"]
-lintDriver = "Batteries.Linter.lint"
+lintDriver = "batteries/runLinter"
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -34,6 +34,7 @@ rev = "main"
 [[lean_lib]]
 name = "Constructible"
 roots = ["Constructible"]
+moreLeanArgs = ["-Dlinter.missingDocs=false", "-Dlinter.unusedVariables=false"]
 
 [[require]]
 name = "mathlib"
