@@ -5,9 +5,6 @@ Authors: Farmer Schlutzenberg, https://sites.google.com/site/schlutzenberg
 -/
 import Constructible.LHierarchy
 
-set_option linter.unusedVariables false
-set_option linter.missingDocs false
-
 universe u u'
 
 namespace LL
@@ -52,6 +49,7 @@ lemma lift_first_code_with_equiv
       subst h'
       exact (h.wf.irrefl.irrefl yc hc).elim
 
+/-- Stub -/
 lemma lift_first_code_mem_iff
   {y3 : α}
   (yc yd : α)
@@ -95,6 +93,7 @@ lemma lift_first_code_mem_iff
     apply Or.inl
     use hc
 
+/-- Stub -/
 lemma lift_first_code_equiv_iff
   {y3 : α}
   (yc yd : α)
@@ -138,6 +137,7 @@ lemma lift_first_code_equiv_iff
     apply Or.inl
     use hc
 
+/-- Stub -/
 lemma lift_second_code_mem_iff
   {y3 : α}
   (yc yd : α)
@@ -182,6 +182,7 @@ lemma lift_second_code_mem_iff
     apply Or.inl
     use hc
 
+/-- Stub -/
 lemma lift_second_code_equiv_iff
   {y3 : α}
   (yc yd : α)
@@ -235,6 +236,7 @@ lemma lift_second_code_equiv_iff
 
 --The first few facts will be proved at level y3 directly from the induction hypothesis,
 --without using any of the other facts we will prove at level y3.
+/-- Stub -/
 def lift_code_commutes {y3 : α} : Prop := ∀
   (y2 y1:α)
   (h23 : r y2 y3)
@@ -246,38 +248,42 @@ def lift_code_commutes {y3 : α} : Prop := ∀
       (lift_code y1 y3 h13 code)
       (lift_code y2 y3 h23 (lift_code y1 y2 h12 code))
 
+/-- Stub -/
 def lift_codes_with_mem
-  {y3 : α} : Prop := ∀
+  {y3 : α}
+  : Prop := ∀
   (yc yd z : α)
-  (jz : r z y3)
+  (_jz : r z y3)
   (jc : r yc y3)
   (jd : r yd y3)
   (hc : r yc z)
   (hd : r yd z)
   (codec : L_code yc)
   (coded : L_code yd)
-  (hcd : (L (h := h) y3).mem (L_code_below.boundcode yc jc codec)
+  (_hcd : (L (h := h) y3).mem (L_code_below.boundcode yc jc codec)
                              (L_code_below.boundcode yd jd coded))
   , code_mem (L (h := h) z) (lift_code yc z hc codec) (lift_code yd z hd coded)
 
+/-- Stub -/
 def lift_codes_with_equiv
   {y3 : α} : Prop := ∀
   (yc yd z : α)
-  (jz : r z y3)
+  (_jz : r z y3)
   (jc : r yc y3)
   (jd : r yd y3)
   (hc : r yc z)
   (hd : r yd z)
   (codec : L_code yc)
   (coded : L_code yd)
-  (hcd : (L (h := h) y3).equiv (L_code_below.boundcode yc jc codec)
+  (_hcd : (L (h := h) y3).equiv (L_code_below.boundcode yc jc codec)
                                (L_code_below.boundcode yd jd coded))
   , code_equiv (L (h := h) z) (lift_code yc z hc codec) (lift_code yd z hd coded)
 
+/-- Stub -/
 def lift_codes_mem_iff
   {y3 : α} : Prop := ∀
   (yc yd z : α)
-  (jz : r z y3)
+  (_jz : r z y3)
   (jc : r yc y3)
   (jd : r yd y3)
   (hc : r yc z)
@@ -288,6 +294,7 @@ def lift_codes_mem_iff
                                (L_code_below.boundcode yd jd coded)
 ↔ code_mem (L (h := h) z) (lift_code yc z hc codec) (lift_code yd z hd coded)
 
+/-- Stub -/
 def L_seg_equiv_is_Equivalence
     {y3 : α} : Prop :=
     Equivalence (L (h := h) y3).equiv
@@ -314,9 +321,9 @@ to `z`. -/
 def L_seg_mem_respects_equiv
   {y3 : α} : Prop := ∀
   (c c' d d' : L_univ y3)
-  (hcc' : (L (h := h) y3).equiv c c')
-  (hdd' : (L (h := h) y3).equiv d d')
-  (hcd : (L (h := h) y3).mem c d)
+  (_hcc' : (L (h := h) y3).equiv c c')
+  (_hdd' : (L (h := h) y3).equiv d d')
+  (_hcd : (L (h := h) y3).mem c d)
   , (L (h := h) y3).mem c' d'
 
 /-- One quarter of extensionality. Note that it only does → in the implication between the
@@ -334,6 +341,7 @@ def L_extensional_equiv_implies
   , (L (h := h) y3).equiv d d'
     → ∀ (x : L_univ y3), ((L (h := h) y3).mem x d ↔ (L (h := h) y3).mem x d')
 
+/-- Stub -/
 def code_equiv_iff
   {y3 : α} : Prop := ∀
   (y:α)
@@ -344,12 +352,14 @@ def code_equiv_iff
         (  code_mem (L (h := h) y) (lift_code x y jx codex) c
          ↔ code_mem (L (h := h) y) (lift_code x y jx codex) c')
 
+/-- Stub -/
 def L_extensional_mem_implies
   {y3 : α} : Prop
 := ∀ (d d' : L_univ y3),
     (∀ (c : L_univ y3),
       ((L (h := h) y3).mem c d ↔ (L (h := h) y3).mem c d')) → (L (h := h) y3).equiv d d'
 
+/-- Stub -/
 def L_extensional
   {y3 : α} : Prop
 := ∀ (d d' : L_univ (r := r) y3),
@@ -357,6 +367,7 @@ def L_extensional
       ↔ (∀ (x : L_univ (r := r) y3),
           (((L (r := r) (h := h) y3).mem x d) ↔ ((L (r := r) (h := h) y3).mem x d')))
 
+/-- Stub -/
 def lift_code_equiv_emb {y3 : α} : Prop := ∀
   {y1:α}
   (h13 : r y1 y3)
@@ -366,105 +377,112 @@ def lift_code_equiv_emb {y3 : α} : Prop := ∀
       (lift_code y1 y3 h13 code1)
       (lift_code y1 y3 h13 code2))
 
+/-- Stub -/
 def L_equiv_trans_lemma_outers_equal_lt_inner
     {y3 : α}
 : Prop
 :=  ∀ (ya : α)
-    (hya : r ya y3)
+    (_hya : r ya y3)
     (codea : L_code ya)
     (yb : α)
-    (hyb : yb = y3)
+    (_hyb : yb = y3)
     (codeb : L_code yb)
     (yc : α)
-    (hyc : r yc y3)
+    (_hyc : r yc y3)
     (codec : L_code yc)
     (hyab : r ya yb)
     (hybc : r yc yb)
     (hyac : ya = yc)
-    (equiv_ab : code_equiv (L (h := h) yb) (lift_code ya yb hyab codea) codeb)
-    (equiv_bc : code_equiv (L (h := h) yb) codeb (lift_code yc yb hybc codec))
+    (_equiv_ab : code_equiv (L (h := h) yb) (lift_code ya yb hyab codea) codeb)
+    (_equiv_bc : code_equiv (L (h := h) yb) codeb (lift_code yc yb hybc codec))
   , code_equiv (L (h := h) ya) codea (hyac ▸ codec)
 
+/-- Stub -/
 def L_equiv_trans_lemma_center_right_equal_lt_left
     {y3 : α} : Prop :=
   ∀ (ya : α)
-    (hya : ya = y3)
+    (_hya : ya = y3)
     (codea : L_code ya)
     (yb : α)
-    (hyb : r yb y3)
+    (_hyb : r yb y3)
     (codeb : L_code yb)
     (yc : α)
-    (hyc : r yc y3)
+    (_hyc : r yc y3)
     (codec : L_code yc)
     (hyab : r yb ya)
     (hybc : yb = yc)
     (hyac : r yc ya)
-    (equiv_ab : code_equiv (L (h := h) ya) codea (lift_code yb ya hyab codeb))
-    (equiv_bc : code_equiv (L (h := h) yb) codeb (hybc ▸ codec))
+    (_equiv_ab : code_equiv (L (h := h) ya) codea (lift_code yb ya hyab codeb))
+    (_equiv_bc : code_equiv (L (h := h) yb) codeb (hybc ▸ codec))
   , code_equiv (L (h := h) ya) codea (lift_code yc ya hyac codec)
 
+/-- Stub -/
 def L_equiv_trans_lemma_center_lt_left_lt_right
     {y3 : α} : Prop :=
   ∀ (ya : α)
-    (hya : r ya y3)
+    (_hya : r ya y3)
     (codea : L_code ya)
     (yb : α)
-    (hyb : r yb y3)
+    (_hyb : r yb y3)
     (codeb : L_code yb)
     (yc : α)
-    (hyc : yc = y3)
+    (_hyc : yc = y3)
     (codec : L_code yc)
     (hyab : r yb ya)
     (hybc : r yb yc)
     (hyac : r ya yc)
-    (equiv_ab : code_equiv (L (h := h) ya) codea (lift_code yb ya hyab codeb))
-    (equiv_bc : code_equiv (L (h := h) yc) (lift_code yb yc hybc codeb) codec)
+    (_equiv_ab : code_equiv (L (h := h) ya) codea (lift_code yb ya hyab codeb))
+    (_equiv_bc : code_equiv (L (h := h) yc) (lift_code yb yc hybc codeb) codec)
   , code_equiv (L (h := h) yc) (lift_code ya yc hyac codea) codec
 
+/-- Stub -/
 def L_equiv_trans_lemma_left_lt_center_lt_right
     {y3 : α} : Prop :=
   ∀ (ya : α)
-    (hya : r ya y3)
+    (_hya : r ya y3)
     (codea : L_code ya)
     (yb : α)
-    (hyb : r yb y3)
+    (_hyb : r yb y3)
     (codeb : L_code yb)
     (yc : α)
-    (hyc : yc = y3)
+    (_hyc : yc = y3)
     (codec : L_code yc)
     (hyab : r ya yb)
     (hybc : r yb yc)
     (hyac : r ya yc)
-    (equiv_ab : code_equiv (L (h := h) yb) (lift_code ya yb hyab codea) codeb)
-    (equiv_bc : code_equiv (L (h := h) yc) (lift_code yb yc hybc codeb) codec)
+    (_equiv_ab : code_equiv (L (h := h) yb) (lift_code ya yb hyab codea) codeb)
+    (_equiv_bc : code_equiv (L (h := h) yc) (lift_code yb yc hybc codeb) codec)
   , code_equiv (L (h := h) yc) (lift_code ya yc hyac codea) codec
 
+/-- Stub -/
 def L_equiv_trans_lemma_left_lt_right_lt_center
     {y3 : α} : Prop :=
   ∀ (ya : α)
-    (hya : r ya y3)
+    (_hya : r ya y3)
     (codea : L_code ya)
     (yb : α)
-    (hyb : yb = y3)
-    (codeb : L_code yb)
+    (_hyb : yb = y3)
+    (codeb : L_code (r:=r) yb)
     (yc : α)
-    (hyc : r yc y3)
+    (_hyc : r yc y3)
     (codec : L_code yc)
     (hyab : r ya yb)
     (hybc : r yc yb)
     (hyac : r ya yc)
-    (equiv_ab : code_equiv (L (h := h) yb) (lift_code ya yb hyab codea) codeb)
-    (equiv_bc : code_equiv (L (h := h) yb) codeb (lift_code yc yb hybc codec))
+    (_equiv_ab : code_equiv (L (h := h) yb) (lift_code ya yb hyab codea) codeb)
+    (_equiv_bc : code_equiv (L (h := h) yb) codeb (lift_code yc yb hybc codec))
   , code_equiv (L (h := h) yc) (lift_code ya yc hyac codea) codec
 
+/-- Stub -/
 def sats_L_code_param_respects_equiv_param
   {y3 : α} : Prop := ∀
   (c : L_code (r:=r) y3)
   {p q : L_univ (r:=r) y3}
-  (hpq : (L (r:=r) (h := h) y3).equiv p q)
-  (hsats : sats_L_code_param (L (r:=r) (h := h) y3) c p)
+  (_hpq : (L (r:=r) (h := h) y3).equiv p q)
+  (_hsats : sats_L_code_param (L (r:=r) (h := h) y3) c p)
   , sats_L_code_param (L (r:=r) (h := h) y3) c q
 
+/-- Stub -/
 def lift_code_mem_emb {y3 : α} : Prop := ∀
   (y1:α)
   (h13 : r y1 y3)
@@ -477,6 +495,7 @@ def lift_code_mem_emb {y3 : α} : Prop := ∀
 --Our inductive hypothesis at y3 is that the assertions stated above hold at all y < y3 (that is,
 --with the parameter y3 above replaced by y).
 
+/-- Stub -/
 @[blueprint "dfn:ext_L_ext_inductive_properties"]
 structure L_ext_inductive_properties (y : α) : Prop  where
   L_equiv_trans_lemma_outers_equal_lt_inner :
@@ -504,12 +523,15 @@ structure L_ext_inductive_properties (y : α) : Prop  where
   lift_code_equiv_emb : lift_code_equiv_emb (y3 := y) (h := h)
   lift_code_mem_emb : lift_code_mem_emb (y3 := y) (h := h)
 
+/-- Stub -/
 @[blueprint "dfn:ext_ext_IH"]
 def ext_IH (y : α) : Prop :=
-  ∀ {z : α} (rankhyp : r z y), L_ext_inductive_properties z (h:=h)
+  ∀ {z : α} (_rankhyp : r z y), L_ext_inductive_properties z (h:=h)
 
 --
 --Proofs begin
+
+/-- Stub -/
 @[blueprint "lem:ext_ind_lift_code_commutes"]
 lemma ind_lift_code_commutes
     {y3 : α}
@@ -621,7 +643,7 @@ lemma ind_lift_code_commutes
           : code_mem (L y2) (lift_code yx y2 (IsStrictOrder.toIsTrans.trans yx y1 y2 hx1 h12) codex)
               (lift_code y1 y2 h12 code)
           :=  (L_recursion_trichotomy_mem_first_lt_second
-                y3 yx hx codex y2 h23 (lift_code y1 y2 h12 code)
+                yx codex y2 (lift_code y1 y2 h12 code)
                 (IsStrictOrder.toIsTrans.trans yx y1 y2 hx1 h12)
               ).mp hyp
           have lifts_equiv
@@ -648,7 +670,7 @@ lemma ind_lift_code_commutes
           use (Eq.refl yx)
           have hyp_case : code_mem (L y2) (lift_code yx y2 h12 codex) (lift_code yx y2 h12 code)
           :=
-            (L_recursion_trichotomy_mem_first_lt_second y3 yx hx codex y2 h23
+            (L_recursion_trichotomy_mem_first_lt_second yx codex y2
               (lift_code yx y2 h12 code) h12).mp hyp
           exact ((ihyp h23).lift_code_mem_emb yx h12 codex code).mpr hyp_case
         | inr hx1 => --Case y1 < yx
@@ -699,6 +721,7 @@ lemma ind_lift_code_commutes
               dsimp at hyp'
               exact hyp'
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_lift_codes_with_mem"]
 lemma ind_lift_codes_with_mem
     {y3 : α}
@@ -749,6 +772,7 @@ lemma ind_lift_codes_with_mem
       dsimp at hcd
       exact ((ihyp jz).lift_code_mem_emb yc hc codec coded).mp hcd
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_lift_codes_with_equiv"]
 lemma ind_lift_codes_with_equiv
     {y3 : α}
@@ -794,6 +818,7 @@ lemma ind_lift_codes_with_equiv
       dsimp at hcd
       exact ((ihyp jz).lift_code_equiv_emb hc codec coded).mp hcd
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_lift_codes_mem_iff"]
 lemma ind_lift_codes_mem_iff
     {y3 : α}
@@ -885,6 +910,7 @@ lemma ind_lift_codes_mem_iff
           ).mp hcd
       exact ((ihyp jz).lift_code_mem_emb yc hc codec (lift_code yd yc jcd coded)).mpr this
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_L_seg_equiv_is_Equivalence"]
 lemma ind_L_seg_equiv_is_Equivalence
     {y3 : α}
@@ -1012,7 +1038,7 @@ lemma ind_L_seg_equiv_is_Equivalence
                   apply Or.inl
                   use h'
                   exact L_equiv_trans_lemma_center_right_equal_gt_left
-                          ya hya codea yb hyb codeb yb hyb codec h' (Eq.refl yb) h' hypab hypbc
+                          ya codea yb codeb yb hyb codec h' (Eq.refl yb) h' hypab hypbc
         | inr  hypab =>
           cases hypab with
           | inl hypab =>
@@ -1038,7 +1064,7 @@ lemma ind_L_seg_equiv_is_Equivalence
                       apply Or.inr
                       use (Eq.refl ya)
                       exact L_equiv_trans_lemma_outers_equal_gt_inner
-                              ya hya codea yb hyb codeb ya hyc codec h' h'' (Eq.refl ya) hypab hypbc
+                              ya codea yb codeb ya hyc codec h' h'' (Eq.refl ya) hypab hypbc
                     | inr h''' => -- yb < yc < ya
                       apply Or.inl
                       use h'''
@@ -1106,7 +1132,7 @@ lemma ind_L_seg_equiv_is_Equivalence
                     exact
                       (code_equiv_is_Equivalence ya (L (h := h) ya)).symm
                         (L_equiv_trans_lemma_center_right_equal_gt_left
-                         yc hyc codec ya hyb codeb ya hya codea h' (Eq.refl ya) h'
+                         yc codec ya codeb ya hya codea h' (Eq.refl ya) h'
                           ((code_equiv_is_Equivalence ya (L (h := h) ya)).symm hypbc)
                           ((code_equiv_is_Equivalence ya (L (h := h) ya)).symm hypab))
                 | inr hypbc =>
@@ -1120,7 +1146,7 @@ lemma ind_L_seg_equiv_is_Equivalence
                     use (Eq.refl ya)
                     dsimp
                     exact L_equiv_trans_lemma_all_equal
-                            ya hya codea ya hyb codeb ya hyc codec
+                            ya codea ya codeb ya hyc codec
                             (Eq.refl ya) (Eq.refl ya) (Eq.refl ya) hypab hypbc
 }
 
@@ -1156,13 +1182,13 @@ lemma ind_L_seg_mem_respects_equiv
       L_code_below.boundcode yd' yd'_LT coded' =>
     rcases upper_bound_of_4 (r:=r) (h := h) yc_LT yc'_LT yd_LT yd'_LT with ⟨z, jz, jc, jc', jd, jd'⟩
     cases jc with
-    | inl jc =>
+    | inr jc =>
       cases jc' with
-      | inl jc' =>
+      | inr jc' =>
         cases jd with
-        | inl jd =>
+        | inr jd =>
           cases jd' with
-          | inl jd' =>
+          | inr jd' =>
             --all < z (actually this case could have been eliminated by showing that we could
             --take z to be the max of c, c', d, d', but it's not difficult to handle it directly)
             let func := (ind_lift_codes_with_mem ihyp (h := h))
@@ -1174,7 +1200,7 @@ lemma ind_L_seg_mem_respects_equiv
             let func := (ind_lift_codes_mem_iff ihyp (h := h))
             step5_lt_lt hc'd'_y3 h y3 yc' yd' z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z func
             exact hc'd'_y3
-          | inr jd' =>
+          | inl jd' =>
             --yc, yc', yd < yd' = z
             have jd'_symm : z = yd' := jd'.symm
             subst jd'_symm
@@ -1182,115 +1208,115 @@ lemma ind_L_seg_mem_respects_equiv
             step1_lt_lt hcd_z h yc yd z yc_LT yd_LT jz jc jd codec coded hcd func
             let func := (ind_lift_codes_with_equiv ihyp (h := h))
             step2_lt_lt hcc'_z h yc yc' z yc_LT yc'_LT jz jc jc' codec codec' hcc' func
-            step2_lt_eq hdd'_z h yd z z yd_LT yd'_LT jz jd jd' coded coded' hdd'
+            step2_lt_eq hdd'_z h yd z yd_LT yd'_LT jd coded coded' hdd'
               lift_first_code_equiv_iff
-            step4_lt_eq hc'd'_z h yc' yd' z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
-            step5_lt_eq hc'd'_y3 h y3 yc' z z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z
+            step4_lt_eq hc'd'_z h yc' z jc' codec' coded' hcc'_z hdd'_z hcd_z
+            step5_lt_eq hc'd'_y3 h y3 yc' z z yc'_LT yd'_LT jc' codec' coded' hc'd'_z
               lift_first_code_mem_iff
             exact hc'd'_y3
-        | inr jd =>
+        | inl jd =>
           cases jd' with
-          | inl jd' =>
+          | inr jd' =>
             --yc, yc', yd' < yd = z
             have jd_symm : z = yd := jd.symm
             subst jd_symm
-            step1_lt_eq hcd_z h yc z z yc_LT yd_LT jz jc jd codec coded hcd lift_first_code_mem_iff
+            step1_lt_eq hcd_z h yc z yc_LT jz jc codec coded hcd lift_first_code_mem_iff
             let func := (ind_lift_codes_with_equiv ihyp (h := h))
             step2_lt_lt hcc'_z h yc yc' z yc_LT yc'_LT jz jc jc' codec codec' hcc' func
-            step2_eq_lt hdd'_z h z yd' z yd_LT yd'_LT jz jd jd' coded coded' hdd'
+            step2_eq_lt hdd'_z h yd' z yd_LT yd'_LT jd' coded coded' hdd'
               lift_second_code_equiv_iff
             step4_lt_lt hc'd'_z h yc' yd' z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
             let func := (ind_lift_codes_mem_iff ihyp (h := h))
             step5_lt_lt hc'd'_y3 h y3 yc' yd' z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z func
             exact hc'd'_y3
-          | inr jd' =>
+          | inl jd' =>
             --yc, yc' < yd = yd' = z
             have jd_symm : z = yd := jd.symm
             have jd'_symm : z = yd' := jd'.symm
             subst jd_symm jd'_symm
-            step1_lt_eq hcd_z h yc z z yc_LT yd_LT jz jc jd codec coded hcd lift_first_code_mem_iff
+            step1_lt_eq hcd_z h yc z yc_LT jz jc codec coded hcd lift_first_code_mem_iff
             let func := (ind_lift_codes_with_equiv ihyp (h := h))
             step2_lt_lt hcc'_z h yc yc' z yc_LT yc'_LT jz jc jc' codec codec' hcc' func
-            step2_eq_eq hdd'_z h z z z yd_LT yd'_LT jz jd jd' coded coded' hdd'
-            step4_lt_eq hc'd'_z h yc' z z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
-            step5_lt_eq hc'd'_y3 h y3 yc' z z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z
+            step2_eq_eq hdd'_z h z jz coded coded' hdd'
+            step4_lt_eq hc'd'_z h yc' z jc' codec' coded' hcc'_z hdd'_z hcd_z
+            step5_lt_eq hc'd'_y3 h y3 yc' z z yc'_LT yd'_LT jc' codec' coded' hc'd'_z
               lift_first_code_mem_iff
             exact hc'd'_y3
-      | inr jc' =>
+      | inl jc' =>
         cases jd with
-        | inl jd =>
+        | inr jd =>
           cases jd' with
-          | inl jd' =>
+          | inr jd' =>
             --yc, yd, yd' < yc' = z
             have jc'_symm : z = yc' := jc'.symm
             subst jc'_symm
             let func := (ind_lift_codes_with_mem ihyp (h := h))
             step1_lt_lt hcd_z h yc yd z yc_LT yd_LT jz jc jd codec coded hcd func
-            step2_lt_eq hcc'_z h yc z z yc_LT yc'_LT jz jc jc' codec codec' hcc'
+            step2_lt_eq hcc'_z h yc z yc_LT yc'_LT jc codec codec' hcc'
               lift_first_code_equiv_iff
             let func := (ind_lift_codes_with_equiv ihyp (h := h))
             step2_lt_lt hdd'_z h yd yd' z yd_LT yd'_LT jz jd jd' coded coded' hdd' func
-            step4_eq_lt hc'd'_z h z yd' z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
-            step5_eq_lt  hc'd'_y3 h y3 z yd' z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z
+            step4_eq_lt hc'd'_z h yd' z jd' codec' coded' hcc'_z hdd'_z hcd_z
+            step5_eq_lt  hc'd'_y3 h y3 z yd' z yc'_LT yd'_LT jd' codec' coded' hc'd'_z
               lift_second_code_mem_iff
             exact hc'd'_y3
-          | inr jd' =>
+          | inl jd' =>
             --yc, yd < yc' = yd' = z
             have jc'_symm : z = yc' := jc'.symm
             have jd'_symm : z = yd' := jd'.symm
             subst jc'_symm jd'_symm
             let func := (ind_lift_codes_with_mem ihyp (h := h))
             step1_lt_lt hcd_z h yc yd z yc_LT yd_LT jz jc jd codec coded hcd func
-            step2_lt_eq hcc'_z h yc z z yc_LT yc'_LT jz jc jc' codec codec' hcc'
+            step2_lt_eq hcc'_z h yc z yc_LT yc'_LT jc codec codec' hcc'
               lift_first_code_equiv_iff
-            step2_lt_eq hdd'_z h yd z z yd_LT yd'_LT jz jd jd' coded coded' hdd'
+            step2_lt_eq hdd'_z h yd z yd_LT yd'_LT jd coded coded' hdd'
               lift_first_code_equiv_iff
-            step4_eq_eq hc'd'_z h z z z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
-            step5_eq_eq hc'd'_y3 h y3 z z z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z
+            step4_eq_eq hc'd'_z h z codec' coded' hcc'_z hdd'_z hcd_z
+            step5_eq_eq hc'd'_y3 h y3 z z z yc'_LT yd'_LT jz codec' coded' hc'd'_z
             exact hc'd'_y3
-        | inr jd =>
+        | inl jd =>
           cases jd' with
-          | inl jd' =>
+          | inr jd' =>
             --yc, yd' < yd = yc' = z
             have jc'_symm : z = yc' := jc'.symm
             have jd_symm : z = yd := jd.symm
             subst jc'_symm jd_symm
-            step1_lt_eq hcd_z h yc z z yc_LT yd_LT jz jc jd codec coded hcd
+            step1_lt_eq hcd_z h yc z yc_LT jz jc codec coded hcd
               lift_first_code_mem_iff
-            step2_lt_eq hcc'_z h yc z z yc_LT yc'_LT jz jc jc' codec codec' hcc'
+            step2_lt_eq hcc'_z h yc z yc_LT yc'_LT jc codec codec' hcc'
               lift_first_code_equiv_iff
-            step2_eq_lt hdd'_z h z yd' z yd_LT yd'_LT jz jd jd' coded coded' hdd'
+            step2_eq_lt hdd'_z h yd' z yd_LT yd'_LT jd' coded coded' hdd'
               lift_second_code_equiv_iff
-            step4_eq_lt hc'd'_z h z yd' z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
-            step5_eq_lt  hc'd'_y3 h y3 z yd' z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z
+            step4_eq_lt hc'd'_z h yd' z jd' codec' coded' hcc'_z hdd'_z hcd_z
+            step5_eq_lt  hc'd'_y3 h y3 z yd' z yc'_LT yd'_LT jd' codec' coded' hc'd'_z
               lift_second_code_mem_iff
             exact hc'd'_y3
-          | inr jd' =>
+          | inl jd' =>
             --yc < yd = yc' = yd' = z
             have jc'_symm : z = yc' := jc'.symm
             have jd_symm : z = yd := jd.symm
             have jd'_symm : z = yd' := jd'.symm
             subst jc'_symm jd_symm jd'_symm
-            step1_lt_eq hcd_z h yc z z yc_LT yd_LT jz jc jd codec coded hcd
+            step1_lt_eq hcd_z h yc z yc_LT jz jc codec coded hcd
               lift_first_code_mem_iff
-            step2_lt_eq hcc'_z h yc z z yc_LT yc'_LT jz jc jc' codec codec' hcc'
+            step2_lt_eq hcc'_z h yc z yc_LT yc'_LT jc codec codec' hcc'
               lift_first_code_equiv_iff
-            step2_eq_eq hdd'_z h z z z yd_LT yd'_LT jz jd jd' coded coded' hdd'
-            step4_eq_eq hc'd'_z h z z z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
-            step5_eq_eq hc'd'_y3 h y3 z z z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z
+            step2_eq_eq hdd'_z h z jz coded coded' hdd'
+            step4_eq_eq hc'd'_z h z codec' coded' hcc'_z hdd'_z hcd_z
+            step5_eq_eq hc'd'_y3 h y3 z z z yc'_LT yd'_LT jz codec' coded' hc'd'_z
             exact hc'd'_y3
-    | inr jc =>
+    | inl jc =>
       cases jc' with
-      | inl jc' =>
+      | inr jc' =>
         cases jd with
-        | inl jd =>
+        | inr jd =>
           cases jd' with
-          | inl jd' =>
+          | inr jd' =>
             --yc', yd, yd' < yc = z
             have jc_symm : z = yc := jc.symm
             subst jc_symm
-            step1_eq_lt hcd_z h z yd z yc_LT yd_LT jz jc jd codec coded hcd lift_second_code_mem_iff
-            step2_eq_lt hcc'_z h z yc' z yc_LT yc'_LT jz jc jc' codec codec' hcc'
+            step1_eq_lt hcd_z h yd z yd_LT jz jd codec coded hcd lift_second_code_mem_iff
+            step2_eq_lt hcc'_z h yc' z yc_LT yc'_LT jc' codec codec' hcc'
               lift_second_code_equiv_iff
             let func := (ind_lift_codes_with_equiv ihyp (h := h))
             step2_lt_lt hdd'_z h yd yd' z yd_LT yd'_LT jz jd jd' coded coded' hdd' func
@@ -1298,108 +1324,108 @@ lemma ind_L_seg_mem_respects_equiv
             let func := (ind_lift_codes_mem_iff ihyp (h := h))
             step5_lt_lt hc'd'_y3 h y3 yc' yd' z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z func
             exact hc'd'_y3
-          | inr jd' =>
+          | inl jd' =>
             --yc', yd < yc = yd' = z
             have jc_symm : z = yc := jc.symm
             have jd'_symm : z = yd' := jd'.symm
             subst jc_symm jd'_symm
-            step1_eq_lt hcd_z h z yd z yc_LT yd_LT jz jc jd codec coded hcd lift_second_code_mem_iff
-            step2_eq_lt hcc'_z h z yc' z yc_LT yc'_LT jz jc jc' codec codec' hcc'
+            step1_eq_lt hcd_z h yd z yd_LT jz jd codec coded hcd lift_second_code_mem_iff
+            step2_eq_lt hcc'_z h yc' z yc_LT yc'_LT jc' codec codec' hcc'
               lift_second_code_equiv_iff
-            step2_lt_eq hdd'_z h yd z z yd_LT yd'_LT jz jd jd' coded coded' hdd'
+            step2_lt_eq hdd'_z h yd z yd_LT yd'_LT jd coded coded' hdd'
               lift_first_code_equiv_iff
-            step4_lt_eq hc'd'_z h yc' yd' z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
-            step5_lt_eq hc'd'_y3 h y3 yc' z z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z
+            step4_lt_eq hc'd'_z h yc' z jc' codec' coded' hcc'_z hdd'_z hcd_z
+            step5_lt_eq hc'd'_y3 h y3 yc' z z yc'_LT yd'_LT jc' codec' coded' hc'd'_z
               lift_first_code_mem_iff
             exact hc'd'_y3
-        | inr jd =>
+        | inl jd =>
           cases jd' with
-          | inl jd' =>
+          | inr jd' =>
             --yc', yd' < yc = yd = z
             have jc_symm : z = yc := jc.symm
             have jd_symm : z = yd := jd.symm
             subst jc_symm jd_symm
-            step1_eq_eq hcd_z h z z z yc_LT yd_LT jz jc jd codec coded hcd
-            step2_eq_lt hcc'_z h z yc' z yc_LT yc'_LT jz jc jc' codec codec' hcc'
+            step1_eq_eq hcd_z h z jz codec coded hcd
+            step2_eq_lt hcc'_z h yc' z yc_LT yc'_LT jc' codec codec' hcc'
               lift_second_code_equiv_iff
-            step2_eq_lt hdd'_z h z yd' z yd_LT yd'_LT jz jd jd' coded coded' hdd'
+            step2_eq_lt hdd'_z h yd' z yd_LT yd'_LT jd' coded coded' hdd'
               lift_second_code_equiv_iff
             step4_lt_lt hc'd'_z h yc' yd' z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
             let func := (ind_lift_codes_mem_iff ihyp (h := h))
             step5_lt_lt hc'd'_y3 h y3 yc' yd' z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z func
             exact hc'd'_y3
-          | inr jd' =>
+          | inl jd' =>
             --yc' < yc = yd = yd' = z
             have jc_symm : z = yc := jc.symm
             have jd_symm : z = yd := jd.symm
             have jd'_symm : z = yd' := jd'.symm
             subst jc_symm jd_symm jd'_symm
-            step1_eq_eq hcd_z h z z z yc_LT yd_LT jz jc jd codec coded hcd
-            step2_eq_lt hcc'_z h z yc' z yc_LT yc'_LT jz jc jc' codec codec' hcc'
+            step1_eq_eq hcd_z h z jz codec coded hcd
+            step2_eq_lt hcc'_z h yc' z yc_LT yc'_LT jc' codec codec' hcc'
               lift_second_code_equiv_iff
-            step2_eq_eq hdd'_z h z z z yd_LT yd'_LT jz jd jd' coded coded' hdd'
-            step4_lt_eq hc'd'_z h yc' z z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
-            step5_lt_eq hc'd'_y3 h y3 yc' z z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z
+            step2_eq_eq hdd'_z h z jz coded coded' hdd'
+            step4_lt_eq hc'd'_z h yc' z jc' codec' coded' hcc'_z hdd'_z hcd_z
+            step5_lt_eq hc'd'_y3 h y3 yc' z z yc'_LT yd'_LT jc' codec' coded' hc'd'_z
               lift_first_code_mem_iff
             exact hc'd'_y3
-      | inr jc' =>
+      | inl jc' =>
         cases jd with
-        | inl jd =>
+        | inr jd =>
           cases jd' with
-          | inl jd' =>
+          | inr jd' =>
             --yd, yd' < yc = yc' = z
             have jc_symm : z = yc := jc.symm
             have jc'_symm : z = yc' := jc'.symm
             subst jc_symm jc'_symm
-            step1_eq_lt hcd_z h z yd z yc_LT yd_LT jz jc jd codec coded hcd lift_second_code_mem_iff
-            step2_eq_eq hcc'_z h z z z yc_LT yc'_LT jz jc jc' codec codec' hcc'
+            step1_eq_lt hcd_z h yd z yd_LT jz jd codec coded hcd lift_second_code_mem_iff
+            step2_eq_eq hcc'_z h z jz codec codec' hcc'
             let func := (ind_lift_codes_with_equiv ihyp (h := h))
             step2_lt_lt hdd'_z h yd yd' z yd_LT yd'_LT jz jd jd' coded coded' hdd' func
-            step4_eq_lt hc'd'_z h z yd' z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
-            step5_eq_lt  hc'd'_y3 h y3 z yd' z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z
+            step4_eq_lt hc'd'_z h yd' z jd' codec' coded' hcc'_z hdd'_z hcd_z
+            step5_eq_lt  hc'd'_y3 h y3 z yd' z yc'_LT yd'_LT jd' codec' coded' hc'd'_z
               lift_second_code_mem_iff
             exact hc'd'_y3
-          | inr jd' =>
+          | inl jd' =>
             --yd < yc = yc' = yd' = z
             have jc_symm : z = yc := jc.symm
             have jc'_symm : z = yc' := jc'.symm
             have jd'_symm : z = yd' := jd'.symm
             subst jc_symm jc'_symm jd'_symm
-            step1_eq_lt hcd_z h z yd z yc_LT yd_LT jz jc jd codec coded hcd lift_second_code_mem_iff
-            step2_eq_eq hcc'_z h z z z yc_LT yc'_LT jz jc jc' codec codec' hcc'
-            step2_lt_eq hdd'_z h yd z z yd_LT yd'_LT jz jd jd' coded coded' hdd'
+            step1_eq_lt hcd_z h yd z yd_LT jz jd codec coded hcd lift_second_code_mem_iff
+            step2_eq_eq hcc'_z h z jz codec codec' hcc'
+            step2_lt_eq hdd'_z h yd z yd_LT yd'_LT jd coded coded' hdd'
               lift_first_code_equiv_iff
-            step4_eq_eq hc'd'_z h z z z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
-            step5_eq_eq hc'd'_y3 h y3 z z z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z
+            step4_eq_eq hc'd'_z h z codec' coded' hcc'_z hdd'_z hcd_z
+            step5_eq_eq hc'd'_y3 h y3 z z z yc'_LT yd'_LT jz codec' coded' hc'd'_z
             exact hc'd'_y3
-        | inr jd =>
+        | inl jd =>
           cases jd' with
-          | inl jd' =>
+          | inr jd' =>
             --yd' < yc = yd = yc' = z
             have jc_symm : z = yc := jc.symm
             have jc'_symm : z = yc' := jc'.symm
             have jd_symm : z = yd := jd.symm
             subst jc_symm jc'_symm jd_symm
-            step1_eq_eq hcd_z h z z z yc_LT yd_LT jz jc jd codec coded hcd
-            step2_eq_eq hcc'_z h z z z yc_LT yc'_LT jz jc jc' codec codec' hcc'
-            step2_eq_lt hdd'_z h z yd' z yd_LT yd'_LT jz jd jd' coded coded' hdd'
+            step1_eq_eq hcd_z h z jz codec coded hcd
+            step2_eq_eq hcc'_z h z jz codec codec' hcc'
+            step2_eq_lt hdd'_z h yd' z yd_LT yd'_LT jd' coded coded' hdd'
               lift_second_code_equiv_iff
-            step4_eq_lt hc'd'_z h z yd' z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
-            step5_eq_lt  hc'd'_y3 h y3 z yd' z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z
+            step4_eq_lt hc'd'_z h yd' z jd' codec' coded' hcc'_z hdd'_z hcd_z
+            step5_eq_lt  hc'd'_y3 h y3 z yd' z yc'_LT yd'_LT jd' codec' coded' hc'd'_z
               lift_second_code_mem_iff
             exact hc'd'_y3
-          | inr jd' =>
+          | inl jd' =>
             --yc = yd = yc' = yd' = z
             have jc_symm : z = yc := jc.symm
             have jc'_symm : z = yc' := jc'.symm
             have jd_symm : z = yd := jd.symm
             have jd'_symm : z = yd' := jd'.symm
             subst jc_symm jc'_symm jd_symm jd'_symm
-            step1_eq_eq hcd_z h z z z yc_LT yd_LT jz jc jd codec coded hcd
-            step2_eq_eq hcc'_z h z z z yc_LT yc'_LT jz jc jc' codec codec' hcc'
-            step2_eq_eq hdd'_z h z z z yd_LT yd'_LT jz jd jd' coded coded' hdd'
-            step4_eq_eq hc'd'_z h z z z jc' jd' codec' coded' hcc'_z hdd'_z hcd_z
-            step5_eq_eq hc'd'_y3 h y3 z z z yc'_LT yd'_LT jz jc' jd' codec' coded' hc'd'_z
+            step1_eq_eq hcd_z h z jz codec coded hcd
+            step2_eq_eq hcc'_z h z jz codec codec' hcc'
+            step2_eq_eq hdd'_z h z jz coded coded' hdd'
+            step4_eq_eq hc'd'_z h z codec' coded' hcc'_z hdd'_z hcd_z
+            step5_eq_eq hc'd'_y3 h y3 z z z yc'_LT yd'_LT jz codec' coded' hc'd'_z
             exact hc'd'_y3
 
 /-- One quarter of extensionality. Note that it only does → in the implication between the
@@ -1431,6 +1457,7 @@ lemma ind_L_extensional_equiv_implies
     · have hyp' : (L (h := h) y3).equiv d' d := (ind_L_seg_equiv_is_Equivalence ihyp).symm hyp
       exact (ind_L_extensional_equiv_implies_mp ihyp) d' d hyp' x
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_code_equiv_iff"]
 lemma ind_code_equiv_iff
     {y3 : α}
@@ -1542,6 +1569,7 @@ lemma ind_code_equiv_iff
                   (fun x => (j' x).symm)
             exact (ihyp hy_LT).sats_L_code_param_respects_equiv_param c l k
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_L_extensional_mem_implies"]
 lemma ind_L_extensional_mem_implies
     {y3 : α}
@@ -1623,6 +1651,7 @@ lemma ind_L_extensional_mem_implies
         at hypc
       exact hypc
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_L_extensional"]
 lemma ind_L_extensional
     {y3 : α}
@@ -1636,6 +1665,7 @@ lemma ind_L_extensional
     · exact (ind_L_extensional_equiv_implies ihyp) d d'
     · exact (ind_L_extensional_mem_implies ihyp) d d'
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_lift_code_equiv_emb"]
 lemma ind_lift_code_equiv_emb
     {y3 : α}
@@ -1673,6 +1703,7 @@ lemma ind_lift_code_equiv_emb
         exact hypx
       exact i.mp j
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_L_equiv_trans_lemma_outers_equal_lt_inner"]
 lemma ind_L_equiv_trans_lemma_outers_equal_lt_inner
     {y3 : α}
@@ -1689,6 +1720,7 @@ lemma ind_L_equiv_trans_lemma_outers_equal_lt_inner
   := (code_equiv_is_Equivalence yb (L (h := h) yb)).trans equiv_ab equiv_bc
   exact ((ind_lift_code_equiv_emb ihyp) hyab codea codec).mpr i
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_L_equiv_trans_lemma_center_right_equal_lt_left"]
 lemma ind_L_equiv_trans_lemma_center_right_equal_lt_left
     {y3 : α}
@@ -1702,9 +1734,10 @@ lemma ind_L_equiv_trans_lemma_center_right_equal_lt_left
   dsimp at equiv_bc
   have equiv_bc_at_ya
   : code_equiv (L (h := h) ya) (lift_code yb ya hyab codeb) (lift_code yb ya hyac codec)
-  := ((ind_lift_code_equiv_emb ihyp) hyab codeb codec).mp (equiv_bc)
+  := ((ind_lift_code_equiv_emb ihyp) hyab codeb codec).mp equiv_bc
   exact (code_equiv_is_Equivalence ya (L (h := h) ya)).trans equiv_ab equiv_bc_at_ya
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_L_equiv_trans_lemma_center_lt_left_lt_right"]
 lemma ind_L_equiv_trans_lemma_center_lt_left_lt_right
     {y3 : α}
@@ -1727,6 +1760,7 @@ lemma ind_L_equiv_trans_lemma_center_lt_left_lt_right
     exact (code_equiv_is_Equivalence yc (L (h := h) yc)).trans equiv_ab_lifted
       ((code_equiv_is_Equivalence yc (L (h := h) yc)).trans commuting_lift_codes equiv_bc)
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_L_equiv_trans_lemma_left_lt_center_lt_right"]
 lemma ind_L_equiv_trans_lemma_left_lt_center_lt_right
     {y3 : α}
@@ -1750,6 +1784,7 @@ lemma ind_L_equiv_trans_lemma_left_lt_center_lt_right
             ((code_equiv_is_Equivalence yc (L (h := h) yc)).symm commuting_lift_codes)
             ((code_equiv_is_Equivalence yc (L (h := h) yc)).trans equiv_ab_lifted equiv_bc)
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_L_equiv_trans_lemma_left_lt_right_lt_center"]
 lemma ind_L_equiv_trans_lemma_left_lt_right_lt_center
     {y3 : α}
@@ -1775,6 +1810,7 @@ lemma ind_L_equiv_trans_lemma_left_lt_right_lt_center
     exact ((ind_lift_code_equiv_emb ihyp) hybc
             (lift_code ya yc hyac codea) codec).mpr equiv_ac_factored
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_sats_L_code_param_respects_equiv_param"]
 lemma ind_sats_L_code_param_respects_equiv_param
   {y3 : α}
@@ -1799,7 +1835,8 @@ lemma ind_sats_L_code_param_respects_equiv_param
   | code φ v σ hσ τ =>
     dsimp only
     dsimp at hsats
-    have hτ : σ.length = (to_List τ).length :=  (L_ListToListLength τ).symm
+    have hτ : σ.length = (to_List τ).length :=  Eq.trans L_List_length.symm
+                                                         (L_ListToListLength τ).symm
     set p_ass := build_ass M φ v σ hσ (to_List τ) hτ p
     set q_ass := build_ass M φ v σ hσ (to_List τ) hτ q
     have p_q_ass_equiv
@@ -1812,10 +1849,10 @@ lemma ind_sats_L_code_param_respects_equiv_param
         subst hvw
         have var_eval_p_ass_eq_p
         : var_eval p_ass v (p_ass.hfree_var.2 hw) = p
-        := eval_build_ass_on_new_var (α:=α) M φ v σ hσ (to_List τ) hτ p hw
+        := eval_build_ass_on_new_var M φ v σ hσ (to_List τ) hτ p hw
         have var_eval_q_ass_eq_q
         : var_eval q_ass v (q_ass.hfree_var.2 hw) = q
-        := eval_build_ass_on_new_var (α:=α) M φ v σ hσ (to_List τ) hτ q hw
+        := eval_build_ass_on_new_var M φ v σ hσ (to_List τ) hτ q hw
         exact var_eval_q_ass_eq_q ▸ var_eval_p_ass_eq_p.symm ▸ hpq
       else
         --in this case they eval to the same object
@@ -1824,12 +1861,13 @@ lemma ind_sats_L_code_param_respects_equiv_param
           (variable_in_free_var_neq_excluded_is_in_free_var_excluding φ v w hvw hw)
         have var_eval_p_ass_eq_var_eval_q_ass
         : var_eval p_ass w (p_ass.hfree_var.2 hw) = var_eval q_ass w (q_ass.hfree_var.2 hw)
-        :=(eval_build_ass_on_old_var (α:=α) M φ v w σ hσ (to_List τ) hτ p w_in_σ).trans
-            (eval_build_ass_on_old_var M φ v w σ hσ (α:=α) (to_List τ) hτ q w_in_σ).symm
+        :=(eval_build_ass_on_old_var M φ v w σ hσ (to_List τ) hτ p w_in_σ).trans
+            (eval_build_ass_on_old_var M φ v w σ hσ (to_List τ) hτ q w_in_σ).symm
         rw[var_eval_p_ass_eq_var_eval_q_ass]
         exact M_eq_Equiv.refl (var_eval q_ass w (q_ass.hfree_var.2 hw))
     exact sats_respects_equiv StandardM φ p_ass q_ass p_q_ass_equiv hsats
 
+/-- Stub -/
 @[blueprint "lem:ext_ind_lift_code_mem_emb"]
 lemma ind_lift_code_mem_emb {y3 : α}
     (ihyp : ext_IH y3 (h := h))
@@ -1868,6 +1906,7 @@ lemma ind_lift_code_mem_emb {y3 : α}
               ((ind_L_seg_equiv_is_Equivalence ihyp).refl boundcode2) hyp'2
         exact (L_seg_mem_of_constructed_boundcodes_same_level y1 h13 code1 code2).mp hyp'2boundcode
 
+/-- Stub -/
 theorem L_ext_inductive_step (y : α) (ihyp : ext_IH y (h := h))
 : L_ext_inductive_properties y (h := h)
 := {L_equiv_trans_lemma_outers_equal_lt_inner :=
@@ -1896,6 +1935,7 @@ theorem L_ext_inductive_step (y : α) (ihyp : ext_IH y (h := h))
     lift_code_equiv_emb := ind_lift_code_equiv_emb (y3 := y) (h := h) ihyp
     lift_code_mem_emb := ind_lift_code_mem_emb (y3 := y) (h := h) ihyp}
 
+/-- Stub -/
 @[blueprint "thm:extensionality_induction"]
 theorem L_ext_properties (y : α) : L_ext_inductive_properties y (h:=h)
 := WellFounded.fix h.wf L_ext_inductive_step y

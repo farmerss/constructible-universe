@@ -5,39 +5,19 @@ Authors: Farmer Schlutzenberg, https://sites.google.com/site/schlutzenberg
 -/
 import Constructible.Basic
 
-set_option linter.unusedVariables false
-set_option linter.missingDocs false
-
-#print var_eval
-#check sats_respects_equiv
-#check assignment
-#check ext_equiv
-#check filter_values_in_position
-
 namespace LL
 open LL
 variable {α : Type u} {r : α → α → Prop} {h : IsWellOrder α r}
 
+/-- Stub -/
 def r_leq
   (x y : α)
 :=
-  let i := h
+  --let i := h
   (r x y) ∨ (x=y)
 
-#check IsWellFounded
-#print IsStrictTotalOrder
-#check WellFounded.isIrrefl
-#check h.wf.irrefl
-#check h.wf.irrefl
-#check Std.Irrefl r
-#check IsIrrefl
-#print IsIrrefl
-
-instance rIsStrictTotalOrder : IsStrictTotalOrder α r where
-  --trichotomous := h.toIsTrichotomous.trichotomous
-  trichotomous := h.trichotomous
-
-instance r_leqIsPartialOrder : IsPartialOrder α (r:=r_leq (r := r) (h:=h)) where
+/- Stub
+instance r_leqIsPartialOrder (j : IsWellOrder α r) : IsPartialOrder α (r:=r_leq (r := r)) where
   refl := -- proof of: ∀ a, a ≤ a
     fun x => Or.inr (Eq.refl x)
   trans := -- proof of: ∀ a b c, a ≤ b → b ≤ c → a ≤ c
@@ -63,7 +43,7 @@ instance r_leqIsPartialOrder : IsPartialOrder α (r:=r_leq (r := r) (h:=h)) wher
     | inl hab => --case r a b
       cases hba with
       | inl hba => --Case (r a b) ∧ (r b a)
-        exact (h.wf.irrefl.irrefl a (IsStrictOrder.toIsTrans.trans a b a hab hba)).elim
+        exact (j.wf.irrefl.irrefl a (IsStrictOrder.toIsTrans.trans a b a hab hba)).elim
       | inr hbc => --Case (r a b) ∧ (b = c)
         subst hbc
         exact Eq.refl b
@@ -71,64 +51,71 @@ instance r_leqIsPartialOrder : IsPartialOrder α (r:=r_leq (r := r) (h:=h)) wher
       subst hab
       exact Eq.refl a
 
-instance r_leqIsTotal : Std.Total (r_leq (r := r) (h := h)) where
+/-- Stub -/
+instance r_leqIsTotal (j : IsWellOrder α r) : Std.Total (r_leq (r := r)) where
   total a b :=
     by
-      cases h.toTrichotomous.rel_or_eq_or_rel_swap (a:=a) (b:=b) with
+      cases j.toTrichotomous.rel_or_eq_or_rel_swap (a:=a) (b:=b) with
       | inl hyp => apply Or.inl; apply Or.inl; exact hyp
       | inr hyp =>
       cases hyp with
       | inl hyp => subst hyp; apply Or.inl;
-                   exact (r_leqIsPartialOrder (α:=α) (r := r) (h:=h)).refl a
+                   exact (r_leqIsPartialOrder (α:=α) (r := r) (j:=j)).refl a
       | inr hyp => apply Or.inr; apply Or.inl; exact hyp -- proof of: a ≤ b ∨ b ≤ a
+-/
 
+/-- Stub -/
 theorem upper_bound
   {y a b : α}
+  {h : IsWellOrder α r}
   (ha : r a y)
   (hb : r b y)
-: ∃ (e:α), (r e y) ∧ (r_leq (r := r) (h:=h) a e ∧ r_leq (r := r) (h:=h) b e)
-:=
-  by
+: ∃ (e:α), (r e y) ∧ ((h.linearOrder r).le a e ∧ (h.linearOrder r).le b e)
+:=by
   cases h.toTrichotomous.rel_or_eq_or_rel_swap (a:=a) (b:=b) with
-  | inl hyp => use b; exact ⟨hb,⟨Or.inl hyp,Or.inr (Eq.refl b)⟩⟩
+  | inl hyp => use b; exact ⟨hb,⟨Or.inr hyp,Or.inl (Eq.refl b)⟩⟩
   | inr hyp =>
   cases hyp with
-  | inl hyp => use a; exact ⟨ha,⟨Or.inr (Eq.refl a),Or.inr hyp.symm⟩⟩
-  | inr hyp => use a; exact ⟨ha,⟨Or.inr (Eq.refl a),Or.inl hyp⟩⟩
+  | inl hyp => use a; exact ⟨ha,⟨Or.inl (Eq.refl a),Or.inl hyp.symm⟩⟩
+  | inr hyp => use a; exact ⟨ha,⟨Or.inl (Eq.refl a),Or.inr hyp⟩⟩
 
+/-- Stub -/
 theorem upper_bound_of_4
   {y a b c d : α}
+  {h : IsWellOrder α r}
   (ha : r a y)
   (hb : r b y)
   (hc : r c y)
   (hd : r d y)
 : ∃ (e : α), r e y
-    ∧ (r_leq (r := r) (h := h) a e)
-    ∧ (r_leq (r := r) (h := h) b e)
-    ∧ (r_leq (r := r) (h := h) c e)
-    ∧ (r_leq (r := r) (h := h) d e)
+    ∧ ((h.linearOrder r).le a e)
+    ∧ ((h.linearOrder r).le b e)
+    ∧ ((h.linearOrder r).le c e)
+    ∧ ((h.linearOrder r).le d e)
 :=
   by
-  cases upper_bound ha hb with
+  cases upper_bound (h:=h) ha hb with
   | intro bound_ab hypab =>
-  cases upper_bound hc hd with
+  cases upper_bound (h:=h) hc hd with
   | intro bound_cd hypcd =>
-  cases upper_bound hypab.1 hypcd.1 with
+  cases upper_bound (h:=h) hypab.1 hypcd.1 with
   | intro bound hyp =>
     use bound
     exact ⟨hyp.1,
-      ⟨(r_leqIsPartialOrder (α:=α) (r := r)).trans a bound_ab bound hypab.2.1 hyp.2.1,
-      ⟨(r_leqIsPartialOrder (α:=α) (r := r)).trans b bound_ab bound hypab.2.2 hyp.2.1,
-      ⟨(r_leqIsPartialOrder (α:=α) (r := r)).trans c bound_cd bound hypcd.2.1 hyp.2.2,
-       (r_leqIsPartialOrder (α:=α) (r := r)).trans d bound_cd bound hypcd.2.2 hyp.2.2⟩⟩⟩⟩
+      ⟨(h.linearOrder r).le_trans a bound_ab bound hypab.2.1 hyp.2.1,
+      ⟨(h.linearOrder r).le_trans b bound_ab bound hypab.2.2 hyp.2.1,
+      ⟨(h.linearOrder r).le_trans c bound_cd bound hypcd.2.1 hyp.2.2,
+       (h.linearOrder r).le_trans d bound_cd bound hypcd.2.2 hyp.2.2⟩⟩⟩⟩
 
+/-- Stub -/
 theorem upper_bound_of_3
   {y a b c : α}
+  {h : IsWellOrder α r}
   (ha : r a y)
   (hb : r b y)
   (hc : r c y)
 : ∃ (d:α), r d y
-    ∧ (r_leq (r := r) (h:=h) a d) ∧ (r_leq (r := r) (h:=h) b d) ∧ (r_leq (r := r) (h:=h) c d)
+    ∧ ((h.linearOrder r).le a d) ∧ ((h.linearOrder r).le b d) ∧ ((h.linearOrder r).le c d)
 :=
   by
   rcases upper_bound_of_4 (h:=h) ha hb hc hc with ⟨e, hypey, hypae, hypbe, hypce, _⟩
@@ -229,20 +216,35 @@ end
 
 namespace L_List
 
+/-- Stub. I could have just output `n` instead of using `τ` to define the length.
+But this leads to problems with the linter complaining of unused arguments.
+But I want to define `τ.length` here, so I want `τ` as an argument. -/
 def length
   {x : α}
   {n : Nat}
-  (_ : L_List (r := r) x n)
+  (τ : L_List (r := r) x n)
 : Nat
-:= n
+:= match τ with
+| .nil => 0
+| .cons _ (n:=k) _ => k + 1
 
 end L_List
 
+/-- Stub -/
 theorem L_List_length_cons_x_nil
   {x : α}
   (y : L_code_below (r := r) x)
 : (L_List.cons y L_List.nil).length = 1
 := rfl
+
+theorem L_List_length
+  {x : α}
+  {m : Nat}
+  {τ : L_List (r := r) x m}
+: τ.length = m
+:=match τ with
+  | .nil => rfl
+  | .cons _ (n:=k) _ => rfl
 
 /-- Definition: `to_List` converts an object of type `L_List` to a standard list type. -/
 def to_List
@@ -254,8 +256,6 @@ def to_List
   match n, τ with
   | 0, L_List.nil (r := r)  => List.nil
   | _ + 1, L_List.cons c τ' => List.cons c (to_List τ')
-
-
 
 /-- Theorem: The casting of `L_List` to `List` given by `to_List`
 respects "cons". -/
@@ -275,17 +275,17 @@ theorem L_ListToListLength
   (τ : L_List (r := r) x n)
 : (to_List τ).length = τ.length
 :=
-  have i : τ.length = n := by rfl
+  --have i : τ.length = n := by rfl
   by
-    rw [i]
+    rw [L_List_length]
     match n, τ with
     | 0, L_List.nil  => rfl
     | m + 1, L_List.cons c τ' =>
       rw [L_ListToListConsCons]
       rw [List.length_cons]
       rw [L_ListToListLength τ']
-      rfl
---attribute [match_pattern]  L_code_below.boundcode L_code.code
+      rw [L_List_length]
+
 end LL
 
 /-- Definition: `build_ass` builds an `assignment M φ` object from input data coming
@@ -352,8 +352,8 @@ def build_ass
     assignment.mk
       σ hσ.1 (Setoid.trans hσ.2 (free_var_excluding_is_free_var_if_excluded_not_present φ v i)) τ hτ
 
+/-- Stub -/
 theorem excluded_var_in_free_var_build_ass_keys_eq_cons
-  {α : Type u}
   (M : LSTModel)
   (φ : LSTF)
   (v : var)
@@ -374,8 +374,8 @@ theorem excluded_var_in_free_var_build_ass_keys_eq_cons
 --  · rfl
 --  · contradiction
 
+/-- Stub -/
 theorem excluded_var_in_free_var_build_ass_values_eq_cons
-  {α : Type u}
   (M : LSTModel)
   (φ : LSTF)
   (v : var)
@@ -391,6 +391,7 @@ theorem excluded_var_in_free_var_build_ass_values_eq_cons
   unfold build_ass
   simp only [i, ↓reduceDIte]
 
+/-- Stub -/
 theorem length_values_build_ass_on_new_var_positive
   (M : LSTModel)
   (φ : LSTF)
@@ -418,6 +419,7 @@ theorem length_values_build_ass_on_new_var_positive
   have n : 0 < ass.values.length := by simp [m]
   exact n
 
+/-- Stub -/
 theorem eval_build_ass_has_old_vars_mem_keys
   (M : LSTModel)
   (φ : LSTF)
@@ -432,6 +434,7 @@ theorem eval_build_ass_has_old_vars_mem_keys
 : w ∈ (build_ass M φ v σ h τ hτ x).keys
 :=(build_ass M φ v σ h τ hτ x).hfree_var.2 hw
 
+/-- Stub -/
 theorem eval_build_ass_on_new_var_has_new_var_mem_keys
   (M : LSTModel)
   (φ : LSTF)
@@ -453,24 +456,8 @@ theorem eval_build_ass_on_new_var_has_new_var_mem_keys
   rw [← j] at k
   exact k
 
+/-- Stub -/
 theorem there_exists_proof_eval_build_ass_on_new_var_has_new_var_mem_keys
-  (M : LSTModel)
-  (φ : LSTF)
-  (v : var)
-  (σ : List var)
-  (h : σ.Nodup ∧ σ ≈ free_var_excluding φ v)
-  (τ : List M.univ)
-  (hτ : σ.length = τ.length)
-  (x : M.univ)
-  (i : v ∈ free_var φ)
-: ∃ (j : v ∈ (build_ass M φ v σ h τ hτ x).keys), true
-:=
-  by
-  use (eval_build_ass_on_new_var_has_new_var_mem_keys M φ v σ h τ hτ x i)
-
-
-theorem new_var_in_free_var_in_build_ass_keys
-  {α : Type u}
   (M : LSTModel)
   (φ : LSTF)
   (v : var)
@@ -483,11 +470,29 @@ theorem new_var_in_free_var_in_build_ass_keys
 :  v ∈ (build_ass M φ v σ h τ hτ x).keys
 :=
   by
-  rw [excluded_var_in_free_var_build_ass_keys_eq_cons (α:=α) M φ v σ h τ hτ x i]
+  use (eval_build_ass_on_new_var_has_new_var_mem_keys M φ v σ h τ hτ x i)
+
+/-- Stub -/
+theorem new_var_in_free_var_in_build_ass_keys
+  --{α : Type u}
+  (M : LSTModel)
+  (φ : LSTF)
+  (v : var)
+  (σ : List var)
+  (h : σ.Nodup ∧ σ ≈ free_var_excluding φ v)
+  (τ : List M.univ)
+  (hτ : σ.length = τ.length)
+  (x : M.univ)
+  (i : v ∈ free_var φ)
+:  v ∈ (build_ass M φ v σ h τ hτ x).keys
+:=
+  by
+  rw [excluded_var_in_free_var_build_ass_keys_eq_cons M φ v σ h τ hτ x i]
   exact List.mem_cons_self (a:=v) (l:=σ)
 
+/-- Stub -/
 theorem eval_build_ass_on_new_var
-  {α : Type u}
+  --{α : Type u}
   (M : LSTModel)
   (φ : LSTF)
   (v : var)
@@ -498,16 +503,16 @@ theorem eval_build_ass_on_new_var
   (x : M.univ)
   (i : v ∈ free_var φ)
   (hkeys : v ∈ (build_ass M φ v σ h τ hτ x).keys
-  := new_var_in_free_var_in_build_ass_keys (α := α) M φ v σ h τ hτ x i)
+  := new_var_in_free_var_in_build_ass_keys M φ v σ h τ hτ x i)
 : var_eval (build_ass M φ v σ h τ hτ x) v hkeys = x
 :=
   by
   unfold var_eval
   dsimp only [Lean.Elab.WF.paramLet]
   have  j_keys : (build_ass M φ v σ h τ hτ x).keys = (v::σ)
-  := excluded_var_in_free_var_build_ass_keys_eq_cons (α:=α) M φ v σ h τ hτ x i
+  := excluded_var_in_free_var_build_ass_keys_eq_cons M φ v σ h τ hτ x i
   have  j_values : (build_ass M φ v σ h τ hτ x).values = (x::τ)
-  := excluded_var_in_free_var_build_ass_values_eq_cons (α:=α) M φ v σ h τ hτ x i
+  := excluded_var_in_free_var_build_ass_values_eq_cons M φ v σ h τ hτ x i
   have m
   : List.idxOf v (build_ass M φ v σ h τ hτ x).keys = 0
   := by rw[j_keys]; simp only [List.idxOf_cons_self]
@@ -518,10 +523,10 @@ theorem eval_build_ass_on_new_var
   simp only [m]
   exact n
 
+/-- Stub -/
 def eval_var_param_pair
   {β : Type u}
   (σ : List var)
-  (hσ : σ.Nodup)
   (τ : List β)
   (hτ : σ.length = τ.length)
   (v : var)
@@ -533,10 +538,11 @@ def eval_var_param_pair
   let idv_lt_length_values : idv < τ.length := hτ ▸ idv_lt_length_keys
   value_at_index τ idv idv_lt_length_values
 
+/-- Stub -/
 theorem eval_var_param_cons_pair_on_old_var
   {β : Type u}
   (σ : List var)
-  (hσ : σ.Nodup)
+  --(hσ : σ.Nodup)
   (τ : List β)
   (hτ : σ.length = τ.length)
   (w : var)
@@ -546,7 +552,6 @@ theorem eval_var_param_cons_pair_on_old_var
   (x : β)
 : eval_var_param_pair
     (v::σ)
-    (List.Nodup.cons j hσ:(v::σ).Nodup)
     (x::τ)
     --proof of (v::σ).length = (x::τ).length:
     (by simp only [(List.length_cons (a:=v) (as:=σ)),
@@ -555,7 +560,7 @@ theorem eval_var_param_cons_pair_on_old_var
                   exact hτ)
     w
     (List.mem_cons_of_mem v i : w ∈ (v::σ))
-= eval_var_param_pair σ hσ τ hτ w i
+= eval_var_param_pair σ τ hτ w i
 :=
   by
   unfold eval_var_param_pair
@@ -573,8 +578,8 @@ theorem eval_var_param_cons_pair_on_old_var
   simp only [n]
   exact value_at_succ_index_of_cons τ (σ.idxOf w) (hτ.symm ▸ l) x
 
+/-- Stub -/
 theorem eval_build_ass_on_old_var
-  {α : Type u}
   (M : LSTModel)
   (φ : LSTF)
   (v w : var)
@@ -594,7 +599,7 @@ theorem eval_build_ass_on_old_var
       (free_var_excluding_is_sub_free_var φ v
         (List_mem_respects_ext_equiv_mp var σ (free_var_excluding φ v) h.2 w i)))
 : var_eval (build_ass M φ v σ h τ hτ x) w h_w_in_keys =
-  eval_var_param_pair σ h.1 τ hτ w i
+  eval_var_param_pair σ τ hτ w i
 :=
   by
   let ass := build_ass M φ v σ h τ hτ x
@@ -629,16 +634,36 @@ theorem eval_build_ass_on_old_var
 -- `φ_5` says $v_6 ∈ v_5$
 -- `σ_5 = [v_6]`, so `[v_6] = free_var_excluding φ_5 v_5`
 -- `hσ_5` : the correctness statement
+
+/-- Stub -/
 def v₀ : var := var.mk 0
+
+/-- Stub -/
 def v₁ : var := var.mk 1
+
+/-- Stub -/
 def v₂ : var := var.mk 2
+
+/-- Stub -/
 def v₃ : var := var.mk 3
+
+/-- Stub -/
 def v₄ : var := var.mk 4
+
+/-- Stub -/
 def v₅ : var := var.mk 5
+
+/-- Stub -/
 def v₆ : var := var.mk 6
+
+/-- Stub -/
 def φ₅ : LSTF := LSTF.atomic_mem v₅ v₆
+
+/-- Stub -/
 def σ₅ : List var := [v₆]
-def hσ₅ :σ₅.Nodup ∧ σ₅ ≈ (free_var_excluding φ₅ v₅) := by
+
+/-- Stub -/
+lemma hσ₅ :σ₅.Nodup ∧ σ₅ ≈ (free_var_excluding φ₅ v₅) := by
   apply And.intro
   · apply List.nodup_singleton
   · rw [free_var_excluding_is φ₅ v₅]
@@ -655,11 +680,18 @@ def hσ₅ :σ₅.Nodup ∧ σ₅ ≈ (free_var_excluding φ₅ v₅) := by
     rw [j]
     have k : [var.mk 6] = ({var.mk 6}:List var) := by rfl
     rw[k]
-def hσ₅length : σ₅.length = 1 := by rfl
 
-def v₅_mem_free_var_φ₅ : v₅ ∈ free_var φ₅ := first_in_free_var_atomic_mem v₅ v₆
-def v₆_mem_free_var_φ₅ : v₆ ∈ free_var φ₅ := second_in_free_var_atomic_mem v₅ v₆
-def v₆_mem_σ₅ : v₆ ∈ σ₅ := List.mem_singleton_self v₆
+/-- Stub -/
+lemma hσ₅length : σ₅.length = 1 := by rfl
+
+/-- Stub -/
+lemma v₅_mem_free_var_φ₅ : v₅ ∈ free_var φ₅ := first_in_free_var_atomic_mem v₅ v₆
+
+/-- Stub -/
+lemma v₆_mem_free_var_φ₅ : v₆ ∈ free_var φ₅ := second_in_free_var_atomic_mem v₅ v₆
+
+/-- Stub -/
+lemma v₆_mem_σ₅ : v₆ ∈ σ₅ := List.mem_singleton_self v₆
 
 namespace LL
 
@@ -679,16 +711,25 @@ def lift_code
 : L_code (r := r) y2
 := L_code.code φ₅ v₅ σ₅ hσ₅ (L_List.cons (L_code_below.boundcode y1 h' code) L_List.nil)
 
+/-- Stub -/
 abbrev L_univ
  (x : α)
 := L_code_below (r := r) x
 
+/-- Stub -/
 structure LSTInterpretation
   (x : α)
 where
+  /-- field of `LSTInterpretation`: a binary relation on the class `L_univ x` of codes
+  for elements of $L_γ$, where $γ$ is the ordinal at rank $x$. This is intended as the
+  the "equality" (equivalence) relation over these codes. -/
   equiv : (L_univ (r := r) x) → (L_univ (r := r) x) → Prop
+  /-- field of `LSTInterpretation`: a binary relation on the class `L_univ x` of codes
+  for elements of $L_γ$, where $γ$ is the ordinal at rank $x$. This is intended as the
+  the "membership" relation over these codes. -/
   mem : (L_univ (r := r) x) → (L_univ (r := r) x) → Prop
 
+/-- Stub -/
 def sats_L_code_param
   {y : α}
   (int : LSTInterpretation (r := r) y)
@@ -699,7 +740,8 @@ def sats_L_code_param
   let M := LSTModel.mk (L_univ y) int.equiv int.mem
   match c with
   | L_code.code φ v σ hσ τ =>
-    let hτ : σ.length = (to_List τ).length := (L_ListToListLength τ).symm
+    let hτ : σ.length = (to_List τ).length := Eq.trans L_List_length.symm
+                                                       (L_ListToListLength τ).symm
     sats M φ (build_ass M φ v σ hσ (to_List τ) hτ x)
 
 /-- This takes as input a model with universe the `y`-bounded `L_code_below`s for
@@ -729,6 +771,7 @@ def code_mem
       ↔ (int.mem x p))
     ∧ (sats_L_code_param int c' p)
 
+/-- Stub -/
 theorem code_equiv_is_Equivalence
   (y : α)
   (int : LSTInterpretation (r := r) y)
@@ -756,6 +799,7 @@ theorem code_equiv_is_Equivalence
       unfold code_equiv at hcd hde
       exact fun x => Iff.trans (hcd x) (hde x)
 
+/-- Stub -/
 theorem code_mem_respects_code_equiv
   {y : α}
   (int : LSTInterpretation (r := r) y)
@@ -780,6 +824,7 @@ theorem code_mem_respects_code_equiv
       unfold code_equiv at hdd'
       exact (hdd' p).mp hyp.2
 
+/-- Stub -/
 theorem code_mem_respects_code_equiv_iff
   {y : α}
   (int : LSTInterpretation (r := r) y)
@@ -792,6 +837,7 @@ theorem code_mem_respects_code_equiv_iff
              (code_mem_respects_code_equiv int ((code_equiv_is_Equivalence y int).symm hcc')
                                                ((code_equiv_is_Equivalence y int).symm hdd'))
 
+/-- Stub -/
 def L_recursion_trichotomy_equiv_general
   (x : α)
   (lx : (y : α) → (_ : r y x) → LSTInterpretation (r := r) y)
@@ -807,6 +853,7 @@ def L_recursion_trichotomy_equiv_general
   ∨ (∃ (h' : r y2 y1), code_equiv  (lx y1 h1) code1 (lift_code y2 y1 h' code2))
   ∨ (∃ (h' : y1=y2),  code_equiv  (lx y1 h1) code1 (h'▸code2))
 
+/-- Stub -/
 def L_recursion_trichotomy_mem_general
   (x : α)
   (lx : (y : α) → (_ : r y x) → LSTInterpretation (r := r) y)
@@ -867,24 +914,30 @@ def L_recursion
            L_recursion_trichotomy_mem_general x lx y1 h1 code1 y2 h2 code2
       )
 
+/-- Stub -/
 noncomputable def L
 : (x : α) → LSTInterpretation (r := r) x
 := WellFounded.fix h.wf (L_recursion)
 
+/-- Stub -/
 noncomputable def L_Model
 : (x : α) → LSTModel
 := fun (x:α) => LSTModel.mk (L_univ (r := r) x) (L (h:=h) x).equiv (L (h:=h) x).mem
 
+/-- Stub -/
+@[nolint unusedArguments]
 noncomputable def L_hierarchy_below
 (x : α)
 : (y:α)→ r y x → LSTInterpretation (r := r) y
-:= fun (y:α) (_ : r y x) => L (h:=h) y
+:= fun (y:α) (_h : r y x) => L (h:=h) y
 
+/-- Stub -/
 theorem L_fixed_point_of_recursion
   (x : α)
 : L (h:=h) x = (L_recursion x) (L_hierarchy_below (h:=h) x)
 := WellFounded.fix_eq h.wf L_recursion x
 
+/-- Stub -/
 theorem L_seg_equiv_via_general
   (x : α)
   (c1 c2 : L_code_below x)
@@ -907,6 +960,7 @@ theorem L_seg_equiv_via_general
   dsimp
   rfl
 
+/-- Stub -/
 theorem L_seg_mem_via_general
   (x : α)
   (c1 c2 : L_code_below x)
@@ -929,42 +983,45 @@ theorem L_seg_mem_via_general
   dsimp only
   rfl
 
+/-- Stub -/
 def L_recursion_trichotomy_equiv
-(x : α)
+--(x : α)
 (y1 : α)
-(_ : r y1 x)
+--(_ : r y1 x)
 (code1 : L_code (r := r) y1)
 (y2 : α)
-(_ : r y2 x)
+--(_ : r y2 x)
 (code2 : L_code (r := r) y2)
 : Prop
 := (∃ (h' : r y1 y2), code_equiv (L (h:=h) y2) (lift_code y1 y2 h' code1) code2)
 ∨ (∃ (h' : r y2 y1), code_equiv  (L (h:=h) y1) code1 (lift_code y2 y1 h' code2))
 ∨ (∃ (h' : y1=y2),  code_equiv  (L (h:=h) y1) code1 (h'▸code2))
 
+/-- Stub -/
 def L_recursion_trichotomy_mem
-(x : α)
+--(x : α)
 (y1 : α)
-(_ : r y1 x)
+--(_ : r y1 x)
 (code1 : L_code (r := r) y1)
 (y2 : α)
-(_ : r y2 x)
+--(_ : r y2 x)
 (code2 : L_code (r := r) y2)
 : Prop
 := (∃ (h' : r y1 y2), code_mem (L (h:=h) y2) (lift_code y1 y2 h' code1) code2)
 ∨ (∃ (h' : r y2 y1), code_mem (L (h:=h) y1) code1 (lift_code y2 y1 h' code2))
 ∨ (∃ (h' : y1=y2),  code_mem (L (h:=h) y1) code1 (h'▸code2))
 
+/-- Stub -/
 theorem L_recursion_trichotomy_mem_first_lt_second
-(x : α)
+--(x : α)
 (y1 : α)
-(h1 : r y1 x)
+--(h1 : r y1 x)
 (code1 : L_code (r := r) y1)
 (y2 : α)
-(h2 : r y2 x)
+--(h2 : r y2 x)
 (code2 : L_code (r := r) y2)
 (h12 : r y1 y2)
-: (L_recursion_trichotomy_mem (h:=h) x y1 h1 code1 y2 h2 code2)
+: (L_recursion_trichotomy_mem (h:=h) y1 code1 y2 code2)
 ↔  code_mem (L (h:=h) y2) (lift_code y1 y2 h12 code1) code2
 :=
   by
@@ -987,16 +1044,17 @@ theorem L_recursion_trichotomy_mem_first_lt_second
     apply Or.inl
     use h12
 
+/-- Stub -/
 theorem L_recursion_trichotomy_equiv_first_lt_second
-(x : α)
+--(x : α)
 (y1 : α)
-(h1 : r y1 x)
+--(h1 : r y1 x)
 (code1 : L_code (r := r) y1)
 (y2 : α)
-(h2 : r y2 x)
+--(h2 : r y2 x)
 (code2 : L_code (r := r) y2)
 (h12 : r y1 y2)
-: (L_recursion_trichotomy_equiv (h:=h) x y1 h1 code1 y2 h2 code2)
+: (L_recursion_trichotomy_equiv (h:=h) y1 code1 y2 code2)
 ↔  code_equiv (L (h:=h) y2) (lift_code y1 y2 h12 code1) code2
 :=
   by
@@ -1019,16 +1077,17 @@ theorem L_recursion_trichotomy_equiv_first_lt_second
     apply Or.inl
     use h12
 
+/-- Stub -/
 theorem L_recursion_trichotomy_mem_second_lt_first
-(x : α)
+--(x : α)
 (y1 : α)
-(h1 : r y1 x)
+--(h1 : r y1 x)
 (code1 : L_code (r := r) y1)
 (y2 : α)
-(h2 : r y2 x)
+--(h2 : r y2 x)
 (code2 : L_code (r := r) y2)
 (h12 : r y2 y1)
-: (L_recursion_trichotomy_mem (h:=h) x y1 h1 code1 y2 h2 code2)
+: (L_recursion_trichotomy_mem (h:=h) y1 code1 y2 code2)
 ↔  code_mem (L (h:=h) y1) code1 (lift_code y2 y1 h12 code2)
 :=
   by
@@ -1052,16 +1111,17 @@ theorem L_recursion_trichotomy_mem_second_lt_first
     apply Or.inl
     use h12
 
+/-- Stub -/
 theorem L_recursion_trichotomy_equiv_second_lt_first
-(x : α)
+--(x : α)
 (y1 : α)
-(h1 : r y1 x)
+--(h1 : r y1 x)
 (code1 : L_code (r := r) y1)
 (y2 : α)
-(h2 : r y2 x)
+--(h2 : r y2 x)
 (code2 : L_code (r := r) y2)
 (h12 : r y2 y1)
-: (L_recursion_trichotomy_equiv (h:=h) x y1 h1 code1 y2 h2 code2)
+: (L_recursion_trichotomy_equiv (h:=h) y1 code1 y2 code2)
 ↔  code_equiv (L (h:=h) y1) code1 (lift_code y2 y1 h12 code2)
 :=
   by
@@ -1085,13 +1145,14 @@ theorem L_recursion_trichotomy_equiv_second_lt_first
     apply Or.inl
     use h12
 
+/-- Stub -/
 theorem L_recursion_trichotomy_mem_first_eq_second
-(x : α)
+--(x : α)
 (y1 : α)
-(h1 : r y1 x)
+--(h1 : r y1 x)
 (code1 : L_code (r := r) y1)
 (code2 : L_code (r := r) y1)
-: (L_recursion_trichotomy_mem (h:=h) x y1 h1 code1 y1 h1 code2)
+: (L_recursion_trichotomy_mem (h:=h) y1 code1 y1 code2)
 ↔  code_mem (L (h:=h) y1) code1 code2
 :=
   by
@@ -1114,13 +1175,14 @@ theorem L_recursion_trichotomy_mem_first_eq_second
     apply Or.inr
     use Eq.refl y1
 
+/-- Stub -/
 theorem L_recursion_trichotomy_equiv_first_eq_second
-(x : α)
+--(x : α)
 (y1 : α)
-(h1 : r y1 x)
+--(h1 : r y1 x)
 (code1 : L_code (r := r) y1)
 (code2 : L_code (r := r) y1)
-: (L_recursion_trichotomy_equiv (h:=h) x y1 h1 code1 y1 h1 code2)
+: (L_recursion_trichotomy_equiv (h:=h) y1 code1 y1 code2)
 ↔  code_equiv (L (h:=h) y1) code1 code2
 :=
   by
@@ -1144,15 +1206,16 @@ theorem L_recursion_trichotomy_equiv_first_eq_second
     use Eq.refl y1
 
 
+/-- Stub -/
 theorem L_seg_equiv
   (x : α)
   (c1 c2 : L_code_below x)
 : (L (h:=h) x).equiv c1 c2 ↔
   (match c1 with
-  | L_code_below.boundcode y1 h1 code1 =>
+  | L_code_below.boundcode y1 _ code1 =>
   match c2 with
-  | L_code_below.boundcode y2 h2 code2 =>
-  L_recursion_trichotomy_equiv (h:=h) x y1 h1 code1 y2 h2 code2)
+  | L_code_below.boundcode y2 _ code2 =>
+  L_recursion_trichotomy_equiv (h:=h) y1 code1 y2 code2)
 :=
   by
   have j
@@ -1167,15 +1230,16 @@ theorem L_seg_equiv
   rfl
 
 
+/-- Stub -/
 theorem L_seg_mem
   (x : α)
   (c1 c2 : L_code_below x)
 : (L (h:=h) x).mem c1 c2 ↔
   (match c1 with
-  | L_code_below.boundcode y1 h1 code1 =>
+  | L_code_below.boundcode y1 _ code1 =>
   match c2 with
-  | L_code_below.boundcode y2 h2 code2 =>
-  L_recursion_trichotomy_mem (h:=h) x y1 h1 code1 y2 h2 code2)
+  | L_code_below.boundcode y2 _ code2 =>
+  L_recursion_trichotomy_mem (h:=h) y1 code1 y2 code2)
 :=
   by
   have j
@@ -1189,6 +1253,7 @@ theorem L_seg_mem
   unfold L_hierarchy_below
   rfl
 
+/-- Stub -/
 theorem L_seg_equiv_of_constructed_boundcodes
   (x : α)
   (y1 : α)
@@ -1198,9 +1263,10 @@ theorem L_seg_equiv_of_constructed_boundcodes
   (h2 : r y2 x)
   (code2 : L_code y2)
 : (L (h:=h) x).equiv (L_code_below.boundcode y1 h1 code1) (L_code_below.boundcode y2 h2 code2) ↔
-  L_recursion_trichotomy_equiv (h:=h) x y1 h1 code1 y2 h2 code2
+  L_recursion_trichotomy_equiv (h:=h) y1 code1 y2 code2
 := by rw [L_seg_equiv]
 
+/-- Stub -/
 theorem L_seg_mem_of_upper_constructed_boundcode
   (x : α)
   (c1 : L_code_below x)
@@ -1209,8 +1275,8 @@ theorem L_seg_mem_of_upper_constructed_boundcode
   (code2 : L_code y2)
 : (L (h:=h) x).mem c1 (L_code_below.boundcode y2 h2 code2) ↔
   (match c1 with
-  | L_code_below.boundcode y1 h1 code1 =>
-  L_recursion_trichotomy_mem (h:=h) x y1 h1 code1 y2 h2 code2)
+  | L_code_below.boundcode y1 _ code1 =>
+  L_recursion_trichotomy_mem (h:=h) y1 code1 y2 code2)
 := by rw [L_seg_mem]
 
 --We now prove by two facts by simultaneous induction:
@@ -1222,6 +1288,7 @@ theorem L_seg_mem_of_upper_constructed_boundcode
 -- replacing `code_equiv`.
 -- We prove these things by simultaneous induction on the upper bound `y3`.
 
+/-- Stub -/
 theorem sats_L_code_param_of_lift_code
   {y2 : α}
   (y1 : α)
@@ -1258,7 +1325,7 @@ theorem sats_L_code_param_of_lift_code
       (LSTF.atomic_mem v₅ v₆) v₅ σ₅ hσ₅
       (to_List (L_List.cons (L_code_below.boundcode y1 i code) L_List.nil)) hτ x
     ) v₅ j = x
-  := eval_build_ass_on_new_var (α:=α) M φ₅ v₅ σ₅ hσ₅ τ hτ x v₅_mem_free_var_φ₅ j
+  := eval_build_ass_on_new_var M φ₅ v₅ σ₅ hσ₅ τ hτ x v₅_mem_free_var_φ₅ j
   erw[k]
   have j'
   : v₆ ∈ (build_ass
@@ -1276,12 +1343,13 @@ theorem sats_L_code_param_of_lift_code
   :=by
     dsimp
     have eval_var_param_pair_returns
-    : eval_var_param_pair σ₅ hσ₅.1 τ hτ v₆ v₆_mem_σ₅ = L_code_below.boundcode y1 i code
+    : eval_var_param_pair σ₅ τ hτ v₆ v₆_mem_σ₅ = L_code_below.boundcode y1 i code
     :=by unfold eval_var_param_pair; rfl
     exact eval_var_param_pair_returns
-      ▸ eval_build_ass_on_old_var (α:=α) M φ₅ v₅ v₆ σ₅ hσ₅ τ hτ x v₆_mem_σ₅
+      ▸ eval_build_ass_on_old_var M φ₅ v₅ v₆ σ₅ hσ₅ τ hτ x v₆_mem_σ₅
   erw[k']
 
+/-- Stub -/
 theorem L_seg_mem_of_constructed_boundcodes
   {x : α}
   (y1 : α)
@@ -1291,7 +1359,7 @@ theorem L_seg_mem_of_constructed_boundcodes
   (h2 : r y2 x)
   (code2 : L_code y2)
 : (L (h:=h) x).mem (L_code_below.boundcode y1 h1 code1) (L_code_below.boundcode y2 h2 code2) ↔
-  L_recursion_trichotomy_mem (h:=h) x y1 h1 code1 y2 h2 code2
+  L_recursion_trichotomy_mem (h:=h) y1 code1 y2 code2
 := by rw [L_seg_mem]
 
 /-The next few theorems reduce (L x).equiv and (L x).mem statements about
@@ -1301,6 +1369,7 @@ separately in 3 cases depending on the relationship between y1 and y3. Thus, the
 is it processes the rather trivial trichotomy in each of those cases (where in each case,
 2 of the possibilities of the trichotomy are just ruled out directly by the hypotheses).-/
 
+/-- Stub -/
 theorem L_seg_equiv_of_constructed_boundcodes_same_level
     {x : α}
     (y : α)
@@ -1337,6 +1406,7 @@ theorem L_seg_equiv_of_constructed_boundcodes_same_level
     apply Or.inr; apply Or.inr
     use (Eq.refl y)
 
+/-- Stub -/
 theorem L_seg_mem_of_constructed_boundcodes_same_level
     {x : α}
     (y : α)
@@ -1373,6 +1443,7 @@ theorem L_seg_mem_of_constructed_boundcodes_same_level
     apply Or.inr; apply Or.inr
     use (Eq.refl y)
 
+/-- Stub -/
 theorem L_seg_equiv_of_constructed_boundcodes_first_below_second
     {x : α}
     (y1 y2 : α)
@@ -1412,6 +1483,7 @@ theorem L_seg_equiv_of_constructed_boundcodes_first_below_second
     apply Or.inl
     use jy1y2
 
+/-- Stub -/
 theorem L_seg_mem_of_constructed_boundcodes_first_below_second
     {x : α}
     (y1 y2 : α)
@@ -1451,6 +1523,7 @@ theorem L_seg_mem_of_constructed_boundcodes_first_below_second
     apply Or.inl
     use jy1y2
 
+/-- Stub -/
 theorem L_seg_equiv_of_constructed_boundcodes_second_below_first
     {x : α}
     (y1 y2 : α)
@@ -1491,6 +1564,7 @@ theorem L_seg_equiv_of_constructed_boundcodes_second_below_first
     apply Or.inl
     use jy1y2
 
+/-- Stub -/
 theorem L_seg_mem_of_constructed_boundcodes_second_below_first
     {x : α}
     (y1 y2 : α)
@@ -1533,9 +1607,11 @@ theorem L_seg_mem_of_constructed_boundcodes_second_below_first
 
 open Lean Meta Elab Tactic
 
+/-- Stub -/
 syntax (name := step1_lt_lt_tac) "step1_lt_lt"
   ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
 
+/-- Stub -/
 @[tactic step1_lt_lt_tac]
   def eval_step1_lt_lt : Tactic := fun stx => do
     match stx with
@@ -1547,43 +1623,55 @@ syntax (name := step1_lt_lt_tac) "step1_lt_lt"
       := $lift_codes_with_mem $yc $yd $z $jz $yc_LT $yd_LT $jc $jd $codec $coded $hcd)
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 syntax (name := step1_lt_eq_tac) "step1_lt_eq"
-  ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+  ident ident ident ident ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step1_lt_eq_tac]
   def eval_step1_lt_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step1_lt_eq $hcd_z $h $yc $yd $z $yc_LT $yd_LT $jz $jc $jd
+    | `(tactic| step1_lt_eq $hcd_z $h $yc $z $yc_LT $jz $jc
                             $codec $coded $hcd $lift_first_code_mem_iff) =>
       evalTactic <| ← `(tactic|
       have $hcd_z : code_mem (L (h := $h) $z) (lift_code $yc $z $jc $codec) $coded
       := ($lift_first_code_mem_iff $yc $z $yc_LT $jz $jc $codec $coded).mp $hcd)
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 syntax (name := step1_eq_lt_tac) (priority := high) "step1_eq_lt"
-  ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+  ident ident ident ident ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step1_eq_lt_tac]
   def eval_step1_eq_lt : Tactic := fun stx => do
     match stx with
-    | `(tactic| step1_eq_lt $hcd_z $h $yc $yd $z $yc_LT $yd_LT $jz $jc $jd
+    | `(tactic| step1_eq_lt $hcd_z $h $yd $z $yd_LT $jz $jd
                             $codec $coded $hcd $lift_second_code_mem_iff) =>
       evalTactic <| ← `(tactic|
       have $hcd_z : code_mem (L (h := $h) $z) $codec (lift_code $yd $z $jd $coded)
       := ($lift_second_code_mem_iff $z $yd $jz $yd_LT $jd $codec $coded).mp $hcd)
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 syntax (name := step1_eq_eq_tac) (priority := high) "step1_eq_eq"
-  ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+  ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step1_eq_eq_tac]
   def eval_step1_eq_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step1_eq_eq $hcd_z $h $yc $yd $z $yc_LT $yd_LT $jz $jc $jd $codec $coded $hcd) =>
+    | `(tactic| step1_eq_eq $hcd_z $h $z $jz $codec $coded $hcd) =>
       evalTactic <| ← `(tactic|
       have $hcd_z : code_mem (L (h := $h) $z) $codec $coded
       := (L_seg_mem_of_constructed_boundcodes_same_level $z $jz $codec $coded).mp $hcd)
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 syntax (name := step2_lt_lt_tac) (priority := 200000) "step2_lt_lt"
   ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step2_lt_lt_tac]
   def eval_step2_lt_lt : Tactic := fun stx => do
     match stx with
@@ -1595,12 +1683,15 @@ syntax (name := step2_lt_lt_tac) (priority := 200000) "step2_lt_lt"
       := $lift_codes_with_equiv $yc $yc' $z $jz $yc_LT $yc'_LT $jc $jc' $codec $codec' $hcc')
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 syntax (name := step2_lt_eq_tac) (priority := 200000) "step2_lt_eq"
-  ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+  ident ident ident ident ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step2_lt_eq_tac]
   def eval_step2_lt_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step2_lt_eq $hcc'_z $h $yc $yc' $z $yc_LT $yc'_LT $jz $jc $jc'
+    | `(tactic| step2_lt_eq $hcc'_z $h $yc $z $yc_LT $yc'_LT $jc
                             $codec $codec' $hcc' $lift_first_code_equiv_iff) =>
       evalTactic <| ← `(tactic|
       have $hcc'_z : code_equiv (L (h := $h) $z) (lift_code $yc $z $jc $codec) $codec'
@@ -1608,24 +1699,30 @@ syntax (name := step2_lt_eq_tac) (priority := 200000) "step2_lt_eq"
     | _ => throwUnsupportedSyntax
 
 
+/-- Stub -/
 syntax (name := step2_eq_lt_tac) (priority := 200000) "step2_eq_lt"
-  ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+  ident ident ident ident ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step2_eq_lt_tac]
   def eval_step2_eq_lt : Tactic := fun stx => do
     match stx with
-    | `(tactic| step2_eq_lt $hcc'_z $h $yc $yc' $z $yc_LT $yc'_LT $jz $jc $jc'
+    | `(tactic| step2_eq_lt $hcc'_z $h $yc' $z $yc_LT $yc'_LT $jc'
                             $codec $codec' $hcc' $lift_second_code_equiv_iff) =>
       evalTactic <| ← `(tactic|
       have $hcc'_z : code_equiv (L (h := $h) $z) $codec (lift_code $yc' $z $jc' $codec')
       := ($lift_second_code_equiv_iff $z $yc' $yc_LT $yc'_LT $jc' $codec $codec').mp $hcc')
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 syntax (name := step2_eq_eq_tac) (priority := 200000) "step2_eq_eq"
-  ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+  ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step2_eq_eq_tac]
   def eval_step2_eq_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step2_eq_eq $hcc'_z $h $yc $yc' $z $yc_LT $yc'_LT $jz $jc $jc'
+    | `(tactic| step2_eq_eq $hcc'_z $h $z $jz
                             $codec $codec' $hcc') =>
       evalTactic <| ← `(tactic|
       have $hcc'_z : code_equiv (L (h := $h) $z) $codec $codec'
@@ -1633,8 +1730,11 @@ syntax (name := step2_eq_eq_tac) (priority := 200000) "step2_eq_eq"
     | _ => throwUnsupportedSyntax
 
 
+/-- Stub -/
 syntax (name := step4_lt_lt_tac) (priority := high) "step4_lt_lt"
   ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step4_lt_lt_tac]
   def eval_step4_lt_lt : Tactic := fun stx => do
     match stx with
@@ -1646,44 +1746,56 @@ syntax (name := step4_lt_lt_tac) (priority := high) "step4_lt_lt"
       := code_mem_respects_code_equiv (L $z) $hcc'_z $hdd'_z $hcd_z)
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 syntax (name := step4_lt_eq_tac) (priority := high) "step4_lt_eq"
-  ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+  ident ident ident ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step4_lt_eq_tac]
   def eval_step4_lt_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step4_lt_eq $hc'd'_z $h $yc' $yd' $z $jc' $jd'
+    | `(tactic| step4_lt_eq $hc'd'_z $h $yc' $z $jc'
                             $codec' $coded' $hcc'_z $hdd'_z $hcd_z) =>
       evalTactic <| ← `(tactic|
       have $hc'd'_z : code_mem (L (h := $h) $z) (lift_code $yc' $z $jc' $codec') $coded'
       := code_mem_respects_code_equiv (L $z) $hcc'_z $hdd'_z $hcd_z)
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 syntax (name := step4_eq_lt_tac) (priority := high) "step4_eq_lt"
-  ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+  ident ident ident ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step4_eq_lt_tac]
   def eval_step4_eq_lt : Tactic := fun stx => do
     match stx with
-    | `(tactic| step4_eq_lt $hc'd'_z $h $yc' $yd' $z $jc' $jd'
+    | `(tactic| step4_eq_lt $hc'd'_z $h $yd' $z $jd'
                             $codec' $coded' $hcc'_z $hdd'_z $hcd_z) =>
       evalTactic <| ← `(tactic|
       have $hc'd'_z : code_mem (L (h := $h) $z) $codec' (lift_code $yd' $z $jd' $coded')
       := code_mem_respects_code_equiv (L $z) $hcc'_z $hdd'_z $hcd_z)
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 syntax (name := step4_eq_eq_tac) (priority := high) "step4_eq_eq"
-  ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+  ident ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step4_eq_eq_tac]
   def eval_step4_eq_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step4_eq_eq $hc'd'_z $h $yc' $yd' $z $jc' $jd'
+    | `(tactic| step4_eq_eq $hc'd'_z $h $z
                             $codec' $coded' $hcc'_z $hdd'_z $hcd_z) =>
       evalTactic <| ← `(tactic|
       have $hc'd'_z : code_mem (L (h := $h) $z) $codec' $coded'
       := code_mem_respects_code_equiv (L $z) $hcc'_z $hdd'_z $hcd_z)
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 syntax (name := step5_lt_lt_tac) (priority := high) "step5_lt_lt"
   ident ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step5_lt_lt_tac]
   def eval_step5_lt_lt : Tactic := fun stx => do
     match stx with
@@ -1696,12 +1808,15 @@ syntax (name := step5_lt_lt_tac) (priority := high) "step5_lt_lt"
         $jc' $jd' $codec' $coded').mpr $hc'd'_z)
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 syntax (name := step5_lt_eq_tac) (priority := high) "step5_lt_eq"
-  ident ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+  ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step5_lt_eq_tac]
   def eval_step5_lt_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step5_lt_eq $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT $jz $jc' $jd'
+    | `(tactic| step5_lt_eq $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT $jc'
                             $codec' $coded' $hc'd'_z $lift_first_code_mem_iff) =>
       evalTactic <| ← `(tactic|
       have $hc'd'_y3 : (L (h := $h) $y3).mem (L_code_below.boundcode $yc' $yc'_LT $codec')
@@ -1709,12 +1824,15 @@ syntax (name := step5_lt_eq_tac) (priority := high) "step5_lt_eq"
       := ($lift_first_code_mem_iff $yc' $z $yc'_LT $yd'_LT $jc' $codec' $coded').mpr $hc'd'_z)
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 syntax (name := step5_eq_lt_tac) (priority := high) "step5_eq_lt"
-  ident ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+  ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step5_eq_lt_tac]
   def eval_step5_eq_lt : Tactic := fun stx => do
     match stx with
-    | `(tactic| step5_eq_lt $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT $jz $jc' $jd'
+    | `(tactic| step5_eq_lt $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT $jd'
                             $codec' $coded' $hc'd'_z $lift_second_code_mem_iff) =>
       evalTactic <| ← `(tactic|
       have $hc'd'_y3 : (L (h := $h) $y3).mem (L_code_below.boundcode $yc' $yc'_LT $codec')
@@ -1722,12 +1840,15 @@ syntax (name := step5_eq_lt_tac) (priority := high) "step5_eq_lt"
       := ($lift_second_code_mem_iff $z $yd' $yc'_LT $yd'_LT $jd' $codec' $coded').mpr $hc'd'_z)
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 syntax (name := step5_eq_eq_tac) (priority := high) "step5_eq_eq"
-  ident ident ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+  ident ident ident ident ident ident ident ident ident ident ident ident : tactic
+
+/-- Stub -/
 @[tactic step5_eq_eq_tac]
   def eval_step5_eq_eq : Tactic := fun stx => do
     match stx with
-    | `(tactic| step5_eq_eq $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT $jz $jc' $jd'
+    | `(tactic| step5_eq_eq $hc'd'_y3 $h $y3 $yc' $yd' $z $yc'_LT $yd'_LT $jz
                             $codec' $coded' $hc'd'_z) =>
       evalTactic <| ← `(tactic|
       have $hc'd'_y3 : (L (h := $h) $y3).mem (L_code_below.boundcode $yc' $yc'_LT $codec')
@@ -1735,13 +1856,14 @@ syntax (name := step5_eq_eq_tac) (priority := high) "step5_eq_eq"
       := (L_seg_mem_of_constructed_boundcodes_same_level $z $jz $codec' $coded').mpr $hc'd'_z)
     | _ => throwUnsupportedSyntax
 
+/-- Stub -/
 theorem L_equiv_trans_lemma_all_equal
   {y3 : α}
   (ya : α)
-  (hya : r ya y3)
+  --(hya : r ya y3)
   (codea : L_code ya)
   (yb : α)
-  (hyb : r yb y3)
+  --(hyb : r yb y3)
   (codeb : L_code yb)
   (yc : α)
   (hyc : r yc y3)
@@ -1761,13 +1883,14 @@ theorem L_equiv_trans_lemma_all_equal
   dsimp at equiv_ab
   exact (code_equiv_is_Equivalence ya (L (h:=h) ya)).trans equiv_ab equiv_bc
 
+/-- Stub -/
 theorem L_equiv_trans_lemma_outers_equal_gt_inner
   {y3 : α}
   (ya : α)
-  (hya : r ya y3)
+  --(hya : r ya y3)
   (codea : L_code ya)
   (yb : α)
-  (hyb : r yb y3)
+  --(hyb : r yb y3)
   (codeb : L_code yb)
   (yc : α)
   (hyc : r yc y3)
@@ -1784,13 +1907,14 @@ theorem L_equiv_trans_lemma_outers_equal_gt_inner
   dsimp
   exact (code_equiv_is_Equivalence ya (L (h:=h) ya)).trans equiv_ab equiv_bc
 
+/-- Stub -/
 theorem L_equiv_trans_lemma_center_right_equal_gt_left
   {y3 : α}
   (ya : α)
-  (hya : r ya y3)
+  --(hya : r ya y3)
   (codea : L_code ya)
   (yb : α)
-  (hyb : r yb y3)
+  --(hyb : r yb y3)
   (codeb : L_code yb)
   (yc : α)
   (hyc : r yc y3)

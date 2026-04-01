@@ -199,6 +199,15 @@ theorem List_length_agree_iff_cons_length_agree
     · intro h
       exact List_lengths_equal_implies_tail_lengths_equal (α:=α) (β:=β) s x t y h
 
+/-- Theorem: `List.cons` preserves length equality. -/
+theorem cons_preserves_length_equality
+  {β : Type u'} (x : α) (σ : List α) (y : β) (τ : List β) (h : σ.length = τ.length)
+: (x::σ).length = (y::τ).length
+:= by
+     have i : (x::σ).length = σ.length + 1 := rfl
+     have j : (y::τ).length = τ.length + 1 := rfl
+     rw [i, j, h]
+
 ---Now switching to LawfulBEq α
 variable (α : Type u) [BEq α] [LawfulBEq α]
 
@@ -284,15 +293,6 @@ theorem Nodup_ext_equiv_preserves_length
     have p : (y::t').length = ((y::t').erase x).length + 1 := (List.length_erase_add_one oo).symm
     have q : (x::s').length = ((y::t').erase x).length + 1 := by rw[n] at o; exact o
     exact Eq.trans q p.symm
-
-/-- Theorem: `List.cons` preserves length equality. -/
-theorem cons_preserves_length_equality
-  {β : Type u'} (x : α) (σ : List α) (y : β) (τ : List β) (h : σ.length = τ.length)
-: (x::σ).length = (y::τ).length
-:= by
-     have i : (x::σ).length = σ.length + 1 := rfl
-     have j : (y::τ).length = τ.length + 1 := rfl
-     rw [i, j, h]
 
 --From here on we need equality to be decidable for elements of `α`.
 variable (α : Type u) [DecidableEq α]
@@ -453,9 +453,11 @@ Fields:\
 -/
 structure filter_result
   {α : Type u} {β : Type u'} (old_keys : List α) (h_old_keys : old_keys.Nodup) where
+  /-- field of `filter_result`, is the "key" list of a key-value pair (`values` corresponds) -/
   keys : List α
   hNodup : keys.Nodup
   hkeys_equiv : ext_equiv α old_keys keys
+  /-- field of `filter_result`, is the "value" list of a key-value pair (`keys` corresponds) -/
   values : List β
   hlength : old_keys.length = values.length
 
@@ -677,6 +679,7 @@ theorem filter_values_in_position_just_chops_heads_when_keys_head_not_in_subset
         · next => --Case v ∉ s'
           rfl
 
+/-- Stub -/
 def value_at_index
   {β : Type u}
   (τ : List β)
@@ -706,6 +709,7 @@ def value_at_index
         exact Nat.lt_of_succ_lt_succ succ_lengths_lt
       value_at_index τ' n n_lt_τ'_length
 
+/-- Stub -/
 theorem value_at_index_of_cons_at_succ_eq_value_at_index
   {β : Type u'}
   (τ : List β)
@@ -715,17 +719,19 @@ theorem value_at_index_of_cons_at_succ_eq_value_at_index
 : value_at_index τ index hindex = value_at_index (x::τ) index.succ (Nat.succ_lt_succ hindex)
 :=rfl
 
+/-- Stub -/
 theorem list_index_of_item_in_subset_lt_list_length
-  {β : Type u'}
+--{β : Type u'}
   (s s' : List α)
-  (hsNodup : s.Nodup)
-  (hs'Nodup : s'.Nodup)
+--  (hsNodup : s.Nodup)
+--  (hs'Nodup : s'.Nodup)
   (s'_sub_s : s' ⊆ s)
   (v : α)
   (hv : v ∈ s')
 : s.idxOf v < s.length
 := s.idxOf_lt_length_of_mem (s'_sub_s hv)
 
+/-- Stub -/
 theorem mem_of_old_keys_is_mem_of_filter_keys
   {β : Type u'}
   (s s' : List α)
@@ -741,6 +747,7 @@ theorem mem_of_old_keys_is_mem_of_filter_keys
     (α := α) s' (filter_values_in_position α (β:=β) s s' hsNodup hs'Nodup s'_sub_s t hlength).keys
     (filter_values_in_position α (β:=β) s s' hsNodup hs'Nodup s'_sub_s t hlength).hkeys_equiv v hv
 
+/-- Stub -/
 theorem filter_keys_index_of_item_in_subset_lt_filter_keys_length
   {β : Type u'}
   (s s' : List α)
@@ -757,6 +764,7 @@ theorem filter_keys_index_of_item_in_subset_lt_filter_keys_length
   ).keys.idxOf_lt_length_of_mem
     (mem_of_old_keys_is_mem_of_filter_keys (α:=α) s s' hsNodup hs'Nodup s'_sub_s t hlength v hv)
 
+/-- Stub -/
 theorem filter_keys_index_of_item_in_subset_lt_filter_values_length
   {β : Type u'}
   (s s' : List α)
@@ -775,6 +783,7 @@ theorem filter_keys_index_of_item_in_subset_lt_filter_values_length
     (filter_keys_index_of_item_in_subset_lt_filter_keys_length
       (α:=α) s s' hsNodup hs'Nodup s'_sub_s t hlength v hv)
 
+/-- Stub -/
 theorem filter_values_in_position_values_neq_nil_when_some_element_in_subset
   {β : Type u'}
   (s s' : List α)
@@ -803,7 +812,7 @@ theorem filter_values_in_position_values_neq_nil_when_some_element_in_subset
     := List.length_nil ▸ hnillengthpos
     exact (Nat.lt_irrefl 0) hzero_lt_zero
 
-
+/-- Stub -/
 theorem
   filter_values_in_position_values_head_is_original_values_head_when_original_keys_head_in_old_keys
   {β : Type u'}
@@ -847,7 +856,7 @@ theorem
         · next v_notin_s' => --Case v ∉ s' (leads to contradiction)
           exact (v_notin_s' hvs').elim
 
-
+/-- Stub -/
 theorem
   filter_values_in_position_keys_head_is_original_keys_head_when_original_keys_head_in_old_keys
   {β : Type u'}
@@ -914,8 +923,7 @@ theorem filter_values_in_position_preserves_value_at_input
   := filter_keys_index_of_item_in_subset_lt_filter_values_length
       α (β := β) s s' hsNodup hs'Nodup s'_sub_s t hlength v hv)
   (h_idxOf_v_lt_t_length : s.idxOf v < t.length
-  := (hlength.symm ▸ (list_index_of_item_in_subset_lt_list_length
-                                      α (β := β) s s' hsNodup hs'Nodup s'_sub_s v hv)))
+  := (hlength.symm ▸ (list_index_of_item_in_subset_lt_list_length α s s' s'_sub_s v hv)))
 :
 --we first define `filter_result`, which is the object we want to talk about:
 let filter_result := filter_values_in_position α (β:=β) s s' hsNodup hs'Nodup s'_sub_s t hlength;
@@ -1183,6 +1191,7 @@ by
             exact goal_but_with_heads_chopped.trans
               ((h_value_idxOf_v.symm).trans h_value_idxOf_succ.symm)
 
+/-- Stub -/
 theorem value_at_succ_index_of_cons
   {β : Type u}
   (τ : List β)
@@ -1193,7 +1202,7 @@ theorem value_at_succ_index_of_cons
   = value_at_index τ index hindex
 := by rfl
 
-#check Nat.zero_lt_succ
+/-- Stub -/
 theorem zero_lt_length_cons
   {β : Type u}
   (τ : List β)
@@ -1201,6 +1210,7 @@ theorem zero_lt_length_cons
 : 0 < (x::τ).length
 := Nat.zero_lt_succ τ.length
 
+/-- Stub -/
 theorem value_at_new_index_of_cons
   {β : Type u}
   (τ : List β)
@@ -1214,8 +1224,9 @@ end Lists
 /-- A `var` structure represents a variable for first-order logic. It is just a wrapper for `Nat`,
 and the results from the "Lists" section will mostly be applied to `List var`. -/
 structure var where
- id : Nat
-deriving DecidableEq, Hashable, Repr
+  /-- field of `var`: The natural number representing the variable. -/
+  id : Nat
+deriving DecidableEq, Hashable
 
 --attribute [match_pattern] var.mk
 
@@ -1297,6 +1308,7 @@ theorem variable_in_free_var_excluding_is_neq_excluded_var
 : w ≠ v
 :=fun (hwv : w=v)  => ((excluded_var_notin_free_var_excluding φ v) (hwv ▸ hw)).elim
 
+/-- Stub -/
 theorem variable_in_free_var_neq_excluded_is_in_free_var_excluding
  (φ : LSTF) (v w : var) (hvw : v ≠ w) (hw : w ∈ free_var φ)
 : w ∈ free_var_excluding φ v
@@ -1327,6 +1339,7 @@ theorem free_var_excluding_is_free_var_if_excluded_not_present
  : free_var_excluding φ v ≈ free_var φ
  := (List.erase_of_not_mem h) ▸ (Setoid.refl free_var φ)
 
+/-- Stub -/
 theorem free_var_excluding_is_sub_free_var
    (φ : LSTF)
    (v : var)
@@ -1343,8 +1356,11 @@ Fields:\
 The relations `eq` and `mem` are just arbitrary binary relations on `univ`.
 -/
 structure LSTModel.{u'''} where
+  /-- field of `LSTModel`: The universe of the model. -/
   univ : Type u'''
+  /-- field of `LSTModel`: The "equality" relation of the model. -/
   eq : univ → univ → Prop
+  /-- field of `LSTModel`: The "membership" relation of the model. -/
   mem : univ → univ → Prop
 
 /-- A structure of type `assignment M φ` represents an assignment of the free variables
@@ -1359,9 +1375,14 @@ Fields:\
 `hvalues` : Proof that `keys` and `values` have the same lengths\
 -/
 structure assignment (M : LSTModel) (φ : LSTF) where
+  /-- field of `assignment`: A list of variables, which the `assignment` maps to elements of the
+  universe of `M`; forms the "keys" of a key-value pair (with `values`). -/
   keys : List var
   hNodup : keys.Nodup
   hfree_var : keys ≈ free_var φ
+  /-- field of `assignment`: A list of elements of the universe of `M`;
+  the images of the corresponding variables in `keys`;
+  forms the "values" of a key-value pair (with `keys`). -/
   values : List M.univ
   hvalues : keys.length = values.length
 
@@ -1473,6 +1494,7 @@ theorem free_var_ex (v : var) (φ : LSTF)
 : free_var (LSTF.ex v φ) ≈ (free_var φ).erase v
 := (free_var_ex_is v φ) ▸ Setoid.refl ((free_var φ).erase v)
 
+/-- Stub -/
 theorem free_var_ex_subset_free_var (v : var) (φ : LSTF)
 : free_var (LSTF.ex v φ) ⊆ free_var φ
 := by rw[free_var_ex_is v φ]; apply List.erase_subset
@@ -1566,6 +1588,7 @@ theorem free_var_matrix_ext_equiv_cons_when_bound_var_present
 : (free_var φ) ≈ (v::free_var (LSTF.ex v φ))
 := (List_cons_erase (α:=var) (free_var φ) v h).symm
 
+/-- Stub -/
 theorem var_ne_bound_var_free_iff_free_in_matrix
   (v : var)
   (φ : LSTF)
@@ -1681,6 +1704,7 @@ def cast_assignment_to_nonnegation
     (values:=ass.values)
     (hvalues:=ass.hvalues)
 
+/-- Stub -/
 theorem cast_assignment_to_nonnegation_agrees
   {M : LSTModel}
   {φ : LSTF}
@@ -1691,6 +1715,7 @@ theorem cast_assignment_to_nonnegation_agrees
 : var_eval ass v hv = var_eval (cast_assignment_to_nonnegation ass) v hvnn
 := rfl
 
+/-- Stub -/
 theorem rest_assignment_to_first_conjunct_agrees
   {M : LSTModel}
   {φ ψ : LSTF}
@@ -1713,6 +1738,7 @@ theorem rest_assignment_to_first_conjunct_agrees
         (free_var_first_conjunct_sub_free_var_conjunction φ ψ))
       ass.values ass.hvalues v ((rest_assignment_to_first_conjunct ass).hfree_var.1 hvfc)).symm
 
+/-- Stub -/
 theorem rest_assignment_to_second_conjunct_agrees
   {M : LSTModel}
   {φ ψ : LSTF}
@@ -1738,6 +1764,7 @@ theorem rest_assignment_to_second_conjunct_agrees
 --Quantifiers and assignments
 --
 
+/-- Stub -/
 def quantified_var_free_extend_assignment
   {M : LSTModel}
   {φ : LSTF}
@@ -1756,12 +1783,13 @@ def quantified_var_free_extend_assignment
       (hvalues := List_lengths_equal_implies_cons_lengths_equal
                     (α:=var) (β:=M.univ) ass.keys v' ass.values x ass.hvalues)
 
+/-- Stub -/
 def quantified_var_not_free_extend_assignment
   {M : LSTModel}
   {φ : LSTF}
   {v' : var}
   (ass : assignment M (LSTF.ex v' φ))
-  (x : M.univ)
+  --(x : M.univ)
   (hv' : v' ∉ free_var φ)
 : assignment M φ
 :=  assignment.mk
@@ -1783,8 +1811,9 @@ def extend_assignment
   (x : M.univ)
 : assignment M φ
 :=if h : v' ∈ free_var φ then (quantified_var_free_extend_assignment ass x h)
-  else (quantified_var_not_free_extend_assignment ass x h)
+  else (quantified_var_not_free_extend_assignment ass h)
 
+/-- Stub -/
 theorem quantified_var_free_extend_assignment_equals
   {M : LSTModel}
   {φ : LSTF}
@@ -1797,6 +1826,7 @@ theorem quantified_var_free_extend_assignment_equals
   unfold extend_assignment
   simp only [hv', ↓reduceDIte]
 
+/-- Stub -/
 theorem quantified_var_not_free_extend_assignment_equals
   {M : LSTModel}
   {φ : LSTF}
@@ -1804,11 +1834,12 @@ theorem quantified_var_not_free_extend_assignment_equals
   (ass : assignment M (LSTF.ex v' φ))
   (x : M.univ)
   (hv' : v' ∉ free_var φ)
-: extend_assignment ass x = quantified_var_not_free_extend_assignment ass x hv'
+: extend_assignment ass x = quantified_var_not_free_extend_assignment ass hv'
 :=by
   unfold extend_assignment
   simp only [hv', ↓reduceDIte]
 
+/-- Stub -/
 theorem quantified_var_free_var_in_extend_assignment_keys
   {M : LSTModel}
   {ψ : LSTF}
@@ -1819,6 +1850,7 @@ theorem quantified_var_free_var_in_extend_assignment_keys
 : v ∈ (extend_assignment ass x).keys
 := (extend_assignment ass x).hfree_var.2 hv
 
+/-- Stub -/
 theorem quantified_var_free_extend_assignment_keys
   {M : LSTModel}
   {ψ : LSTF}
@@ -1829,6 +1861,7 @@ theorem quantified_var_free_extend_assignment_keys
 : (extend_assignment ass x).keys = (v::ass.keys)
 :=by rw [quantified_var_free_extend_assignment_equals ass x hv]; rfl
 
+/-- Stub -/
 theorem quantified_var_not_free_extend_assignment_keys
   {M : LSTModel}
   {ψ : LSTF}
@@ -1839,6 +1872,7 @@ theorem quantified_var_not_free_extend_assignment_keys
 : (extend_assignment ass x).keys = ass.keys
 :=by rw [quantified_var_not_free_extend_assignment_equals ass x hv]; rfl
 
+/-- Stub -/
 theorem quantified_var_free_extend_assignment_values
   {M : LSTModel}
   {ψ : LSTF}
@@ -1849,6 +1883,7 @@ theorem quantified_var_free_extend_assignment_values
 : (extend_assignment ass x).values = (x::ass.values)
 :=by rw [quantified_var_free_extend_assignment_equals ass x hv]; rfl
 
+/-- Stub -/
 theorem quantified_var_not_free_extend_assignment_values
   {M : LSTModel}
   {ψ : LSTF}
@@ -1859,6 +1894,7 @@ theorem quantified_var_not_free_extend_assignment_values
 : (extend_assignment ass x).values = ass.values
 :=by rw [quantified_var_not_free_extend_assignment_equals ass x hv]; rfl
 
+/-- Stub -/
 theorem quantified_var_free_extend_assignment_keys_length
   {M : LSTModel}
   {ψ : LSTF}
@@ -1869,6 +1905,7 @@ theorem quantified_var_free_extend_assignment_keys_length
 : (extend_assignment ass x).keys.length = ass.keys.length + 1
 :=by rw [quantified_var_free_extend_assignment_equals ass x hv]; rfl
 
+/-- Stub -/
 theorem quantified_var_free_extend_assignment_values_length
   {M : LSTModel}
   {ψ : LSTF}
@@ -1879,6 +1916,7 @@ theorem quantified_var_free_extend_assignment_values_length
 : (extend_assignment ass x).values.length = ass.values.length + 1
 :=by rw [quantified_var_free_extend_assignment_equals ass x hv]; rfl
 
+/-- Stub -/
 theorem quantified_var_not_free_extend_assignment_keys_length
   {M : LSTModel}
   {ψ : LSTF}
@@ -1889,6 +1927,7 @@ theorem quantified_var_not_free_extend_assignment_keys_length
 : (extend_assignment ass x).keys.length = ass.keys.length
 :=by rw [quantified_var_not_free_extend_assignment_equals ass x hv]; rfl
 
+/-- Stub -/
 theorem quantified_var_not_free_extend_assignment_values_length
   {M : LSTModel}
   {ψ : LSTF}
@@ -1899,6 +1938,7 @@ theorem quantified_var_not_free_extend_assignment_values_length
 : (extend_assignment ass x).values.length = ass.values.length
 :=by rw [quantified_var_not_free_extend_assignment_equals ass x hv]; rfl
 
+/-- Stub -/
 theorem quantified_var_free_index_var_in_extend_assignment_keys
   {M : LSTModel}
   {ψ : LSTF}
@@ -1911,6 +1951,7 @@ theorem quantified_var_free_index_var_in_extend_assignment_keys
    rw[quantified_var_free_extend_assignment_keys ass x hv]
    exact List.idxOf_cons_self
 
+/-- Stub -/
 theorem extend_assignment_new_value
   {M : LSTModel}
   {ψ : LSTF}
@@ -1929,6 +1970,7 @@ theorem extend_assignment_new_value
              quantified_var_free_extend_assignment_values ass x hv]
   rfl
 
+/-- Stub -/
 theorem assignment_keys_subset_extend_assignment_keys
   {M : LSTModel}
   {ψ : LSTF}
@@ -1944,6 +1986,7 @@ theorem assignment_keys_subset_extend_assignment_keys
   := (free_var_ex_subset_free_var v ψ) i
   exact (extend_assignment ass x).hfree_var.2 j
 
+/-- Stub -/
 theorem quantified_var_free_extend_assignment_agrees
   {M : LSTModel}
   {ψ : LSTF}
@@ -1975,6 +2018,7 @@ theorem quantified_var_free_extend_assignment_agrees
   simp only [n]
   exact value_at_succ_index_of_cons ass.values (ass.keys.idxOf w) (ass.hvalues.symm ▸ l) x
 
+/-- Stub -/
 theorem quantified_var_not_free_extend_assignment_agrees
   {M : LSTModel}
   {ψ : LSTF}
@@ -1996,6 +2040,7 @@ theorem quantified_var_not_free_extend_assignment_agrees
                             := quantified_var_not_free_extend_assignment_values ass x hv
   simp only [ex_ass_keys_is, ex_ass_values_is]
 
+/-- Stub -/
 theorem extend_assignment_agrees
   {M : LSTModel}
   {ψ : LSTF}
@@ -2031,49 +2076,62 @@ match φ with
 
 attribute [match_pattern]  sats
 
+/-- Stub -/
 theorem sats_atomic_eq (M : LSTModel) (v v' : var) (ass : assignment M (LSTF.atomic_eq v v'))
 : (sats M (LSTF.atomic_eq v v') ass) ↔
   (M.eq (var_eval ass v (ass.hfree_var.2 (first_in_free_var_atomic_mem v v')))
         (var_eval ass v' (ass.hfree_var.2 (second_in_free_var_atomic_mem v v'))))
 := by rfl
 
+/-- Stub -/
 theorem sats_atomic_mem (M : LSTModel) (v v' : var) (ass : assignment M (LSTF.atomic_mem v v'))
 : (sats M (LSTF.atomic_mem v v') ass) ↔
   (M.mem (var_eval ass v (ass.hfree_var.2 (first_in_free_var_atomic_mem v v')))
         (var_eval ass v' (ass.hfree_var.2 (second_in_free_var_atomic_mem v v'))))
 := by rfl
 
+/-- Stub -/
 theorem sats_conj (M : LSTModel) (ψ ρ : LSTF) (ass : assignment M (LSTF.conj ψ ρ))
 : (sats M (LSTF.conj ψ ρ) ass) ↔
   (sats M ψ (rest_assignment_to_first_conjunct ass))
   ∧ (sats M ρ (rest_assignment_to_second_conjunct ass))
 := by rfl
 
+/-- Stub -/
 theorem sats_neg (M : LSTModel) (ψ : LSTF) (ass : assignment M (LSTF.neg ψ))
 : (sats M (LSTF.neg ψ) ass) ↔
   ¬ (sats M ψ (cast_assignment_to_nonnegation ass))
 := by rfl
 
+/-- Stub -/
 theorem sats_ex (M : LSTModel) (v : var) (ψ : LSTF) (ass : assignment M (LSTF.ex v ψ))
 : (sats M (LSTF.ex v ψ) ass) ↔
   ∃ x : M.univ,
     sats M ψ (extend_assignment ass x)
 := by rfl
 
+/-- Stub -/
 def respects {α : Type u} (eq : α → α → Prop) (mem : α → α → Prop)
 : Prop
 := ∀ (c c' d d' : α), (eq c c') → (eq d d') → (mem c d) → (mem c' d')
 
+/-- A `StandardLSTModel` is a structure which consists of an `LSTModel` `M` (given by the `model`
+field) whose "equivalence" relation `M.eq` is in fact an equivalence relation, as proven by
+the `heq` field, and whose "membership" relation `M.mem` respects `M.eq`, as proven by the field
+`hmem`. -/
 structure StandardLSTModel.{u''} where
+  /-- field of `StandardLSTModel`: the underlying `LSTModel`, which is the basic data. -/
   model : LSTModel.{u''}
   heq : Equivalence (α:=_) model.eq
   hmem : respects (α:=_) model.eq model.mem
 
+/-- Stub -/
 def equiv_ass (M : StandardLSTModel) (φ : LSTF) (ass ass' : assignment (M.model) φ)
 : Prop
 :=∀ (v : var) (hv : v ∈ free_var φ),
     M.model.eq (var_eval ass v (ass.hfree_var.2 hv)) (var_eval ass' v (ass'.hfree_var.2 hv))
 
+/-- Stub -/
 theorem equiv_ass_is_Equivalence (M : StandardLSTModel) (φ : LSTF)
 : Equivalence (equiv_ass M φ)
 where
@@ -2091,6 +2149,7 @@ where
     intro ass1 ass2 ass3 h12 h23 v hv
     exact M.heq.trans (h12 v hv) (h23 v hv)
 
+/-- Stub -/
 theorem equiv_ass_first_conjunct (M : StandardLSTModel) (φ ψ : LSTF)
   (ass ass' : assignment (M.model) (LSTF.conj φ ψ)) (hass : equiv_ass M (LSTF.conj φ ψ) ass ass')
 : equiv_ass M φ (rest_assignment_to_first_conjunct ass) (rest_assignment_to_first_conjunct ass')
@@ -2117,6 +2176,7 @@ theorem equiv_ass_first_conjunct (M : StandardLSTModel) (φ ψ : LSTF)
   := (rest_assignment_to_first_conjunct_agrees ass' v hvconjkeys' hvkeys').symm
   exact (var_evals_agree'.symm ▸ (var_evals_agree.symm ▸ hassv))
 
+/-- Stub -/
 theorem equiv_ass_second_conjunct (M : StandardLSTModel) (φ ψ : LSTF)
   (ass ass' : assignment (M.model) (LSTF.conj φ ψ)) (hass : equiv_ass M (LSTF.conj φ ψ) ass ass')
 : equiv_ass M ψ (rest_assignment_to_second_conjunct ass) (rest_assignment_to_second_conjunct ass')
@@ -2143,6 +2203,7 @@ theorem equiv_ass_second_conjunct (M : StandardLSTModel) (φ ψ : LSTF)
   := (rest_assignment_to_second_conjunct_agrees ass' v hvconjkeys' hvkeys').symm
   exact (var_evals_agree'.symm ▸ (var_evals_agree.symm ▸ hassv))
 
+/-- Stub -/
 theorem equiv_ass_neg (M : StandardLSTModel) (φ : LSTF)
   (ass ass' : assignment (M.model) (LSTF.neg φ)) (hass : equiv_ass M (LSTF.neg φ) ass ass')
 : equiv_ass M φ (cast_assignment_to_nonnegation ass) (cast_assignment_to_nonnegation ass')
@@ -2155,6 +2216,7 @@ theorem equiv_ass_neg (M : StandardLSTModel) (φ : LSTF)
   := (free_var_neg ▸ hv)
   exact hass v hvneg --This didn't work so easily in the conjunction case
 
+/-- Stub -/
 theorem equiv_ass_ex
   {M : StandardLSTModel}
   {ψ : LSTF}
@@ -2192,6 +2254,7 @@ theorem equiv_ass_ex
     := (extend_assignment_agrees ass' w hwex x' hwkeys').symm
     exact (var_eval_w'.symm ▸ (var_eval_w.symm ▸ hass w hwex))
 
+/-- Stub -/
 theorem sats_respects_equiv
   (M : StandardLSTModel)
   (φ : LSTF)
